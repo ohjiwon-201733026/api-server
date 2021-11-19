@@ -5,11 +5,12 @@ import lombok.Getter;
 
 import java.util.List;
 
+//@Getter
 public class ErrorResponse {
-    private int code;
-    private String message;
-    private List<String> errorDetails;
-    private String responseTime;
+    private final int code;
+    private final String message;
+    private final List<String> errorDetails;
+    private final String responseTime;
 
 
     public ErrorResponse(int code, String message, List<String> errorDetails) {
