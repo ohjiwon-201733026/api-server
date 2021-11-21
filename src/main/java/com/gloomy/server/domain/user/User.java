@@ -29,4 +29,20 @@ public class User {
     static User of(String email, String name, Password password) {
         return new User(email, Profile.from(name), password);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
+
+    public Password getPassword() {
+        return password;
+    }
 }
