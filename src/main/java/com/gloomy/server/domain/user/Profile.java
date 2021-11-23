@@ -29,6 +29,10 @@ public class Profile {
         this.image = image;
     }
 
+    public String getUserName() {
+        return name;
+    }
+
     void changeName(String name) {
         this.name = name;
     }

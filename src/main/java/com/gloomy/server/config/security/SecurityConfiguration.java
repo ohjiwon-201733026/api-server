@@ -35,7 +35,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.logout().disable();
         http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll();
+                .antMatchers("/h2-console/**").permitAll()
+                .anyRequest().authenticated();
     }
 
     @Override

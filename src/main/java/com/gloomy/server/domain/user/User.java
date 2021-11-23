@@ -1,5 +1,8 @@
 package com.gloomy.server.domain.user;
 
+import lombok.AccessLevel;
+import lombok.Builder;
+
 import javax.persistence.*;
 
 @Entity
@@ -20,6 +23,7 @@ public class User {
     protected User() {
     }
 
+    @Builder(access = AccessLevel.PROTECTED)
     private User(String email, Profile profile, Password password) {
         this.email = email;
         this.profile = profile;
@@ -27,7 +31,12 @@ public class User {
     }
 
     static User of(String email, String name, Password password) {
-        return new User(email, Profile.from(name), password);
+//        return new User(email, Profile.from(name), password);
+        return User.builder()
+                .email(email)
+                .profile(Profile.from(name))
+                .password(password)
+                .build();
     }
 
     public Long getId() {
@@ -40,6 +49,10 @@ public class User {
 
     public Profile getProfile() {
         return profile;
+    }
+
+    public String getName() {
+        return getProfile().get
     }
 
     public Password getPassword() {
