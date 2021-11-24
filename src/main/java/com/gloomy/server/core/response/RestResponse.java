@@ -1,6 +1,6 @@
-package com.gloomy.server.config.response;
+package com.gloomy.server.core.response;
 
-import com.gloomy.server.util.LocalDateTimeUtil;
+import com.gloomy.server.core.util.LocalDateTimeUtil;
 
 public class RestResponse<T> {
     private int code;

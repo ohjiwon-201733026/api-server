@@ -1,6 +1,6 @@
-package com.gloomy.server.config.security.jwt;
+package com.gloomy.server.infrastructure.jwt;
 
-import com.gloomy.server.config.security.jwt.domain.JWTPayload;
+import com.gloomy.server.domain.jwt.JWTPayload;
 import com.gloomy.server.domain.user.User;
 
 import static java.lang.String.format;

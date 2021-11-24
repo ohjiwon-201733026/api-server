@@ -1,7 +1,6 @@
-package com.gloomy.server.config.response;
+package com.gloomy.server.core.response;
 
-import com.gloomy.server.util.LocalDateTimeUtil;
-import lombok.Getter;
+import com.gloomy.server.core.util.LocalDateTimeUtil;
 
 import java.util.List;
 

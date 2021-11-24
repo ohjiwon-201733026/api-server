@@ -1,4 +1,4 @@
-package com.gloomy.server.util;
+package com.gloomy.server.core.util;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

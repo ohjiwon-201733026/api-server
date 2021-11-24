@@ -1,4 +1,4 @@
-package com.gloomy.server.config.security.jwt;
+package com.gloomy.server.infrastructure.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;

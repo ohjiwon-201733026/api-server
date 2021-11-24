@@ -1,6 +1,6 @@
-package com.gloomy.server.config.handler;
+package com.gloomy.server.core.handler;
 
-import com.gloomy.server.config.response.RestResponse;
+import com.gloomy.server.core.response.RestResponse;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

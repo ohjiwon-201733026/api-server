@@ -1,4 +1,4 @@
-package com.gloomy.server.config.security.jwt;
+package com.gloomy.server.infrastructure.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

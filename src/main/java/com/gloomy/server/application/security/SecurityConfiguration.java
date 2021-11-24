@@ -1,6 +1,6 @@
-package com.gloomy.server.config.security;
+package com.gloomy.server.application.security;
 
-import com.gloomy.server.config.security.jwt.domain.JWTDeserializer;
+import com.gloomy.server.domain.jwt.JWTDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

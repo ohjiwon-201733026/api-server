@@ -1,8 +1,7 @@
-package com.gloomy.server.config.security;
+package com.gloomy.server.application.security;
 
-import com.gloomy.server.config.security.jwt.domain.JWTDeserializer;
-import com.gloomy.server.config.security.jwt.domain.JWTDeserializer;
-import com.gloomy.server.config.security.jwt.domain.JWTPayload;
+import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.domain.jwt.JWTPayload;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;

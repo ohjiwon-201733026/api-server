@@ -1,4 +1,4 @@
-package com.gloomy.server.config.security;
+package com.gloomy.server.application.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.web.filter.OncePerRequestFilter;

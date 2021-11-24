@@ -1,14 +1,14 @@
-package com.gloomy.server.config.security.jwt;
+package com.gloomy.server.infrastructure.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gloomy.server.config.security.jwt.domain.JWTDeserializer;
-import com.gloomy.server.config.security.jwt.domain.JWTSerializer;
+import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
-import com.gloomy.server.config.security.jwt.domain.JWTPayload;
+import com.gloomy.server.domain.jwt.JWTPayload;
 
 import java.util.regex.Pattern;
 
-import static com.gloomy.server.config.security.jwt.Base64URL.*;
+import static com.gloomy.server.infrastructure.jwt.Base64URL.*;
 import static java.lang.String.format;
 import static java.time.Instant.now;
 import static java.util.regex.Pattern.compile;

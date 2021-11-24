@@ -1,4 +1,4 @@
-package com.gloomy.server.config.security.jwt;
+package com.gloomy.server.infrastructure.jwt;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;

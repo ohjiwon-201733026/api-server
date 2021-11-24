@@ -1,9 +1,8 @@
-package com.gloomy.server.controller;
+package com.gloomy.server.application.user;
 
-import com.gloomy.server.config.security.jwt.domain.JWTSerializer;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
-import com.gloomy.server.dto.UserDto;
-import com.gloomy.server.service.UserService;
+import com.gloomy.server.domain.user.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +22,8 @@ public class UserRestController {
     }
 
     @PostMapping
-    public Object postUser(@Validated @RequestBody UserDto.Request dto) {
-        final User = userService.signUp(dto);
+    public Object postUser(@Validated @RequestBody UserDTO.Request dto) {
+        final User userSaved = userService.signUp(dto);
         return null;
     }
 

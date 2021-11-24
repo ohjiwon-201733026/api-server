@@ -1,4 +1,4 @@
-package com.gloomy.server.config.security.jwt.domain;
+package com.gloomy.server.domain.jwt;
 
 public interface JWTDeserializer {
 

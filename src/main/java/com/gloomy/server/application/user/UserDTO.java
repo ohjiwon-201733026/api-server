@@ -1,4 +1,4 @@
-package com.gloomy.server.dto;
+package com.gloomy.server.application.user;
 
 import com.gloomy.server.domain.user.User;
 import lombok.AccessLevel;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-public class UserDto {
+public class UserDTO {
 
     public static class Request {
         @Email
@@ -50,10 +50,10 @@ public class UserDto {
         public static Response fromUserAndToken(User user, String token) {
             return Response.builder()
                     .email(user.getEmail())
-                    .username(user.get)
+                    .username(user.getName())
                     .token(token)
-                    .bio()
-                    .image()
+                    .bio("")
+                    .image("")
                     .build();
         }
     }
