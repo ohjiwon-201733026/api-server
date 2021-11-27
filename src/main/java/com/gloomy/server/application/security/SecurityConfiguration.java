@@ -16,13 +16,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.POST;
+
 @EnableConfigurationProperties(SecurityConfigurationProperties.class)
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final SecurityConfigurationProperties properties;
 
-    public SecurityConfiguration(SecurityConfigurationProperties properties) {
+    SecurityConfiguration(SecurityConfigurationProperties properties) {
         this.properties = properties;
     }
 
@@ -36,16 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
+                .antMatchers(POST, "/users", "/users/login").permitAll()
                 .anyRequest().authenticated();
-    }
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedHeaders("GET", "POST", "DELETE", "PUT")
-                .allowedOrigins(properties.getAllowedOrigins().toArray(new String[0]))
-                .allowedHeaders("*")
-                .allowCredentials(true);
     }
 
     @Bean
@@ -56,6 +50,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedHeaders("GET", "POST", "DELETE", "PUT")
+                .allowedOrigins(properties.getAllowedOrigins().toArray(new String[0]))
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
 

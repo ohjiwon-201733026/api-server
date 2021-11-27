@@ -4,7 +4,9 @@ import lombok.AccessLevel;
 import lombok.Builder;
 
 import javax.persistence.*;
+import java.util.Objects;
 
+@Table(name = "uers")
 @Entity
 public class User {
 
@@ -52,10 +54,23 @@ public class User {
     }
 
     public String getName() {
-        return getProfile().get
+        return getProfile().getUserName();
     }
 
     public Password getPassword() {
         return password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return email.equals(user.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email);
     }
 }

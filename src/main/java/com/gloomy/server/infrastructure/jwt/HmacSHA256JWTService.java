@@ -2,9 +2,9 @@ package com.gloomy.server.infrastructure.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.domain.jwt.JWTPayload;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
-import com.gloomy.server.domain.jwt.JWTPayload;
 
 import java.util.regex.Pattern;
 
