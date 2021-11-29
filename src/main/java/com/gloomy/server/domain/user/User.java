@@ -16,28 +16,42 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @Column(name = "type")
+    private String type;
+
     @Embedded
     private Profile profile;
 
     @Embedded
     private Password password;
 
+    @Embedded
+    private Token token;
+
     protected User() {
     }
 
-    @Builder(access = AccessLevel.PROTECTED)
-    private User(String email, Profile profile, Password password) {
+    @Builder/*(access = AccessLevel.PROTECTED)*/
+    private User(String email, Profile profile, Password password, String type) {
         this.email = email;
+        this.type = type;
         this.profile = profile;
         this.password = password;
     }
 
     static User of(String email, String name, Password password) {
-//        return new User(email, Profile.from(name), password);
         return User.builder()
                 .email(email)
+                .type("SITE")
                 .profile(Profile.from(name))
                 .password(password)
+                .build();
+    }
+
+    static User of(String email) {
+        return User.builder()
+                .email(email)
+                .type("KAKAO")
                 .build();
     }
 
