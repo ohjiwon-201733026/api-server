@@ -38,7 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers(POST, "/user/login/kakao").permitAll()
+
+                .antMatchers(POST, "/user", "/user/login", "/user/login/kakao").permitAll()
                 .anyRequest().authenticated();
     }
 

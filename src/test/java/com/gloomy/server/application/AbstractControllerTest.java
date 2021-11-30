@@ -1,10 +1,14 @@
 package com.gloomy.server.application;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.ApiServerApplication;
 import com.gloomy.server.config.TestConfig;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationContextProvider;
@@ -26,6 +30,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 @ActiveProfiles
 @Import(TestConfig.class)
 @ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@AutoConfigureRestDocs(uriScheme = "https", uriHost = "docs.api.com") // (1)
 @SpringBootTest(classes = ApiServerApplication.class)
 public abstract class AbstractControllerTest {
 
@@ -33,7 +39,8 @@ public abstract class AbstractControllerTest {
     private FilterChainProxy springSecurityFilterChain;
 
     protected MockMvc mockMvc;
-
+    @Autowired
+    protected ObjectMapper objectMapper;
     protected RestDocumentationResultHandler document;
 
     @BeforeEach

@@ -10,9 +10,6 @@ public class Profile {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "bio")
-    private String bio;
-
     @Embedded
     private Image image;
 
@@ -20,12 +17,11 @@ public class Profile {
     }
 
     static Profile from(String name) {
-        return new Profile(name, null, null);
+        return new Profile(name, null);
     }
 
-    private Profile(String name, String bio, Image image) {
+    private Profile(String name, Image image) {
         this.name = name;
-        this.bio = bio;
         this.image = image;
     }
 

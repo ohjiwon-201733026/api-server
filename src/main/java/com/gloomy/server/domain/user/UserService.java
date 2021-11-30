@@ -1,7 +1,9 @@
 package com.gloomy.server.domain.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
@@ -18,12 +20,24 @@ public class UserService {
 
     private final WebClient webClient;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-
-    public User signUp(Request dto) {
-        return null;
+    @Transactional
+    public User signUp(PostRequest postRequest) {
+        final Password encodedPassword = Password.of(postRequest.getPassword(), passwordEncoder);
+        User user = User.of(postRequest.getEmail(),
+                postRequest.getUserName(),
+                encodedPassword);
+        return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<User> login(LoginRequest request) {
+        return userRepository.findFirstByEmail(request.getEmail())
+                .filter(user -> user.matchesPassword(request.getPassword(), passwordEncoder));
+    }
+
+    @Transactional(readOnly = true)
     public Optional<User> kakaoLogin(KakaoCodeRequest dto) {
         KakaoToken kakaoToken = getKakaoAccessToken(dto);
         KakaoUserInfo kakaoUserInfo = getKakaoUserInfo(kakaoToken.getAccess_token());
@@ -64,5 +78,4 @@ public class UserService {
                 .bodyToMono(KakaoUserInfo.class)
                 .blockOptional().orElseThrow();
     }
-
 }
