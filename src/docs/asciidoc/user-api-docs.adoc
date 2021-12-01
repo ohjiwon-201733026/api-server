@@ -1,4 +1,4 @@
-= 스터디팜 유저 API 문서
+= API 문서
 :doctype: book
 :icons: font
 :source-highlighter: highlightjs
