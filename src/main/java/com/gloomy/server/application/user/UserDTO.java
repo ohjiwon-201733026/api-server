@@ -2,6 +2,7 @@ package com.gloomy.server.application.user;
 
 import com.gloomy.server.domain.user.User;
 import lombok.*;
+import org.json.JSONObject;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,7 +12,11 @@ public class UserDTO {
     /**
      * Info
      **/
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     @Getter
+    @ToString
     public static class KakaoToken {
         String token_type;
         String access_token;
@@ -21,20 +26,18 @@ public class UserDTO {
     }
 
     @Getter
-    public static class KakaoUserInfo {
-        String id;
-        KakaoAccount kakao_account;
+    public static class KakaoUser {
+        String nickname;
+        String email;
 
-        public String getEmail() {
-            return kakao_account.getEmail();
+        private KakaoUser(String nickname, String email) {
+            this.nickname = nickname;
+            this.email = email;
         }
 
-        static class KakaoAccount {
-            String email;
-
-            public String getEmail() {
-                return email;
-            }
+        public static KakaoUser from(JSONObject obj) {
+            return new KakaoUser(obj.getJSONObject("properties").getString("nickname"),
+                    obj.getJSONObject("kakao_account").getString("email"));
         }
     }
 
@@ -76,9 +79,6 @@ public class UserDTO {
     public static class KakaoCodeRequest {
         @NotBlank(message = "코드값을 입력하세요.")
         String code;
-        String grantType;
-        String clientId;
-        String redirectUri;
     }
 
 

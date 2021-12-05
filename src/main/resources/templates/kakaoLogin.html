@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>kakaoLogin</title>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+</head>
+<body>
+<a id="custom-login-btn" href="javascript:loginWithKakao()">
+    <img
+            src="//k.kakaocdn.net/14/dn/btqCn0WEmI3/nijroPfbpCa4at5EIsjyf0/o.jpg"
+            width="222"
+    />
+</a>
+<script type="text/javascript">
+    Kakao.init('343faed407d9718984e4cd32202042ac');
+    console.log(Kakao.isInitialized());
+
+    function loginWithKakao() {
+        Kakao.Auth.authorize({
+            redirectUri: 'http://localhost:3030/'
+        });
+    }
+</script>
+
+</body>
+</html>

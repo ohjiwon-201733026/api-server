@@ -49,8 +49,8 @@ public class User {
 //                .build();
 //    }
 
-    static User of(String email) {
-        return new User(email, null, null);
+    static User of(String email, String name) {
+        return new User(email, Profile.from(name), null);
     }
 
     boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {

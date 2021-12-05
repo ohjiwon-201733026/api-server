@@ -3,6 +3,7 @@ package com.gloomy.server.application.user;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +25,7 @@ public class UserRestController {
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object postUser(@Validated @RequestBody PostRequest request) {
+    public Object addUser(@Validated @RequestBody PostRequest request) {
         final User userSaved = userService.signUp(request);
         return Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved));
     }
@@ -36,9 +37,8 @@ public class UserRestController {
     }
 
     @PostMapping(value = "/login/kakao", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO.Response> kakaoLogin(@Validated @RequestBody KakaoCodeRequest dto) {
-//    public ResponseEntity<UserDTO.Response> login(@RequestHeader("access_token") String accessToken) {
-        return of(userService.kakaoLogin(dto)
+    public ResponseEntity<UserDTO.Response> kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
+        return of(userService.kakaoLogin(request)
                 .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
 
