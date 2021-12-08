@@ -15,15 +15,19 @@ public class TestFeedDTO {
     private final Long userId;
     private final String password;
     private final String content;
-    private final ArrayList<MultipartFile> images;
+    private ArrayList<MultipartFile> images;
 
-    public TestFeedDTO(User testUser) {
+    public TestFeedDTO(User testUser, int imageNum) {
         this.ip = "123.456.789.012";
         this.user = testUser;
         this.userId = testUser.getId();
         this.password = "12345";
         this.content = "글 작성 샘플입니다.";
-        this.images = new TestImage().makeImages(1);
+        this.images = new TestImage().makeImages(imageNum);
+    }
+
+    public void setImages(int imageNum) {
+        this.images = new TestImage().makeImages(imageNum);
     }
 
     public FeedDTO.Request makeUserFeedDTO() {

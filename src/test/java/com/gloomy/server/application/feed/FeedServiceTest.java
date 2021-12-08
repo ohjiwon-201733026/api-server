@@ -33,7 +33,7 @@ class FeedServiceTest {
     void beforeEach() {
         User testUser = new TestUserDTO().makeTestUser();
         userService.createUser(testUser);
-        testFeedDTO = new TestFeedDTO(testUser);
+        testFeedDTO = new TestFeedDTO(testUser, 1);
     }
 
     @AfterEach
@@ -86,12 +86,10 @@ class FeedServiceTest {
     }
 
     private void checkFeedSuccess(FeedDTO.Request feedDTO, Feed createdFeed) {
-        final int imageSize = 1;
-
         assertEquals(createdFeed.getIsUser().getIsUser(), feedDTO.getIsUser());
         assertEquals(createdFeed.getIp().getIp(), feedDTO.getIp());
         assertEquals(createdFeed.getContent().getContent(), feedDTO.getContent());
-        assertEquals(imageService.findImages(createdFeed).getSize(), imageSize);
+        assertEquals(imageService.findImages(createdFeed).getSize(), feedDTO.getImages().size());
 
         if (feedDTO.getIsUser()) {
             assertEquals(createdFeed.getUserId().getId(), feedDTO.getUserId());
