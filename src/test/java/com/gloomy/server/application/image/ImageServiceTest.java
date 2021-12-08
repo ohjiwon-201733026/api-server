@@ -5,6 +5,8 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.image.IMAGE_STATUS;
+import com.gloomy.server.domain.image.Image;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -93,12 +95,26 @@ class ImageServiceTest {
         checkFoundImageFail(null, "[ImageService] 피드가 유효하지 않습니다.");
     }
 
-    private void checkFoundImageFail(Feed feedId, String errorMessage) {
-        assertEquals(
-                assertThrows(IllegalArgumentException.class, () -> {
-                    imageService.findImages(feedId);
-                }).getMessage(),
-                errorMessage);
+    @Test
+    void 이미지_삭제_성공() {
+        ArrayList<MultipartFile> images = testImage.makeImages(3);
+
+        imageService.uploadMany(testFeed, images);
+        Images deleteImages = imageService.deleteImages(testFeed);
+
+        checkDeletedImageSuccess(deleteImages);
+    }
+
+    @Test
+    void 이미지_삭제_실패() {
+        checkDeletedImageFail(null, "[ImageService] 피드가 유효하지 않습니다.");
+    }
+
+    private void checkUploadedImageSuccess(ArrayList<MultipartFile> images, Images createdImages) {
+        assertEquals(createdImages.getSize(), images.size());
+        for (int i = 0; i < images.size(); i++) {
+            assertEquals(createdImages.getImages().get(i).getFeedId().getId(), testFeed.getId());
+        }
     }
 
     private void checkUploadedImageFail(Feed feed, ArrayList<MultipartFile> images, String errorMessage) {
@@ -109,10 +125,25 @@ class ImageServiceTest {
                 errorMessage);
     }
 
-    private void checkUploadedImageSuccess(ArrayList<MultipartFile> images, Images createdImages) {
-        assertEquals(createdImages.getSize(), images.size());
-        for (int i = 0; i < images.size(); i++) {
-            assertEquals(createdImages.getImages().get(i).getFeedId().getId(), testFeed.getId());
+    private void checkFoundImageFail(Feed feedId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    imageService.findImages(feedId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkDeletedImageSuccess(Images deletedImages) {
+        for (Image deletedImage : deletedImages.getImages()) {
+            assertEquals(deletedImage.getStatus(), IMAGE_STATUS.INACTIVE);
         }
+    }
+
+    private void checkDeletedImageFail(Feed feedId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    imageService.deleteImages(feedId);
+                }).getMessage(),
+                errorMessage);
     }
 }
