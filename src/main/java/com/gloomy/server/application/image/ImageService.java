@@ -2,6 +2,7 @@ package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.image.IMAGE_STATUS;
 import com.gloomy.server.domain.image.Image;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ImageService {
@@ -54,6 +56,18 @@ public class ImageService {
             throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
         }
         return new Images(imageRepository.findAllByFeedId(feedId));
+    }
+
+    @Transactional
+    public Images deleteImages(Feed feedId) throws IllegalArgumentException {
+        if (feedId == null) {
+            throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
+        }
+        List<Image> foundImages = imageRepository.findAllByFeedId(feedId);
+        for (Image foundImage : foundImages) {
+            foundImage.setStatus(IMAGE_STATUS.INACTIVE);
+        }
+        return new Images(imageRepository.saveAll(foundImages));
     }
 
     public void deleteAll() {
