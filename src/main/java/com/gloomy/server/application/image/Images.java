@@ -14,6 +14,10 @@ public class Images {
         this.images = new ArrayList<>();
     }
 
+    public Images(List<Image> images) {
+        this.images = images;
+    }
+
     public void addImage(Image image) {
         images.add(image);
     }
