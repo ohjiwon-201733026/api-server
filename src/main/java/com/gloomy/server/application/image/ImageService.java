@@ -49,7 +49,10 @@ public class ImageService {
         return imageRepository.save(image);
     }
 
-    public Images findImages(Feed feedId) {
+    public Images findImages(Feed feedId) throws IllegalArgumentException {
+        if (feedId == null) {
+            throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
+        }
         return new Images(imageRepository.findAllByFeedId(feedId));
     }
 

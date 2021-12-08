@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -34,5 +35,14 @@ public class Image {
                 .feedId(feedId)
                 .imageUrl(new ImageURL(imageUrl))
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Image) {
+            Image targetImage = (Image) o;
+            return Objects.equals(id, targetImage.id) && Objects.equals(feedId.getId(), targetImage.feedId.getId()) && Objects.equals(imageUrl.getImageUrl(), targetImage.imageUrl.getImageUrl());
+        }
+        return false;
     }
 }

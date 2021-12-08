@@ -9,12 +9,12 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ImageURL {
     @Column(name = "image_url", nullable = false)
-    private String image;
+    private String imageUrl;
 
     public ImageURL() {
     }
 
-    public ImageURL(String image) {
-        this.image = image;
+    public ImageURL(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
