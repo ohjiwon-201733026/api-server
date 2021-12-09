@@ -56,3 +56,23 @@ include::{snippets}/user-rest-controller-test/login-test/response-fields.adoc[]
 
 [[kakao-login]]
 == 로그인 (카카오)
+
+CURL
+
+include::{snippets}/user-rest-controller-test/kakao-login/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/user-rest-controller-test/kakao-login//http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/user-rest-controller-test/kakao-login//request-fields.adoc[]
+
+응답정보
+
+include::{snippets}/user-rest-controller-test/kakao-login//http-response.adoc[]
+
+응답형식
+
+include::{snippets}/user-rest-controller-test/kakao-login//response-fields.adoc[]
