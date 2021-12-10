@@ -1,12 +1,16 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -47,6 +51,27 @@ public class FeedService {
             return Feed.of(feedDTO.getIp(), findUser, feedDTO.getContent());
         }
         return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
+    }
+
+    public List<Feed> findUserFeeds(Long userId) throws IllegalArgumentException {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("[FeedService] 사용자 ID가 유효하지 않습니다.");
+        }
+        try {
+            User foundUser = userService.findUser(userId);
+            return feedRepository.findAllByUserId(foundUser);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
+        }
+    }
+
+    public Feed findNonUserFeed(Long feedId) throws IllegalArgumentException {
+        if (feedId == null || feedId <= 0) {
+            throw new IllegalArgumentException("[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
+        }
+        return feedRepository.findById(feedId).orElseThrow(() -> {
+            throw new IllegalArgumentException("[FeedService] 해당 피드 ID가 존재하지 않습니다.");
+        });
     }
 
     @Transactional

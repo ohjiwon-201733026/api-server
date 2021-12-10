@@ -9,4 +9,5 @@ import java.util.List;
 
 @Repository
 public interface FeedRepository extends JpaRepository<Feed, Long> {
+    List<Feed> findAllByUserId(User userId);
 }

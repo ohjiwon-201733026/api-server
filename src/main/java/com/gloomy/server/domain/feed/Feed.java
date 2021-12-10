@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Entity
@@ -74,7 +75,22 @@ public class Feed {
                 .build();
     }
 
-    public void setStatus(FEED_STATUS status) {
-        this.status = status;
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Feed) {
+            Feed targetFeed = (Feed) o;
+            boolean result = Objects.equals(id, targetFeed.id)
+                    && Objects.equals(isUser.getIsUser(), targetFeed.isUser.getIsUser())
+                    && Objects.equals(ip.getIp(), targetFeed.ip.getIp())
+                    && status == targetFeed.status
+                    && Objects.equals(content.getContent(), targetFeed.content.getContent());
+            if (userId != null) {
+                result &= Objects.equals(userId.getId(), targetFeed.userId.getId());
+                return result;
+            }
+            result &= Objects.equals(password.getPassword(), targetFeed.password.getPassword());
+            return result;
+        }
+        return false;
     }
 }
