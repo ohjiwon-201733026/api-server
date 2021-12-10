@@ -30,7 +30,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                                             .password("test1234")
                                             .build();
 
-        MvcResult mvcResult = mockMvc.perform(post("http://localhost:3030/user")
+        MvcResult mvcResult = mockMvc.perform(post(BASE_URL + "/user")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(postRequest)))
@@ -66,7 +66,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .password("test234")
                 .build();
 
-        mockMvc.perform(post("http://localhost:3030/user/login")
+        mockMvc.perform(post(BASE_URL + "/user/login")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(loginRequest)))
@@ -93,10 +93,10 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("uUZMDQ3aE2736JJFK5C885E2ab0ZlLv97WqaigfKzAM06vKPXL5GwSz3_R0YWPJhVLD6Gwo9c5sAAAF9n6OncA")
+                .code("Pj1NBbO3PyTEDiKUX3L5vtks3MY_hr3dkhY0sOmiUbpoIvgrTsxEhYe3YH1juvGXUJ9Fogo9dRsAAAF9n6Ky1Q")
                 .build();
 
-        mockMvc.perform(post("http://localhost:3030/user/login/kakao")
+        mockMvc.perform(post(BASE_URL + "/user/login/kakao")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
