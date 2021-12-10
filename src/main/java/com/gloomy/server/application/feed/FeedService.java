@@ -6,11 +6,12 @@ import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,6 +52,13 @@ public class FeedService {
             return Feed.of(feedDTO.getIp(), findUser, feedDTO.getContent());
         }
         return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
+    }
+
+    public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
+        }
+        return feedRepository.findAll(pageable);
     }
 
     public List<Feed> findUserFeeds(Long userId) throws IllegalArgumentException {
