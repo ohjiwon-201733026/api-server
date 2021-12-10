@@ -40,6 +40,11 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<User> findById(long id) {
+        return userRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public Optional<User> kakaoLogin(KakaoCodeRequest request) {
         KakaoToken kakaoToken = getKakaoToken(request);
         KakaoUser kakaoUser =  getKakaoUser(kakaoToken.getAccess_token());
