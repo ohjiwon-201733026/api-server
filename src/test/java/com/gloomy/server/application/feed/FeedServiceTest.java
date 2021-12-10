@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
@@ -50,7 +52,7 @@ class FeedServiceTest {
 
         Feed createdFeed = feedService.createFeed(userFeedDTO);
 
-        checkFeedSuccess(userFeedDTO, createdFeed);
+        checkCreatedFeedSuccess(userFeedDTO, createdFeed);
     }
 
     @Test
@@ -60,8 +62,8 @@ class FeedServiceTest {
         FeedDTO.Request userFeedDTOWithNoUserId = new FeedDTO.Request(
                 true, testFeedDTO.getIp(), (Long) null, testFeedDTO.getContent(), testFeedDTO.getImages());
 
-        checkFeedFail(userFeedDTOWithPassword, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
-        checkFeedFail(userFeedDTOWithNoUserId, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        checkCreatedFeedFail(userFeedDTOWithPassword, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        checkCreatedFeedFail(userFeedDTOWithNoUserId, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
     }
 
     @Test
@@ -71,7 +73,7 @@ class FeedServiceTest {
 
         Feed createdFeed = feedService.createFeed(nonUserFeedDTO);
 
-        checkFeedSuccess(nonUserFeedDTO, createdFeed);
+        checkCreatedFeedSuccess(nonUserFeedDTO, createdFeed);
     }
 
     @Test
@@ -81,11 +83,60 @@ class FeedServiceTest {
         FeedDTO.Request nonUserFeedDTOWithNoPassword = new FeedDTO.Request(
                 false, testFeedDTO.getIp(), (String) null, testFeedDTO.getContent(), testFeedDTO.getImages());
 
-        checkFeedFail(nonUserFeedDTOWithUserId, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
-        checkFeedFail(nonUserFeedDTOWithNoPassword, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        checkCreatedFeedFail(nonUserFeedDTOWithUserId, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        checkCreatedFeedFail(nonUserFeedDTOWithNoPassword, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
     }
 
-    private void checkFeedSuccess(FeedDTO.Request feedDTO, Feed createdFeed) {
+    @Test
+    void 피드_조회_회원_성공() {
+        FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
+
+        Feed createdUserFeedFirst = feedService.createFeed(userFeedDTO);
+        List<Feed> foundUserFeedsFirst = feedService.findUserFeeds(createdUserFeedFirst.getUserId().getId());
+        Feed createdUserFeedSecond = feedService.createFeed(userFeedDTO);
+        List<Feed> foundUserFeedsSecond = feedService.findUserFeeds(createdUserFeedFirst.getUserId().getId());
+
+        assertEquals(foundUserFeedsFirst.size(), 1);
+        assertEquals(foundUserFeedsFirst.get(0), createdUserFeedFirst);
+        assertEquals(foundUserFeedsSecond.size(), 2);
+        assertEquals(foundUserFeedsSecond.get(0), createdUserFeedFirst);
+        assertEquals(foundUserFeedsSecond.get(1), createdUserFeedSecond);
+    }
+
+    @Test
+    void 피드_조회_회원_실패() {
+        User createdUser = userService.createUser(new TestUserDTO().makeTestUser());
+
+        userService.deleteUser(createdUser.getId());
+
+        checkFoundUserFeedFail(0L, "[FeedService] 사용자 ID가 유효하지 않습니다.");
+        checkFoundUserFeedFail(null, "[FeedService] 사용자 ID가 유효하지 않습니다.");
+        checkFoundUserFeedFail(createdUser.getId(), "[FeedService] 해당하는 사용자가 없습니다.");
+
+    }
+
+    @Test
+    void 피드_조회_비회원_성공() {
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+
+        Feed createdUserFeed = feedService.createFeed(nonUserFeedDTO);
+        Feed foundNonUserFeed = feedService.findNonUserFeed(createdUserFeed.getId());
+
+        assertEquals(foundNonUserFeed, createdUserFeed);
+    }
+
+    @Test
+    void 피드_조회_비회원_실패() {
+        Feed createNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+
+        feedService.deleteAll();
+
+        checkFoundNonUserFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
+        checkFoundNonUserFeedFail(null, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
+        checkFoundNonUserFeedFail(createNonUserFeed.getId(), "[FeedService] 해당 피드 ID가 존재하지 않습니다.");
+    }
+
+    private void checkCreatedFeedSuccess(FeedDTO.Request feedDTO, Feed createdFeed) {
         assertEquals(createdFeed.getIsUser().getIsUser(), feedDTO.getIsUser());
         assertEquals(createdFeed.getIp().getIp(), feedDTO.getIp());
         assertEquals(createdFeed.getContent().getContent(), feedDTO.getContent());
@@ -100,10 +151,26 @@ class FeedServiceTest {
         assertNull(createdFeed.getUserId());
     }
 
-    private void checkFeedFail(FeedDTO.Request feedDTO, String errorMessage) {
+    private void checkCreatedFeedFail(FeedDTO.Request feedDTO, String errorMessage) {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     feedService.createFeed(feedDTO);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkFoundUserFeedFail(Long userId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    feedService.findUserFeeds(userId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkFoundNonUserFeedFail(Long feedId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    feedService.findNonUserFeed(feedId);
                 }).getMessage(),
                 errorMessage);
     }

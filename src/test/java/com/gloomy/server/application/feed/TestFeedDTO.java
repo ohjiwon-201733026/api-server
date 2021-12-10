@@ -1,7 +1,6 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.TestImage;
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import lombok.Getter;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +33,7 @@ public class TestFeedDTO {
         return new FeedDTO.Request(true, ip, userId, content, images);
     }
 
-    public FeedDTO.Request makeNonUserFeedDTOO() {
+    public FeedDTO.Request makeNonUserFeedDTO() {
         return new FeedDTO.Request(false, ip, password, content, images);
     }
 }
