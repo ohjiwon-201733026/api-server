@@ -71,6 +71,15 @@ public class FeedRestController {
         }
     }
 
+    @DeleteMapping("/{feedId}")
+    public Object deleteFeed(@PathVariable Long feedId) {
+        try {
+            return new RestResponse<>(200, "피드 삭제 성공", null);
+        } catch (IllegalArgumentException e) {
+            return new ErrorResponse(400, "피드 삭제 실패", null);
+        }
+    }
+
     private String makeResult(Object feed) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new Hibernate5Module());
