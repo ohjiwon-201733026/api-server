@@ -1,6 +1,6 @@
-package com.gloomy.server.core.handler;
+package com.gloomy.server.application.core.handler;
 
-import com.gloomy.server.core.response.ErrorResponse;
+import com.gloomy.server.application.core.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,64 +1,100 @@
 package com.gloomy.server.application.user;
 
 import com.gloomy.server.domain.user.User;
-import lombok.AccessLevel;
-import lombok.Builder;
+import lombok.*;
+import org.json.JSONObject;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 public class UserDTO {
 
-    public static class Request {
-        @Email
-        String email;
-        @NotBlank
-        String userName;
-        @NotBlank
-        String password;
-
-//        SingUpRequest toSignUpRequest() {
-//            return new User
-//        }
-
-//        @Builder(access = AccessLevel.PROTECTED)
-//        private Request(String email, String userName, String password) {
-//            this.email = email;
-//            this.userName = userName;
-//            this.password = password;
-//        }
-//
-//        public static
+    /**
+     * Info
+     **/
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @ToString
+    public static class KakaoToken {
+        String token_type;
+        String access_token;
+        Integer expires_in;
+        String refresh_token;
+        Integer refresh_token_expires_in;
     }
 
+    @Getter
+    public static class KakaoUser {
+        String nickname;
+        String email;
+
+        private KakaoUser(String nickname, String email) {
+            this.nickname = nickname;
+            this.email = email;
+        }
+
+        public static KakaoUser from(JSONObject obj) {
+            return new KakaoUser(obj.getJSONObject("properties").getString("nickname"),
+                    obj.getJSONObject("kakao_account").getString("email"));
+        }
+    }
+
+
+    /**
+     * Request
+     **/
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @ToString
+    public static class PostRequest {
+        @Email(message = "이메일 양식에 맞지 않습니다.")
+        String email;
+        @NotBlank(message = "유저 이름을 입력하세요.")
+        String userName;
+        @NotBlank(message = "패스워드를 입력하세요.")
+        String password;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @ToString
+    public static class LoginRequest {
+        @Email(message = "이메일 양식에 맞지 않습니다.")
+        String email;
+        @NotBlank(message = "패스워드를 입력하세요.")
+        String password;
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @ToString
+    public static class KakaoCodeRequest {
+        @NotBlank(message = "코드값을 입력하세요.")
+        String code;
+    }
+
+
+    /**
+     * Response
+     **/
+    @Value
     public static class Response {
+        long id;
         String email;
         String username;
         String token;
-        String bio;
         String image;
 
-        @Builder(access = AccessLevel.PROTECTED)
-        private Response(String email, String username, String token, String bio, String image) {
-            this.email = email;
-            this.username = username;
-            this.token = token;
-            this.bio = bio;
-            this.image = image;
-        }
-
         public static Response fromUserAndToken(User user, String token) {
-            return Response.builder()
-                    .email(user.getEmail())
-                    .username(user.getName())
-                    .token(token)
-                    .bio("")
-                    .image("")
-                    .build();
+            return new Response(user.getId(), user.getEmail(), user.getName(), token, "");
         }
     }
-
-    /*public static class SingUpRequest {
-        private
-    }*/
 }

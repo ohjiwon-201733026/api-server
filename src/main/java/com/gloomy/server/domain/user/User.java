@@ -2,15 +2,18 @@ package com.gloomy.server.domain.user;
 
 import lombok.AccessLevel;
 import lombok.Builder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.util.Objects;
 
-@Table(name = "uers")
+import static javax.persistence.GenerationType.IDENTITY;
+
+@Table(name = "users")
 @Entity
 public class User {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "email", nullable = false)
@@ -22,10 +25,12 @@ public class User {
     @Embedded
     private Password password;
 
+//    @Embedded
+//    private Token token;
+
     protected User() {
     }
 
-    @Builder(access = AccessLevel.PROTECTED)
     private User(String email, Profile profile, Password password) {
         this.email = email;
         this.profile = profile;
@@ -33,12 +38,23 @@ public class User {
     }
 
     static User of(String email, String name, Password password) {
-//        return new User(email, Profile.from(name), password);
-        return User.builder()
-                .email(email)
-                .profile(Profile.from(name))
-                .password(password)
-                .build();
+        return new User(email, Profile.from(name), password);
+    }
+//    static User of(String email, String name, Password password) {
+//        return User.builder()
+//                .email(email)
+//                .type("SITE")
+//                .profile(Profile.from(name))
+//                .password(password)
+//                .build();
+//    }
+
+    static User of(String email, String name) {
+        return new User(email, Profile.from(name), null);
+    }
+
+    boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {
+        return password.matchesPassword(rawPassword, passwordEncoder);
     }
 
     public Long getId() {

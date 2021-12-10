@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Password {
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String encodedPassword;
 
     protected Password() {

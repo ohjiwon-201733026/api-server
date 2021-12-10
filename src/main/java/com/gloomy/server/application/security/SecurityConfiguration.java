@@ -33,13 +33,16 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.headers().frameOptions().sameOrigin();
         http.csrf().disable();
         http.cors();
-        http.formLogin().disable();
         http.logout().disable();
         http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers(POST, "/users", "/users/login").permitAll()
+                .antMatchers("/kakao", "/h2-console/**").permitAll()
+
+
+                .antMatchers(POST, "/user", "/user/login", "/user/login/kakao").permitAll()
                 .anyRequest().authenticated();
+
+        http.formLogin().disable();
     }
 
     @Bean
