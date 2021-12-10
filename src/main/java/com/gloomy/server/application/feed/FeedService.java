@@ -75,6 +75,13 @@ public class FeedService {
     }
 
     @Transactional
+    public Feed deleteFeed(Long feedId) {
+        Feed foundFeed = findNonUserFeed(feedId);
+        foundFeed.setStatus(FEED_STATUS.INACTIVE);
+        return feedRepository.save(foundFeed);
+    }
+
+    @Transactional
     public void deleteAll() {
         feedRepository.deleteAll();
     }

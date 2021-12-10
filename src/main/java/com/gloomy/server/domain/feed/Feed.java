@@ -75,6 +75,10 @@ public class Feed {
                 .build();
     }
 
+    public void setStatus(FEED_STATUS status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof Feed) {
