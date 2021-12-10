@@ -11,8 +11,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -89,6 +95,21 @@ class FeedServiceTest {
     }
 
     @Test
+    void 피드_전체_조회_성공() {
+        final int allNonUserFeedsNum = 3;
+        final int allUserFeedsNum = 3;
+
+        List<Feed> createdAllFeeds = addFeeds(allNonUserFeedsNum, allUserFeedsNum);
+        Page<Feed> foundAllFeeds = feedService.findAllFeeds(PageRequest.of(0, 10));
+        checkFoundAllFeedsSuccess(createdAllFeeds, foundAllFeeds, allNonUserFeedsNum, allUserFeedsNum);
+    }
+
+    @Test
+    void 피드_전체_조회_실패() {
+        checkFoundAllFeedsFail(null, "[FeedService] Pageable이 유효하지 않습니다.");
+    }
+
+    @Test
     void 피드_조회_회원_성공() {
         FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
 
@@ -113,7 +134,6 @@ class FeedServiceTest {
         checkFoundUserFeedFail(0L, "[FeedService] 사용자 ID가 유효하지 않습니다.");
         checkFoundUserFeedFail(null, "[FeedService] 사용자 ID가 유효하지 않습니다.");
         checkFoundUserFeedFail(createdUser.getId(), "[FeedService] 해당하는 사용자가 없습니다.");
-
     }
 
     @Test
@@ -205,6 +225,34 @@ class FeedServiceTest {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     feedService.findNonUserFeed(feedId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private List<Feed> addFeeds(int nonUserFeedNum, int userFeedNum) {
+        List<Feed> allFeeds = new ArrayList<>();
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+        for (int num = 0; num < nonUserFeedNum; num++) {
+            allFeeds.add(feedService.createFeed(nonUserFeedDTO));
+        }
+        FeedDTO.Request userFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+        for (int num = 0; num < userFeedNum; num++) {
+            allFeeds.add(feedService.createFeed(userFeedDTO));
+        }
+        return allFeeds;
+    }
+
+    private void checkFoundAllFeedsSuccess(List<Feed> cratedAllFeeds, Page<Feed> foundAllFeeds, int allNonUserFeedsNum, int allUserFeedsNum) {
+        assertEquals(foundAllFeeds.getContent().size(), allNonUserFeedsNum + allUserFeedsNum);
+        for (int num = 0; num < allNonUserFeedsNum + allUserFeedsNum; num++) {
+            assertEquals(foundAllFeeds.getContent().get(num), cratedAllFeeds.get(num));
+        }
+    }
+
+    private void checkFoundAllFeedsFail(Pageable pageable, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    feedService.findAllFeeds(pageable);
                 }).getMessage(),
                 errorMessage);
     }
