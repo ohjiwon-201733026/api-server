@@ -13,13 +13,16 @@ public class FeedDTO {
     public static class Request {
         @NotNull
         private Boolean isUser;
-        @Pattern(regexp = "[[0-9]{3}.[0-9]{3}.[0-9]{3}.[0-9]{3}")
+        @Pattern(regexp = "[0-9]{3}.[0-9]{3}.[0-9]{3}.[0-9]{3}")
         private String ip;
         private Long userId;
         private String password;
         @NotBlank
         private String content;
         private ArrayList<MultipartFile> images;
+
+        Request() {
+        }
 
         public Request(Boolean isUser, String ip, Long userId, String content, ArrayList<MultipartFile> images) {
             this.isUser = isUser;

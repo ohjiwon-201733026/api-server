@@ -30,7 +30,9 @@ public class FeedService {
     public Feed createFeed(FeedDTO.Request feedDTO) throws IllegalArgumentException {
         validateFeedDTO(feedDTO);
         Feed createdFeed = feedRepository.save(makeFeed(feedDTO));
-        imageService.uploadMany(createdFeed, feedDTO.getImages());
+        if (feedDTO.getImages() != null) {
+            imageService.uploadMany(createdFeed, feedDTO.getImages());
+        }
         return createdFeed;
     }
 
