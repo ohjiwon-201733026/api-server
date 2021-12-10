@@ -1,6 +1,7 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.*;
 import lombok.extern.slf4j.Slf4j;
@@ -136,6 +137,39 @@ class FeedServiceTest {
         checkFoundNonUserFeedFail(createNonUserFeed.getId(), "[FeedService] 해당 피드 ID가 존재하지 않습니다.");
     }
 
+    @Test
+    void 피드_삭제_성공() {
+        FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
+
+        Feed createdUserFeed = feedService.createFeed(userFeedDTO);
+        Feed deletedUserFeed = feedService.deleteFeed(createdUserFeed.getId());
+
+        assertEquals(deletedUserFeed.getStatus(), FEED_STATUS.INACTIVE);
+    }
+
+    @Test
+    void 피드_삭제_비회원_성공() {
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+
+        Feed createdNonUserFeed = feedService.createFeed(nonUserFeedDTO);
+        Feed deletedNonUserFeed = feedService.deleteFeed(createdNonUserFeed.getId());
+
+        assertEquals(deletedNonUserFeed.getStatus(), FEED_STATUS.INACTIVE);
+    }
+
+    @Test
+    void 피드_삭제_공통_실패() {
+        Feed createUserFeed = feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+        Feed createNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+
+        feedService.deleteAll();
+
+        checkDeletedFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
+        checkDeletedFeedFail(null, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
+        checkDeletedFeedFail(createUserFeed.getId(), "[FeedService] 해당 피드 ID가 존재하지 않습니다.");
+        checkDeletedFeedFail(createNonUserFeed.getId(), "[FeedService] 해당 피드 ID가 존재하지 않습니다.");
+    }
+
     private void checkCreatedFeedSuccess(FeedDTO.Request feedDTO, Feed createdFeed) {
         assertEquals(createdFeed.getIsUser().getIsUser(), feedDTO.getIsUser());
         assertEquals(createdFeed.getIp().getIp(), feedDTO.getIp());
@@ -171,6 +205,14 @@ class FeedServiceTest {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     feedService.findNonUserFeed(feedId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkDeletedFeedFail(Long feedId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    feedService.deleteFeed(feedId);
                 }).getMessage(),
                 errorMessage);
     }
