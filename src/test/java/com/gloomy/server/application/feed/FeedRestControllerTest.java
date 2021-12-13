@@ -15,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,6 +65,7 @@ class FeedRestControllerTest {
         userService.deleteAll();
     }
 
+    @Order(1)
     @Test
     void 피드_생성_비회원() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
@@ -95,6 +98,7 @@ class FeedRestControllerTest {
                 ));
     }
 
+    @Order(2)
     @Test
     void 피드_생성_회원() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
@@ -121,6 +125,69 @@ class FeedRestControllerTest {
                                 fieldWithPath("isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")
+                        )
+                ));
+    }
+
+    @Test
+    void 전체_피드_조회() throws Exception {
+        this.mockMvc.perform(get("/feed")
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("get-all-feeds",
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID").optional(),
+                                fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부").optional(),
+                                fieldWithPath("[].ip").type(JsonFieldType.STRING).description("작성자 IP").optional(),
+                                fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용").optional()
+                        )
+                ));
+    }
+
+    @Test
+    void 사용자_피드_조회() throws Exception {
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/user/{userId}", testUser.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("get-user-feeds",
+                        pathParameters(
+                                parameterWithName("userId").description("사용자 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID").optional(),
+                                fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부").optional(),
+                                fieldWithPath("[].ip").type(JsonFieldType.STRING).description("작성자 IP").optional(),
+                                fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용").optional()
+                        )
+                ));
+    }
+
+    @Test
+    void 피드_조회() throws Exception {
+        FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
+        Feed createdNonUserFeed = feedService.createFeed(request);
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/{feedId}", createdNonUserFeed.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("get-one-feed",
+                        pathParameters(
+                                parameterWithName("feedId").description("피드 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
+                                fieldWithPath("ip").type(JsonFieldType.STRING).description("작성자 IP"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional(),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")
                         )
