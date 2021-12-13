@@ -1,16 +1,12 @@
 package com.gloomy.server.application.image;
 
-import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.application.feed.FeedService;
-import com.gloomy.server.application.feed.TestFeedDTO;
-import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.IMAGE_STATUS;
 import com.gloomy.server.domain.image.Image;
-import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
@@ -36,22 +33,6 @@ class ImageServiceTest {
 
     private TestImage testImage;
     private Feed testFeed;
-
-    @BeforeEach
-    void setUp() {
-        User testUser = new TestUserDTO().makeTestUser();
-        userService.createUser(testUser);
-        FeedDTO.Request testFeedDTO = new TestFeedDTO(testUser, 0).makeUserFeedDTO();
-        testFeed = feedService.createFeed(testFeedDTO);
-        testImage = new TestImage();
-    }
-
-    @AfterEach
-    void afterEach() {
-        imageService.deleteAll();
-        feedService.deleteAll();
-        userService.deleteAll();
-    }
 
     @Test
     void 이미지_업로드_성공() {

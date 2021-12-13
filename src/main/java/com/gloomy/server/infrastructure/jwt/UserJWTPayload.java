@@ -2,8 +2,11 @@ package com.gloomy.server.infrastructure.jwt;
 
 import com.gloomy.server.domain.jwt.JWTPayload;
 import com.gloomy.server.domain.user.User;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import static java.lang.String.format;
+import static java.lang.String.valueOf;
 import static java.time.Instant.now;
 
 public class UserJWTPayload implements JWTPayload {
@@ -13,10 +16,11 @@ public class UserJWTPayload implements JWTPayload {
     private final long iat;
 
     static UserJWTPayload of(User user, long epochSecondExpired) {
-        return new UserJWTPayload(user.getId(), user.getEmail(), epochSecondExpired);
+        return new UserJWTPayload(user.getId(), valueOf(user.getEmail()), epochSecondExpired);
     }
 
-    UserJWTPayload(long sub, String name, long iat) {
+    // TODO: 파싱이슈
+    public UserJWTPayload(long sub, String name, long iat) {
         this.sub = sub;
         this.name = name;
         this.iat = iat;

@@ -42,7 +42,7 @@ public class User {
         return new User(email, Profile.from(name), password);
     }
 
-    static User of(String email, String name) {
+    public static User of(String email, String name) {
         return new User(email, Profile.from(name), null);
     }
 

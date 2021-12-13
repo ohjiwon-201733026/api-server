@@ -16,6 +16,7 @@ import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -33,6 +34,11 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "docs.api.com") // (1)
 @SpringBootTest(classes = ApiServerApplication.class)
+@TestPropertySource(properties = { "spring.config.location=classpath:application.yml,classpath:aws.yml"})
+//@SpringBootTest(properties = "spring.config.location="
+//        + "classpath:application.yml"
+//        + ",classpath:aws.yml"
+//)
 public abstract class AbstractControllerTest {
 
     @Autowired
