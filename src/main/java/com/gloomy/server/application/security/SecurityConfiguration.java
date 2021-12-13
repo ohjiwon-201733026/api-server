@@ -43,6 +43,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers(POST, "/user", "/user/login", "/user/login/kakao").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/feed/**").permitAll()
+                .antMatchers("/docs/**").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin().disable();
