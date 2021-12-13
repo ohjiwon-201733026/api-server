@@ -1,47 +1,29 @@
 package com.gloomy.server.application.feed;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.*;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.util.MultiValueMap;
 
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@ExtendWith({ RestDocumentationExtension.class, SpringExtension.class })
-@SpringBootTest(properties = {
-        "spring.config.location=classpath:application.yml,classpath:aws.yml"
-})
-class FeedRestControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-    @Autowired
-    private ObjectMapper objectMapper;
+class FeedRestControllerTest extends AbstractControllerTest {
+
     @Autowired
     private FeedService feedService;
     @Autowired
@@ -65,9 +47,10 @@ class FeedRestControllerTest {
         userService.deleteAll();
     }
 
+    @DisplayName("피드_생성_비회원")
     @Order(1)
     @Test
-    void 피드_생성_비회원() throws Exception {
+    void postCreateNonuserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
 
         MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
@@ -78,7 +61,7 @@ class FeedRestControllerTest {
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post-create-nonuser-feed",
+                .andDo(document.document(
                         requestParameters(
                                 parameterWithName("isUser").description("회원 여부"),
                                 parameterWithName("ip").description("작성자 IP"),
@@ -98,9 +81,10 @@ class FeedRestControllerTest {
                 ));
     }
 
+    @DisplayName("피드_생성_회원")
     @Order(2)
     @Test
-    void 피드_생성_회원() throws Exception {
+    void postCreateUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
 
         MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
@@ -111,7 +95,7 @@ class FeedRestControllerTest {
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post-create-user-feed",
+                .andDo(document.document(
                         requestParameters(
                                 parameterWithName("isUser").description("회원 여부"),
                                 parameterWithName("ip").description("작성자 IP"),
@@ -131,13 +115,14 @@ class FeedRestControllerTest {
                 ));
     }
 
+    @DisplayName("전체_피드_조회")
     @Test
-    void 전체_피드_조회() throws Exception {
+    void getAllFeeds() throws Exception {
         this.mockMvc.perform(get("/feed")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("get-all-feeds",
+                .andDo(document.document(
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID").optional(),
                                 fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부").optional(),
@@ -149,13 +134,14 @@ class FeedRestControllerTest {
                 ));
     }
 
+    @DisplayName("사용자_피드_조회")
     @Test
-    void 사용자_피드_조회() throws Exception {
+    void getUserFeeds() throws Exception {
         this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/user/{userId}", testUser.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("get-user-feeds",
+                .andDo(document.document(
                         pathParameters(
                                 parameterWithName("userId").description("사용자 ID")
                         ),
@@ -170,8 +156,9 @@ class FeedRestControllerTest {
                 ));
     }
 
+    @DisplayName("피드_조회")
     @Test
-    void 피드_조회() throws Exception {
+    void getOneFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
         Feed createdNonUserFeed = feedService.createFeed(request);
 
@@ -179,7 +166,7 @@ class FeedRestControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("get-one-feed",
+                .andDo(document.document(
                         pathParameters(
                                 parameterWithName("feedId").description("피드 ID")
                         ),

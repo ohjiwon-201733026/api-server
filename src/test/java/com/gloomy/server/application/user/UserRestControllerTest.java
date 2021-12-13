@@ -1,8 +1,6 @@
 package com.gloomy.server.application.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gloomy.server.application.AbstractControllerTest;
-import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -18,12 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserRestControllerTest extends AbstractControllerTest {
 
-    private final String BASE_URL = "http://localhost:3030";
-
     @Order(1)
     @DisplayName("일반 회원가입")
     @Test
-    void postUserTest() throws Exception {
+    void postUser() throws Exception {
 
         PostRequest postRequest = PostRequest.builder()
                                             .email("test1@gamil.com")
@@ -31,7 +27,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                                             .password("test1234")
                                             .build();
 
-        MvcResult mvcResult = mockMvc.perform(post(BASE_URL + "/user")
+        MvcResult mvcResult = mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(postRequest)))
@@ -60,14 +56,14 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Order(2)
     @DisplayName("일반 로그인")
     @Test
-    void loginTest() throws Exception {
+    void login() throws Exception {
 
         LoginRequest loginRequest = LoginRequest.builder()
                 .email("test2@gamil.com")
                 .password("test234")
                 .build();
 
-        mockMvc.perform(post(BASE_URL + "/user/login")
+        mockMvc.perform(post("/user/login")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(loginRequest)))
@@ -97,7 +93,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .code("Pj1NBbO3PyTEDiKUX3L5vtks3MY_hr3dkhY0sOmiUbpoIvgrTsxEhYe3YH1juvGXUJ9Fogo9dRsAAAF9n6Ky1Q")
                 .build();
 
-        mockMvc.perform(post(BASE_URL + "/user/login/kakao")
+        mockMvc.perform(post("/user/login/kakao")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
@@ -118,11 +114,11 @@ class UserRestControllerTest extends AbstractControllerTest {
                 );
     }
 
-    @Test
-    public void test() throws JsonProcessingException {
-        String decodedPayload = "{\"sub\":1,\"name\":\"jaesungahn91@kakao.com\",\"iat\":1639410941}";
-        UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
-
-        System.out.println(jwtPayload);
-    }
+//    @Test
+//    public void test() throws JsonProcessingException {
+//        String decodedPayload = "{\"sub\":1,\"name\":\"jaesungahn91@kakao.com\",\"iat\":1639410941}";
+//        UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
+//
+//        System.out.println(jwtPayload);
+//    }
 }
