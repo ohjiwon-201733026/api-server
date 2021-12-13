@@ -5,11 +5,9 @@ import org.springframework.data.repository.Repository;
 
 import java.util.Optional;
 
-public interface UserRepository extends Repository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
     User save(User user);
-
     Optional<User> findFirstByEmail(String email);
-
     Optional<User> findById(long id);
 }

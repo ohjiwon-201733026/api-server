@@ -19,7 +19,6 @@ import static com.gloomy.server.application.user.UserDTO.*;
 @RequiredArgsConstructor
 @Service
 public class UserService {
-
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -89,5 +88,23 @@ public class UserService {
 
         JSONObject obj = new JSONObject(response.getBody());
         return KakaoUser.from(obj);
+    }
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public User findUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> {
+            throw new IllegalArgumentException();
+        });
+    }
+
+    public void deleteUser(Long userId) {
+        userRepository.delete(findUser(userId));
+    }
+
+    public void deleteAll() {
+        userRepository.deleteAll();
     }
 }

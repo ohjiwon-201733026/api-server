@@ -1,14 +1,15 @@
 package com.gloomy.server.domain.user;
 
-import lombok.AccessLevel;
-import lombok.Builder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
-
 import static javax.persistence.GenerationType.IDENTITY;
 
+@Setter
+@Getter
 @Table(name = "users")
 @Entity
 public class User {
@@ -37,17 +38,9 @@ public class User {
         this.password = password;
     }
 
-    static User of(String email, String name, Password password) {
+    public static User of(String email, String name, Password password) {
         return new User(email, Profile.from(name), password);
     }
-//    static User of(String email, String name, Password password) {
-//        return User.builder()
-//                .email(email)
-//                .type("SITE")
-//                .profile(Profile.from(name))
-//                .password(password)
-//                .build();
-//    }
 
     static User of(String email, String name) {
         return new User(email, Profile.from(name), null);
