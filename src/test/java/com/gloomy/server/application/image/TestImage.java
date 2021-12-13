@@ -1,6 +1,7 @@
 package com.gloomy.server.application.image;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class TestImage {
@@ -30,5 +32,16 @@ public class TestImage {
             images.add(image);
         }
         return images;
+    }
+
+    public static MockMultipartFile convert(List<MultipartFile> images, int imageNum) {
+        try {
+            return new MockMultipartFile("images",
+                    images.get(imageNum).getOriginalFilename(),
+                    MediaType.MULTIPART_FORM_DATA_VALUE,
+                    images.get(imageNum).getInputStream());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("[TestImage] 이미지 파일 변환 중 오류가 발생했습니다.");
+        }
     }
 }
