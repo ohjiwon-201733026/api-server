@@ -48,7 +48,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_생성_비회원")
-    @Order(1)
     @Test
     void postCreateNonuserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
@@ -57,7 +56,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
         MultiValueMap<String, String> params = TestFeedDTO.convert(objectMapper, request);
 
         this.mockMvc.perform(multipart("/feed")
-                .file(firstImageFile)
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -69,7 +67,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 parameterWithName("password").description("비밀번호"),
                                 parameterWithName("content").description("게시글 내용")),
                         requestParts(
-                                partWithName("images").description("이미지 파일").optional()),
+                                partWithName("images").description("이미지 파일 리스트").optional()),
                         responseFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("피드 ID"),
                                 fieldWithPath("isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
@@ -82,7 +80,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_생성_회원")
-    @Order(2)
     @Test
     void postCreateUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
@@ -91,7 +88,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
         MultiValueMap<String, String> params = TestFeedDTO.convert(objectMapper, request);
 
         this.mockMvc.perform(multipart("/feed")
-                .file(firstImageFile)
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -103,7 +99,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 parameterWithName("password").description("비밀번호").optional(),
                                 parameterWithName("content").description("게시글 내용")),
                         requestParts(
-                                partWithName("images").description("이미지 파일").optional()),
+                                partWithName("images").description("이미지 파일 리스트").optional()),
                         responseFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("피드 ID"),
                                 fieldWithPath("isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
@@ -118,18 +114,24 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("전체_피드_조회")
     @Test
     void getAllFeeds() throws Exception {
-        this.mockMvc.perform(get("/feed")
+        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+        feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+
+        this.mockMvc.perform(get("/feed?page=0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestParameters(
+                                parameterWithName("page").description("페이지 넘버")
+                        ),
                         responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID").optional(),
-                                fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부").optional(),
-                                fieldWithPath("[].ip").type(JsonFieldType.STRING).description("작성자 IP").optional(),
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
+                                fieldWithPath("[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
                                 fieldWithPath("[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
-                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용").optional()
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용")
                         )
                 ));
     }
@@ -137,21 +139,27 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("사용자_피드_조회")
     @Test
     void getUserFeeds() throws Exception {
-        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/user/{userId}", testUser.getId())
+        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/user/{userId}?page=0", testUser.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestParameters(
+                                parameterWithName("page").description("페이지 넘버")
+                        ),
                         pathParameters(
                                 parameterWithName("userId").description("사용자 ID")
                         ),
                         responseFields(
-                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID").optional(),
-                                fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부").optional(),
-                                fieldWithPath("[].ip").type(JsonFieldType.STRING).description("작성자 IP").optional(),
+                                fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
+                                fieldWithPath("[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
                                 fieldWithPath("[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
-                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용").optional()
+                                fieldWithPath("[].content").type(JsonFieldType.STRING).description("게시글 내용")
                         )
                 ));
     }
@@ -159,8 +167,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("피드_조회")
     @Test
     void getOneFeed() throws Exception {
-        FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
-        Feed createdNonUserFeed = feedService.createFeed(request);
+        Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
 
         this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/{feedId}", createdNonUserFeed.getId())
                 .accept(MediaType.APPLICATION_JSON))
