@@ -14,8 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
@@ -100,7 +98,7 @@ class FeedServiceTest {
         final int allUserFeedsNum = 3;
 
         List<Feed> createdAllFeeds = addFeeds(allNonUserFeedsNum, allUserFeedsNum);
-        Page<Feed> foundAllFeeds = feedService.findAllFeeds(PageRequest.of(0, 10));
+        Page<FeedDTO.Response> foundAllFeeds = feedService.findAllFeeds(PageRequest.of(0, 10));
         checkFoundAllFeedsSuccess(createdAllFeeds, foundAllFeeds, allNonUserFeedsNum, allUserFeedsNum);
     }
 
@@ -242,7 +240,7 @@ class FeedServiceTest {
         return allFeeds;
     }
 
-    private void checkFoundAllFeedsSuccess(List<Feed> cratedAllFeeds, Page<Feed> foundAllFeeds, int allNonUserFeedsNum, int allUserFeedsNum) {
+    private void checkFoundAllFeedsSuccess(List<Feed> cratedAllFeeds, Page<FeedDTO.Response> foundAllFeeds, int allNonUserFeedsNum, int allUserFeedsNum) {
         assertEquals(foundAllFeeds.getContent().size(), allNonUserFeedsNum + allUserFeedsNum);
         for (int num = 0; num < allNonUserFeedsNum + allUserFeedsNum; num++) {
             assertEquals(foundAllFeeds.getContent().get(num), cratedAllFeeds.get(num));
