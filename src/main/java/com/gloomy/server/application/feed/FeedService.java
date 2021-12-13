@@ -52,8 +52,7 @@ public class FeedService {
 
     private Feed makeFeed(FeedDTO.Request feedDTO) {
         if (feedDTO.getIsUser()) {
-            User findUser = userService.findById(feedDTO.getUserId())
-                    .orElseThrow(() -> new RuntimeException("해당 id유 저를 찾을 수 없습니다."));
+            User findUser = userService.findUser(feedDTO.getUserId());
             return Feed.of(feedDTO.getIp(), findUser, feedDTO.getContent());
         }
         return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
@@ -74,14 +73,16 @@ public class FeedService {
         return new PageImpl<>(result);
     }
 
-    public List<Feed> findUserFeeds(Long userId) throws IllegalArgumentException {
+    public Page<FeedDTO.Response> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[FeedService] pageable이 유효하지 않습니다.");
+        }
         if (userId == null || userId <= 0) {
             throw new IllegalArgumentException("[FeedService] 사용자 ID가 유효하지 않습니다.");
         }
         try {
-            User foundUser = userService.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("해당 id유 저를 찾을 수 없습니다."));
-            return feedRepository.findAllByUserId(foundUser);
+            User foundUser = userService.findUser(userId);
+            return makeResult(feedRepository.findAllByUserId(pageable, foundUser));
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
         }

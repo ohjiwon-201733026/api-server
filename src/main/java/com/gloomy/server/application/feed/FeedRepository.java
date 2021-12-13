@@ -11,6 +11,6 @@ import java.util.List;
 
 @Repository
 public interface FeedRepository extends JpaRepository<Feed, Long> {
-    List<Feed> findAllByUserId(User userId);
+    Page<Feed> findAllByUserId(Pageable pageable, User userId);
     Page<Feed> findAll(Pageable pageable);
 }

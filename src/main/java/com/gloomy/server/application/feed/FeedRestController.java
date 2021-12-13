@@ -49,7 +49,6 @@ public class FeedRestController {
 
     @GetMapping("/{feedId}")
     public Object getFeed(@PathVariable Long feedId) {
-        System.out.println(feedId);
         try {
             Feed foundFeed = feedService.findNonUserFeed(feedId);
             return new ResponseEntity<>(FeedDTO.Response.of(foundFeed), HttpStatus.OK);
@@ -59,10 +58,10 @@ public class FeedRestController {
     }
 
     @GetMapping("/user/{userId}")
-    public Object getUserFeeds(@PathVariable Long userId) {
+    public Object getUserFeeds(@PathVariable Long userId, @PageableDefault(size = 10) Pageable pageable) {
         try {
-            List<Feed> foundUserFeeds = feedService.findUserFeeds(userId);
-            return new ResponseEntity<>(makeResult(foundUserFeeds), HttpStatus.OK);
+            Page<FeedDTO.Response> userFeeds = feedService.findUserFeeds(pageable, userId);
+            return new ResponseEntity<>(makeResult(userFeeds.getContent()), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), userId), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
