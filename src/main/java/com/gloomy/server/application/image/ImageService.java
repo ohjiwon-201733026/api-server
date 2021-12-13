@@ -23,7 +23,7 @@ public class ImageService {
     }
 
     @Transactional
-    public Images uploadMany(Feed feed, ArrayList<MultipartFile> multipartFiles) throws IllegalArgumentException {
+    public Images uploadMany(Feed feed, List<MultipartFile> multipartFiles) throws IllegalArgumentException {
         validateImages(feed, multipartFiles);
         Images images = new Images();
         if (!ObjectUtils.isEmpty(multipartFiles)) {
@@ -35,7 +35,7 @@ public class ImageService {
         return images;
     }
 
-    private void validateImages(Feed feed, ArrayList<MultipartFile> multipartFiles) throws IllegalArgumentException {
+    private void validateImages(Feed feed, List<MultipartFile> multipartFiles) throws IllegalArgumentException {
         if (feed == null) {
             throw new IllegalArgumentException("[ImageService] 피드가 존재하지 않습니다.");
         }

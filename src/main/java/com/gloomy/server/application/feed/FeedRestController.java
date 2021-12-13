@@ -3,18 +3,21 @@ package com.gloomy.server.application.feed;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
-import com.gloomy.server.application.core.response.ErrorResponse;
-import com.gloomy.server.application.core.response.RestResponse;
 import com.gloomy.server.domain.feed.Feed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/feed")
 public class FeedRestController {
@@ -24,25 +27,23 @@ public class FeedRestController {
         this.feedService = feedService;
     }
 
-    @PostMapping("")
-    public Object createFeed(@Validated @RequestBody FeedDTO.Request feedDTO) {
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createFeed(@Validated @ModelAttribute FeedDTO.Request feedDTO) {
         try {
             Feed createFeed = feedService.createFeed(feedDTO);
-            return new RestResponse<>(200, "업로드 성공", createFeed);
+            return new ResponseEntity<>(FeedDTO.Response.of(createFeed), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ErrorResponse(400, "업로드 실패", makeErrorMessage(e.getMessage(), feedDTO.toString()));
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedDTO.toString()), HttpStatus.BAD_REQUEST);
         }
     }
 
     @GetMapping("")
     public Object getAllFeeds(@PageableDefault(size = 10) Pageable pageable) {
         try {
-            Page<Feed> foundAllFeeds = feedService.findAllFeeds(pageable);
-            return new RestResponse<>(200, "전체 피드 조회 성공", makeResult(foundAllFeeds.getContent()));
+            Page<FeedDTO.Response> allFeeds = feedService.findAllFeeds(pageable);
+            return new ResponseEntity<>(allFeeds.getContent(), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ErrorResponse(400, "전체 피드 조회 실패", makeErrorMessage(e.getMessage(), null));
-        } catch (JsonProcessingException e) {
-            return new ErrorResponse(500, "전체 피드 조회 실패", null);
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -51,11 +52,9 @@ public class FeedRestController {
         System.out.println(feedId);
         try {
             Feed foundFeed = feedService.findNonUserFeed(feedId);
-            return new RestResponse<>(200, "피드 조회 성공", makeResult(foundFeed));
+            return new ResponseEntity<>(FeedDTO.Response.of(foundFeed), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ErrorResponse(400, "피드 조회 실패", makeErrorMessage(e.getMessage(), feedId));
-        } catch (JsonProcessingException e) {
-            return new ErrorResponse(500, "피드 조회 실패", null);
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedId), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -63,20 +62,21 @@ public class FeedRestController {
     public Object getUserFeeds(@PathVariable Long userId) {
         try {
             List<Feed> foundUserFeeds = feedService.findUserFeeds(userId);
-            return new RestResponse<>(200, "피드 조회 성공", makeResult(foundUserFeeds));
+            return new ResponseEntity<>(makeResult(foundUserFeeds), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ErrorResponse(400, "사용자 피드 조회 실패", makeErrorMessage(e.getMessage(), userId));
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), userId), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
-            return new ErrorResponse(500, "사용자 피드 조회 실패", null);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/{feedId}")
     public Object deleteFeed(@PathVariable Long feedId) {
         try {
-            return new RestResponse<>(200, "피드 삭제 성공", null);
+            feedService.deleteFeed(feedId);
+            return new ResponseEntity<>(HttpStatus.OK);
         } catch (IllegalArgumentException e) {
-            return new ErrorResponse(400, "피드 삭제 실패", null);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 

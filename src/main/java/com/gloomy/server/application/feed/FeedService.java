@@ -7,10 +7,12 @@ import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -57,11 +59,19 @@ public class FeedService {
         return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
     }
 
-    public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
+    public Page<FeedDTO.Response> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
-        return feedRepository.findAll(pageable);
+        return makeResult(feedRepository.findAll(pageable));
+    }
+
+    private Page<FeedDTO.Response> makeResult(Page<Feed> allFeeds) {
+        List<FeedDTO.Response> result = new ArrayList<>();
+        for (Feed feed : allFeeds) {
+            result.add(FeedDTO.Response.of(feed));
+        }
+        return new PageImpl<>(result);
     }
 
     public List<Feed> findUserFeeds(Long userId) throws IllegalArgumentException {
