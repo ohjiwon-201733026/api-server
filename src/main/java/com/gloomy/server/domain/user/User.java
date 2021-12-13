@@ -37,7 +37,7 @@ public class User {
         this.password = password;
     }
 
-    static User of(String email, String name, Password password) {
+    public static User of(String email, String name, Password password) {
         return new User(email, Profile.from(name), password);
     }
 //    static User of(String email, String name, Password password) {
@@ -49,7 +49,7 @@ public class User {
 //                .build();
 //    }
 
-    static User of(String email, String name) {
+    public static User of(String email, String name) {
         return new User(email, Profile.from(name), null);
     }
 

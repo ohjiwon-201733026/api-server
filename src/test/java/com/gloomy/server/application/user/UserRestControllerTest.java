@@ -2,6 +2,7 @@ package com.gloomy.server.application.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gloomy.server.application.AbstractControllerTest;
+import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -115,5 +116,13 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 )
                         )
                 );
+    }
+
+    @Test
+    public void test() throws JsonProcessingException {
+        String decodedPayload = "{\"sub\":1,\"name\":\"jaesungahn91@kakao.com\",\"iat\":1639410941}";
+        UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
+
+        System.out.println(jwtPayload);
     }
 }
