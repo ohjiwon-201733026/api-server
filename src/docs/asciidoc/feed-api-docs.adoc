@@ -1,0 +1,121 @@
+= API문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+:snippets: ../../../build/generated-snippets
+
+[[post-user]]
+== 피드 등록 (비회원)
+
+CURL
+
+include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/response-fields.adoc[]
+
+[[post-user]]
+== 피드 등록 (회원)
+
+CURL
+
+include::{snippets}/feed-rest-controller-test/post-create-user-feed/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/post-create-user-feed/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-rest-controller-test/post-create-user-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/post-create-user-feed/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/post-create-user-feed/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/post-create-user-feed/response-fields.adoc[]
+
+[[post-user]]
+== 피드 전체 조회
+
+CURL
+
+include::{snippets}/feed-rest-controller-test/get-all-feeds/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/get-all-feeds/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-rest-controller-test/get-all-feeds/request-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/get-all-feeds/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/get-all-feeds/response-fields.adoc[]
+
+[[post-user]]
+== 피드 조회 (회원 ID)
+
+CURL
+
+include::{snippets}/feed-rest-controller-test/get-user-feeds/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/get-user-feeds/http-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/get-user-feeds/request-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/get-user-feeds/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/get-user-feeds/response-fields.adoc[]
+
+[[post-user]]
+== 피드 조회 (피드 ID)
+
+CURL
+
+include::{snippets}/feed-rest-controller-test/get-one-feed/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/get-one-feed/http-request.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/get-one-feed/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/get-one-feed/response-fields.adoc[]
