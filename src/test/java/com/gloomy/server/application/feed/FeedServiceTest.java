@@ -4,6 +4,7 @@ import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.*;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +36,20 @@ class FeedServiceTest {
     private UserService userService;
 
     private TestFeedDTO testFeedDTO;
+
+    @BeforeEach
+    void beforeEach() {
+        User testUser = new TestUserDTO().makeTestUser();
+        userService.createUser(testUser);
+        testFeedDTO = new TestFeedDTO(testUser, 1);
+    }
+
+    @AfterEach
+    void afterEach() {
+        imageService.deleteAll();
+        feedService.deleteAll();
+        userService.deleteAll();
+    }
 
     @Test
     void 피드_생성_회원_성공() {
@@ -98,26 +113,31 @@ class FeedServiceTest {
         FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
 
         Feed createdUserFeedFirst = feedService.createFeed(userFeedDTO);
-        List<Feed> foundUserFeedsFirst = feedService.findUserFeeds(createdUserFeedFirst.getUserId().getId());
+        Page<FeedDTO.Response> foundUserFeedsFirst = feedService.findUserFeeds(
+                PageRequest.of(0, 10), createdUserFeedFirst.getUserId().getId());
         Feed createdUserFeedSecond = feedService.createFeed(userFeedDTO);
-        List<Feed> foundUserFeedsSecond = feedService.findUserFeeds(createdUserFeedFirst.getUserId().getId());
+        Page<FeedDTO.Response> foundUserFeedsSecond = feedService.findUserFeeds(
+                PageRequest.of(0, 10), createdUserFeedFirst.getUserId().getId());
 
-        assertEquals(foundUserFeedsFirst.size(), 1);
-        assertEquals(foundUserFeedsFirst.get(0), createdUserFeedFirst);
-        assertEquals(foundUserFeedsSecond.size(), 2);
-        assertEquals(foundUserFeedsSecond.get(0), createdUserFeedFirst);
-        assertEquals(foundUserFeedsSecond.get(1), createdUserFeedSecond);
+        assertEquals(foundUserFeedsFirst.getSize(), 1);
+        checkFeedDTOResponseEqualsFeed(foundUserFeedsFirst.getContent().get(0), createdUserFeedFirst);
+        assertEquals(foundUserFeedsSecond.getSize(), 2);
+        checkFeedDTOResponseEqualsFeed(foundUserFeedsSecond.getContent().get(0), createdUserFeedFirst);
+        checkFeedDTOResponseEqualsFeed(foundUserFeedsSecond.getContent().get(1), createdUserFeedSecond);
     }
 
     @Test
     void 피드_조회_회원_실패() {
-//        User createdUser = userService.createUser(new TestUserDTO().makeTestUser());
-//
-//        userService.deleteUser(createdUser.getId());
-//
-//        checkFoundUserFeedFail(0L, "[FeedService] 사용자 ID가 유효하지 않습니다.");
-//        checkFoundUserFeedFail(null, "[FeedService] 사용자 ID가 유효하지 않습니다.");
-//        checkFoundUserFeedFail(createdUser.getId(), "[FeedService] 해당하는 사용자가 없습니다.");
+        User createdUser = userService.createUser(new TestUserDTO().makeTestUser());
+        User deletedUser = userService.createUser(new TestUserDTO().makeTestUser());
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        userService.deleteUser(deletedUser.getId());
+
+        checkFoundUserFeedFail(pageable, null, "[FeedService] 사용자 ID가 유효하지 않습니다.");
+        checkFoundUserFeedFail(pageable, 0L, "[FeedService] 사용자 ID가 유효하지 않습니다.");
+        checkFoundUserFeedFail(pageable, deletedUser.getId(), "[FeedService] 해당하는 사용자가 없습니다.");
+        checkFoundUserFeedFail(null, createdUser.getId(), "[FeedService] pageable이 유효하지 않습니다.");
     }
 
     @Test
@@ -134,6 +154,7 @@ class FeedServiceTest {
     void 피드_조회_비회원_실패() {
         Feed createNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
 
+        imageService.deleteAll();
         feedService.deleteAll();
 
         checkFoundNonUserFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
@@ -166,6 +187,7 @@ class FeedServiceTest {
         Feed createUserFeed = feedService.createFeed(testFeedDTO.makeUserFeedDTO());
         Feed createNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
 
+        imageService.deleteAll();
         feedService.deleteAll();
 
         checkDeletedFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
@@ -197,10 +219,10 @@ class FeedServiceTest {
                 errorMessage);
     }
 
-    private void checkFoundUserFeedFail(Long userId, String errorMessage) {
+    private void checkFoundUserFeedFail(Pageable pageable, Long userId, String errorMessage) {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
-                    feedService.findUserFeeds(userId);
+                    feedService.findUserFeeds(pageable, userId);
                 }).getMessage(),
                 errorMessage);
     }
@@ -229,8 +251,20 @@ class FeedServiceTest {
     private void checkFoundAllFeedsSuccess(List<Feed> cratedAllFeeds, Page<FeedDTO.Response> foundAllFeeds, int allNonUserFeedsNum, int allUserFeedsNum) {
         assertEquals(foundAllFeeds.getContent().size(), allNonUserFeedsNum + allUserFeedsNum);
         for (int num = 0; num < allNonUserFeedsNum + allUserFeedsNum; num++) {
-            assertEquals(foundAllFeeds.getContent().get(num), cratedAllFeeds.get(num));
+            checkFeedDTOResponseEqualsFeed(foundAllFeeds.getContent().get(num), cratedAllFeeds.get(num));
         }
+    }
+
+    private void checkFeedDTOResponseEqualsFeed(FeedDTO.Response response, Feed feed) {
+        assertEquals(response.getId(), feed.getId());
+        assertEquals(response.getIsUser(), feed.getIsUser().getIsUser());
+        assertEquals(response.getIp(), feed.getIp().getIp());
+        assertEquals(response.getContent(), feed.getContent().getContent());
+        if (response.getIsUser()) {
+            assertEquals(response.getUserId(), feed.getUserId().getId());
+            return;
+        }
+        assertEquals(response.getPassword(), feed.getPassword().getPassword());
     }
 
     private void checkFoundAllFeedsFail(Pageable pageable, String errorMessage) {
