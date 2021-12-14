@@ -49,7 +49,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
 
     @DisplayName("피드_생성_비회원")
     @Test
-    void postCreateNonuserFeed() throws Exception {
+    void createNonuserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
 
         MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
@@ -81,7 +81,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
 
     @DisplayName("피드_생성_회원")
     @Test
-    void postCreateUserFeed() throws Exception {
+    void createUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
 
         MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
@@ -184,6 +184,22 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional(),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")
+                        )
+                ));
+    }
+
+    @DisplayName("피드 삭제")
+    @Test
+    void deleteFeed() throws Exception {
+        Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/feed/{feedId}", createdNonUserFeed.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("feedId").description("삭제할 피드 ID")
                         )
                 ));
     }
