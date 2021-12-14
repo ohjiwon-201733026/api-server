@@ -5,7 +5,8 @@
 :toc: left
 :toclevels: 3
 :sectlinks:
-:snippets: ../../../build/generated-snippets
+:basedir: {docdir}/../../../
+:snippets: {basedir}/build/generated-snippets
 
 [[post-user]]
 == 피드 등록 (비회원)
