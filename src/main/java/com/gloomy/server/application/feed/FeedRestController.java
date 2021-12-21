@@ -50,7 +50,7 @@ public class FeedRestController {
     @GetMapping("/{feedId}")
     public Object getFeed(@PathVariable Long feedId) {
         try {
-            Feed foundFeed = feedService.findNonUserFeed(feedId);
+            Feed foundFeed = feedService.findOneFeed(feedId);
             return new ResponseEntity<>(FeedDTO.Response.of(foundFeed), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedId), HttpStatus.BAD_REQUEST);
@@ -66,6 +66,18 @@ public class FeedRestController {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), userId), HttpStatus.BAD_REQUEST);
         } catch (JsonProcessingException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/{feedId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Object updateFeed(@PathVariable Long feedId, @ModelAttribute UpdateFeedDTO.Request feedDTO) {
+        try {
+            Feed updatedFeed = feedService.updateOneFeed(feedId, feedDTO);
+            System.out.println(feedId);
+            System.out.println(feedDTO.getPassword());
+            return new ResponseEntity<>(FeedDTO.Response.of(updatedFeed), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedDTO.toString()), HttpStatus.BAD_REQUEST);
         }
     }
 
