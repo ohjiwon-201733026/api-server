@@ -1,8 +1,10 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +90,7 @@ public class FeedService {
         }
     }
 
-    public Feed findNonUserFeed(Long feedId) throws IllegalArgumentException {
+    public Feed findOneFeed(Long feedId) throws IllegalArgumentException {
         if (feedId == null || feedId <= 0) {
             throw new IllegalArgumentException("[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
         }
@@ -98,8 +100,34 @@ public class FeedService {
     }
 
     @Transactional
+    public Feed updateOneFeed(Long feedId, UpdateFeedDTO.Request feedDTO) {
+        Feed foundFeed = findOneFeed(feedId);
+        validateUpdateFeedDTO(foundFeed, feedDTO);
+        updateFeed(foundFeed, feedDTO);
+        return feedRepository.save(foundFeed);
+    }
+
+    private void updateFeed(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
+        if (feedDTO.getPassword() != null) {
+            foundFeed.setPassword(new Password(feedDTO.getPassword()));
+        }
+        if (feedDTO.getContent() != null) {
+            foundFeed.setContent(new Content(feedDTO.getContent()));
+        }
+        if (feedDTO.getImages() != null) {
+            imageService.updateImages(foundFeed, feedDTO.getImages());
+        }
+    }
+
+    private void validateUpdateFeedDTO(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
+        if (foundFeed.getIsUser().getIsUser() && feedDTO.getPassword() != null) {
+            throw new IllegalArgumentException("[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
+        }
+    }
+
+    @Transactional
     public Feed deleteFeed(Long feedId) {
-        Feed foundFeed = findNonUserFeed(feedId);
+        Feed foundFeed = findOneFeed(feedId);
         foundFeed.setStatus(FEED_STATUS.INACTIVE);
         return feedRepository.save(foundFeed);
     }

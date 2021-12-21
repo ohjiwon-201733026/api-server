@@ -1,6 +1,7 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
+import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.IMAGE_STATUS;
 import com.gloomy.server.domain.image.Image;
@@ -56,6 +57,18 @@ public class ImageService {
             throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
         }
         return new Images(imageRepository.findAllByFeedId(feedId));
+    }
+
+    public Images findActiveImages(Feed feedId) throws IllegalArgumentException {
+        if (feedId == null) {
+            throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
+        }
+        return new Images(imageRepository.findAllByFeedIdAndStatus(feedId, IMAGE_STATUS.ACTIVE));
+    }
+
+    public Images updateImages(Feed feedId, List<MultipartFile> images) {
+        deleteImages(feedId);
+        return uploadMany(feedId, images);
     }
 
     @Transactional

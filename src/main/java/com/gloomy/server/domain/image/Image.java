@@ -19,9 +19,9 @@ public class Image {
     private Feed feedId;
 
     @Embedded
-
     private ImageURL imageUrl;
-    @Embedded
+
+    @Column(name = "status", nullable = false)
     private IMAGE_STATUS status;
 
     private Image() {

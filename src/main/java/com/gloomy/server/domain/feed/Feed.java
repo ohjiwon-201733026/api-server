@@ -79,6 +79,14 @@ public class Feed {
         this.status = status;
     }
 
+    public void setPassword(Password password) {
+        this.password = password;
+    }
+
+    public void setContent(Content content) {
+        this.content = content;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o instanceof Feed) {
