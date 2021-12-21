@@ -42,7 +42,7 @@ public class TestFeedDTO {
         return new FeedDTO.Request(false, ip, password, content, images);
     }
 
-    public static MultiValueMap<String, String> convert(ObjectMapper objectMapper, FeedDTO.Request feedDTO) {
+    public static MultiValueMap<String, String> convert(FeedDTO.Request feedDTO) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("isUser", feedDTO.getIsUser().toString());
@@ -53,6 +53,21 @@ public class TestFeedDTO {
                 return params;
             }
             params.add("password", feedDTO.getPassword());
+            return params;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("[TestFeedDTO] 변환 중 오류가 발생했습니다.");
+        }
+    }
+
+    public static MultiValueMap<String, String> convert(UpdateFeedDTO.Request feedDTO) {
+        try {
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            if (feedDTO.getPassword() != null) {
+                params.add("password", feedDTO.getPassword());
+            }
+            if (feedDTO.getContent() != null) {
+                params.add("content", feedDTO.getContent());
+            }
             return params;
         } catch (Exception e) {
             throw new IllegalArgumentException("[TestFeedDTO] 변환 중 오류가 발생했습니다.");

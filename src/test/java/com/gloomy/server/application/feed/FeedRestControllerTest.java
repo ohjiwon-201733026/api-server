@@ -10,15 +10,14 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.util.MultiValueMap;
 
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -53,9 +52,10 @@ class FeedRestControllerTest extends AbstractControllerTest {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
 
         MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
-        MultiValueMap<String, String> params = TestFeedDTO.convert(objectMapper, request);
+        MultiValueMap<String, String> params = TestFeedDTO.convert(request);
 
-        this.mockMvc.perform(multipart("/feed")
+        this.mockMvc.perform(fileUpload("/feed")
+//                .file(firstImageFile)
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -85,9 +85,10 @@ class FeedRestControllerTest extends AbstractControllerTest {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
 
         MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
-        MultiValueMap<String, String> params = TestFeedDTO.convert(objectMapper, request);
+        MultiValueMap<String, String> params = TestFeedDTO.convert(request);
 
-        this.mockMvc.perform(multipart("/feed")
+        this.mockMvc.perform(fileUpload("/feed")
+//                .file(firstImageFile)
                 .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -142,7 +143,8 @@ class FeedRestControllerTest extends AbstractControllerTest {
         feedService.createFeed(testFeedDTO.makeUserFeedDTO());
         feedService.createFeed(testFeedDTO.makeUserFeedDTO());
 
-        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/user/{userId}?page=0", testUser.getId())
+        this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
+                .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -151,7 +153,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 parameterWithName("page").description("페이지 넘버")
                         ),
                         pathParameters(
-                                parameterWithName("userId").description("사용자 ID")
+                                parameterWithName("userId").description("조회할 사용자 ID")
                         ),
                         responseFields(
                                 fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
@@ -169,14 +171,51 @@ class FeedRestControllerTest extends AbstractControllerTest {
     void getOneFeed() throws Exception {
         Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
 
-        this.mockMvc.perform(RestDocumentationRequestBuilders.get("/feed/{feedId}", createdNonUserFeed.getId())
+        this.mockMvc.perform(get("/feed/{feedId}", createdNonUserFeed.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         pathParameters(
-                                parameterWithName("feedId").description("피드 ID")
+                                parameterWithName("feedId").description("조회할 피드 ID")
                         ),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
+                                fieldWithPath("ip").type(JsonFieldType.STRING).description("작성자 IP"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")
+                        )
+                ));
+    }
+
+    @DisplayName("피드_수정")
+    @Test
+    void updateFeed() throws Exception {
+        String updatePassword = "34567";
+        String updateContent = "새 글";
+        MockMultipartFile firstUpdateImageFile = TestImage.convert(testFeedDTO.getImages(), 0);
+
+        Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+        UpdateFeedDTO.Request request = new UpdateFeedDTO.Request();
+        request.setPassword(updatePassword);
+        request.setContent(updateContent);
+        MultiValueMap<String, String> params = TestFeedDTO.convert(request);
+
+        this.mockMvc.perform(fileUpload("/feed/{feedId}", createdNonUserFeed.getId())
+//                .file(firstUpdateImageFile)
+                .params(params))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("feedId").description("수정할 피드 ID")),
+                        requestParameters(
+                                parameterWithName("password").description("수정할 비회원 비밀번호").optional(),
+                                parameterWithName("content").description("수정할 게시글 내용").optional()),
+                        requestParts(
+                                partWithName("images").description("수정할 이미지 파일 리스트").optional()),
                         responseFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("피드 ID"),
                                 fieldWithPath("isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
@@ -193,7 +232,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     void deleteFeed() throws Exception {
         Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
 
-        this.mockMvc.perform(RestDocumentationRequestBuilders.delete("/feed/{feedId}", createdNonUserFeed.getId())
+        this.mockMvc.perform(delete("/feed/{feedId}", createdNonUserFeed.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
