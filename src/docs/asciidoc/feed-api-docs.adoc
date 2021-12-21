@@ -90,8 +90,9 @@ include::{snippets}/feed-rest-controller-test/get-user-feeds/curl-request.adoc[]
 
 include::{snippets}/feed-rest-controller-test/get-user-feeds/http-request.adoc[]
 
-요청 정보
+요청 형식
 
+include::{snippets}/feed-rest-controller-test/get-user-feeds/path-parameters.adoc[]
 include::{snippets}/feed-rest-controller-test/get-user-feeds/request-parameters.adoc[]
 
 응답 정보
@@ -113,6 +114,10 @@ include::{snippets}/feed-rest-controller-test/get-one-feed/curl-request.adoc[]
 
 include::{snippets}/feed-rest-controller-test/get-one-feed/http-request.adoc[]
 
+요청 형식
+
+include::{snippets}/feed-rest-controller-test/get-one-feed/path-parameters.adoc[]
+
 응답 정보
 
 include::{snippets}/feed-rest-controller-test/get-one-feed/http-response.adoc[]
@@ -120,6 +125,32 @@ include::{snippets}/feed-rest-controller-test/get-one-feed/http-response.adoc[]
 응답 형식
 
 include::{snippets}/feed-rest-controller-test/get-one-feed/response-fields.adoc[]
+
+[[update-feed]]
+== 피드 수정
+
+CURL
+
+include::{snippets}/feed-rest-controller-test/update-feed/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/update-feed/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-rest-controller-test/update-feed/path-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/update-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/update-feed/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/update-feed/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/update-feed/response-fields.adoc[]
+
 
 [[delete-feed]]
 == 피드 삭제
@@ -131,6 +162,10 @@ include::{snippets}/feed-rest-controller-test/delete-feed/curl-request.adoc[]
 요청 정보
 
 include::{snippets}/feed-rest-controller-test/delete-feed/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-rest-controller-test/delete-feed/path-parameters.adoc[]
 
 응답 정보
 
