@@ -1,10 +1,10 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.*;
-import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,12 +37,14 @@ class FeedServiceTest {
     private UserService userService;
 
     private TestFeedDTO testFeedDTO;
+    private UpdateFeedDTO.Request updateFeedDTO;
 
     @BeforeEach
     void beforeEach() {
         User testUser = new TestUserDTO().makeTestUser();
         userService.createUser(testUser);
         testFeedDTO = new TestFeedDTO(testUser, 1);
+        updateFeedDTO = new UpdateFeedDTO.Request();
     }
 
     @AfterEach
@@ -145,7 +148,7 @@ class FeedServiceTest {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
 
         Feed createdUserFeed = feedService.createFeed(nonUserFeedDTO);
-        Feed foundNonUserFeed = feedService.findNonUserFeed(createdUserFeed.getId());
+        Feed foundNonUserFeed = feedService.findOneFeed(createdUserFeed.getId());
 
         assertEquals(foundNonUserFeed, createdUserFeed);
     }
@@ -160,6 +163,43 @@ class FeedServiceTest {
         checkFoundNonUserFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
         checkFoundNonUserFeedFail(null, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
         checkFoundNonUserFeedFail(createNonUserFeed.getId(), "[FeedService] 해당 피드 ID가 존재하지 않습니다.");
+    }
+
+    @Test
+    void 피드_수정_공통_성공() {
+        Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+        String updateContent = "새 글";
+        ArrayList<MultipartFile> updateImages = testFeedDTO.getImages();
+        updateFeedDTO.setContent(updateContent);
+        updateFeedDTO.setImages(updateImages);
+
+        Feed updatedNonUserFeed = feedService.updateOneFeed(createdNonUserFeed.getId(), updateFeedDTO);
+        Feed foundUpdatedNonUserFeed = feedService.findOneFeed(createdNonUserFeed.getId());
+        Images foundActiveImages = imageService.findActiveImages(createdNonUserFeed);
+
+        assertEquals(foundUpdatedNonUserFeed, updatedNonUserFeed);
+        assertEquals(foundActiveImages.getSize(), updateImages.size());
+    }
+
+    @Test
+    void 피드_수정_비회원_성공() {
+        String updatePassword = "34567";
+        Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+        updateFeedDTO.setPassword(updatePassword);
+
+        Feed updatedNonUserFeed = feedService.updateOneFeed(createdNonUserFeed.getId(), updateFeedDTO);
+        Feed foundUpdatedNonUserFeed = feedService.findOneFeed(createdNonUserFeed.getId());
+
+        assertEquals(foundUpdatedNonUserFeed, updatedNonUserFeed);
+    }
+
+    @Test
+    void 피드_수정_회원_실패() {
+        String updatePassword = "34567";
+        Feed createdUserFeed = feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+        updateFeedDTO.setPassword(updatePassword);
+
+        checkUpdatedFeedFail(createdUserFeed.getId(), updateFeedDTO, "[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
     }
 
     @Test
@@ -230,7 +270,7 @@ class FeedServiceTest {
     private void checkFoundNonUserFeedFail(Long feedId, String errorMessage) {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
-                    feedService.findNonUserFeed(feedId);
+                    feedService.findOneFeed(feedId);
                 }).getMessage(),
                 errorMessage);
     }
@@ -271,6 +311,14 @@ class FeedServiceTest {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     feedService.findAllFeeds(pageable);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkUpdatedFeedFail(Long feedId, UpdateFeedDTO.Request feedDTO, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    feedService.updateOneFeed(feedId, feedDTO);
                 }).getMessage(),
                 errorMessage);
     }
