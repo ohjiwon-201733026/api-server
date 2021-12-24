@@ -42,6 +42,16 @@ public class CommentRestController {
         }
     }
 
+    @GetMapping("/{commentId}")
+    public Object getComment(@PathVariable Long commentId) {
+        try {
+            Comment foundComment = commentService.findComment(commentId);
+            return new ResponseEntity<>(makeCommentDTOResponse(foundComment), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), commentId), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private Page<CommentDTO.Response> makeResult(Page<Comment> allComments) {
         List<CommentDTO.Response> result = new ArrayList<>();
         for (Comment comment : allComments.getContent()) {
