@@ -206,7 +206,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
 
     @DisplayName("댓글 삭제")
     @Test
-    void deleteFeed() throws Exception {
+    void deleteComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
 
         Comment createdComment = commentService.createComment(request);
