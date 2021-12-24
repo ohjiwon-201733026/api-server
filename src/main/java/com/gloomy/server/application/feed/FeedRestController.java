@@ -44,9 +44,9 @@ public class FeedRestController {
     }
 
     @GetMapping("")
-    public Object getAllFeeds(@PageableDefault(size = 10) Pageable pageable) {
+    public Object getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
         try {
-            Page<Feed> allFeeds = feedService.findAllFeeds(pageable);
+            Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
             return new ResponseEntity<>(makeResult(allFeeds), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
