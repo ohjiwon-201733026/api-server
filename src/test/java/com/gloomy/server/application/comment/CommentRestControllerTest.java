@@ -203,4 +203,21 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         )
                 ));
     }
+
+    @DisplayName("댓글 삭제")
+    @Test
+    void deleteFeed() throws Exception {
+        CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
+
+        Comment createdComment = commentService.createComment(request);
+
+        this.mockMvc.perform(delete("/comment/{commentId}", createdComment.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("commentId").description("삭제할 댓글 ID")
+                        )
+                ));
+    }
 }
