@@ -9,13 +9,9 @@ import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -60,22 +56,14 @@ public class FeedService {
         return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
     }
 
-    public Page<FeedDTO.Response> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
+    public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
-        return makeResult(feedRepository.findAll(pageable));
+        return feedRepository.findAll(pageable);
     }
 
-    private Page<FeedDTO.Response> makeResult(Page<Feed> allFeeds) {
-        List<FeedDTO.Response> result = new ArrayList<>();
-        for (Feed feed : allFeeds) {
-            result.add(FeedDTO.Response.of(feed));
-        }
-        return new PageImpl<>(result);
-    }
-
-    public Page<FeedDTO.Response> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
+    public Page<Feed> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] pageable이 유효하지 않습니다.");
         }
@@ -84,7 +72,7 @@ public class FeedService {
         }
         try {
             User foundUser = userService.findUser(userId);
-            return makeResult(feedRepository.findAllByUserId(pageable, foundUser));
+            return feedRepository.findAllByUserId(pageable, foundUser);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
         }
