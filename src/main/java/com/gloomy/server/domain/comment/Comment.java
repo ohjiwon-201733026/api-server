@@ -75,6 +75,10 @@ public class Comment {
         this.content = content;
     }
 
+    public void setStatus(COMMENT_STATUS status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -88,10 +92,5 @@ public class Comment {
             return result && Objects.equals(userId.getId(), comment.getUserId().getId());
         }
         return result && Objects.equals(password.getPassword(), comment.getPassword().getPassword());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, content, feedId, userId, password, status);
     }
 }

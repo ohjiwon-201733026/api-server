@@ -1,6 +1,7 @@
 package com.gloomy.server.application.comment;
 
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
@@ -66,6 +67,12 @@ public class CommentService {
         if (updateCommentDTO.getContent() == null) {
             throw new IllegalArgumentException("[CommentService] 댓글 수정 요청 메시지가 잘못되었습니다.");
         }
+    }
+
+    public Comment deleteComment(Long commentId) {
+        Comment foundComment = findComment(commentId);
+        foundComment.setStatus(COMMENT_STATUS.INACTIVE);
+        return commentRepository.save(foundComment);
     }
 
     public void deleteAll() {
