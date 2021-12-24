@@ -34,25 +34,30 @@ public class Feed {
     @Embedded
     private Content content;
 
+    @Embedded
+    private LikeCount likeCount;
+
     Feed() {
     }
 
     @Builder(builderClassName = "userFeedBuilder", builderMethodName = "userFeedBuilder", access = AccessLevel.PRIVATE)
-    private Feed(IsUser isUser, Ip ip, User userId, FEED_STATUS status, Content content) {
+    private Feed(IsUser isUser, Ip ip, User userId, FEED_STATUS status, Content content, LikeCount likeCount) {
         this.isUser = isUser;
         this.ip = ip;
         this.userId = userId;
         this.status = status;
         this.content = content;
+        this.likeCount = likeCount;
     }
 
     @Builder(builderClassName = "nonUserFeedBuilder", builderMethodName = "nonUserFeedBuilder", access = AccessLevel.PRIVATE)
-    private Feed(IsUser isUser, Ip ip, Password password, FEED_STATUS status, Content content) {
+    private Feed(IsUser isUser, Ip ip, Password password, FEED_STATUS status, Content content, LikeCount likeCount) {
         this.isUser = isUser;
         this.ip = ip;
         this.password = password;
         this.status = status;
         this.content = content;
+        this.likeCount = likeCount;
     }
 
     public static Feed of(String ip, User userId, String content) {
@@ -62,6 +67,7 @@ public class Feed {
                 .userId(userId)
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))
+                .likeCount(new LikeCount(0))
                 .build();
     }
 
@@ -72,6 +78,7 @@ public class Feed {
                 .password(new Password(password))
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))
+                .likeCount(new LikeCount(0))
                 .build();
     }
 
