@@ -1,14 +1,15 @@
 package com.gloomy.server.application.feed;
 
+import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.feed.LikeCount;
+import com.gloomy.server.domain.image.Image;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FeedDTO {
@@ -52,29 +53,38 @@ public class FeedDTO {
         private String password;
         private String content;
         private Integer likeCount;
+        private List<String> imageURLs;
+        private Integer commentCount;
 
         @Builder(builderClassName = "userFeedResponse", builderMethodName = "userFeedResponse")
-        public Response(Long id, Boolean isUser, String ip, Long userId, String content, Integer likeCount) {
+        public Response(Long id, Boolean isUser, String ip, Long userId, String content, Integer likeCount, List<String> imageURLs, Integer commentCount) {
             this.id = id;
             this.isUser = isUser;
             this.ip = ip;
             this.userId = userId;
             this.content = content;
             this.likeCount = likeCount;
+            this.imageURLs = imageURLs;
+            this.commentCount = commentCount;
         }
 
         @Builder(builderClassName = "nonUserFeedResponse", builderMethodName = "nonUserFeedResponse")
-        public Response(Long id, Boolean isUser, String ip, String password, String content, Integer likeCount) {
+        public Response(Long id, Boolean isUser, String ip, String password, String content, Integer likeCount, List<String> imageURLs, Integer commentCount) {
             this.id = id;
             this.isUser = isUser;
             this.ip = ip;
             this.password = password;
             this.content = content;
             this.likeCount = likeCount;
+            this.imageURLs = imageURLs;
+            this.commentCount = commentCount;
         }
 
-        public static Response of(Feed feed) {
-            final Integer LIKECOUNT_ZERO = 0;
+        public static Response of(Feed feed, Images images, Integer commentCount) {
+            List<String> imageURLs = new ArrayList<>();
+            for (Image image : images.getImages()) {
+                imageURLs.add(image.getImageUrl().getImageUrl());
+            }
             if (feed.getIsUser().getIsUser()) {
                 return userFeedResponse()
                         .id(feed.getId())
@@ -82,7 +92,9 @@ public class FeedDTO {
                         .ip(feed.getIp().getIp())
                         .userId(feed.getUserId().getId())
                         .content(feed.getContent().getContent())
-                        .likeCount(LIKECOUNT_ZERO)
+                        .likeCount(feed.getLikeCount().getLikeCount())
+                        .imageURLs(imageURLs)
+                        .commentCount(commentCount)
                         .build();
             }
             return new nonUserFeedResponse()
@@ -91,7 +103,9 @@ public class FeedDTO {
                     .ip(feed.getIp().getIp())
                     .password(feed.getPassword().getPassword())
                     .content(feed.getContent().getContent())
-                    .likeCount(LIKECOUNT_ZERO)
+                    .likeCount(feed.getLikeCount().getLikeCount())
+                    .imageURLs(imageURLs)
+                    .commentCount(commentCount)
                     .build();
         }
     }
