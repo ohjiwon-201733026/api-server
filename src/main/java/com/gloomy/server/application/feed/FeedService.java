@@ -63,6 +63,13 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
+    public Page<Feed> findAllActiveFeeds(Pageable pageable) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
+        }
+        return feedRepository.findAllByStatus(pageable, FEED_STATUS.ACTIVE);
+    }
+
     public Page<Feed> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] pageable이 유효하지 않습니다.");
