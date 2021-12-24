@@ -173,4 +173,34 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         )
                 ));
     }
+
+    @DisplayName("댓글_수정")
+    @Test
+    void updateComment() throws Exception {
+        String updateContent = "새 글";
+        CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
+        UpdateCommentDTO.Request updateRequest = new UpdateCommentDTO.Request();
+        updateRequest.setContent(updateContent);
+
+        Comment createdComment = commentService.createComment(request);
+        String body = objectMapper.writeValueAsString(updateRequest);
+
+        this.mockMvc.perform(patch("/comment/{commentId}", createdComment.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("commentId").description("수정할 댓글 ID")),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                        )
+                ));
+    }
 }
