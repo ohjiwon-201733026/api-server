@@ -102,7 +102,7 @@ class FeedServiceTest {
         final int allUserFeedsNum = 3;
 
         List<Feed> createdAllFeeds = addFeeds(allNonUserFeedsNum, allUserFeedsNum);
-        Page<FeedDTO.Response> foundAllFeeds = feedService.findAllFeeds(PageRequest.of(0, 10));
+        Page<Feed> foundAllFeeds = feedService.findAllFeeds(PageRequest.of(0, 10));
         checkFoundAllFeedsSuccess(createdAllFeeds, foundAllFeeds, allNonUserFeedsNum, allUserFeedsNum);
     }
 
@@ -116,17 +116,17 @@ class FeedServiceTest {
         FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
 
         Feed createdUserFeedFirst = feedService.createFeed(userFeedDTO);
-        Page<FeedDTO.Response> foundUserFeedsFirst = feedService.findUserFeeds(
+        Page<Feed> foundUserFeedsFirst = feedService.findUserFeeds(
                 PageRequest.of(0, 10), createdUserFeedFirst.getUserId().getId());
         Feed createdUserFeedSecond = feedService.createFeed(userFeedDTO);
-        Page<FeedDTO.Response> foundUserFeedsSecond = feedService.findUserFeeds(
+        Page<Feed> foundUserFeedsSecond = feedService.findUserFeeds(
                 PageRequest.of(0, 10), createdUserFeedFirst.getUserId().getId());
 
-        assertEquals(foundUserFeedsFirst.getSize(), 1);
-        checkFeedDTOResponseEqualsFeed(foundUserFeedsFirst.getContent().get(0), createdUserFeedFirst);
-        assertEquals(foundUserFeedsSecond.getSize(), 2);
-        checkFeedDTOResponseEqualsFeed(foundUserFeedsSecond.getContent().get(0), createdUserFeedFirst);
-        checkFeedDTOResponseEqualsFeed(foundUserFeedsSecond.getContent().get(1), createdUserFeedSecond);
+        assertEquals(foundUserFeedsFirst.getContent().size(), 1);
+        assertEquals(foundUserFeedsFirst.getContent().get(0), createdUserFeedFirst);
+        assertEquals(foundUserFeedsSecond.getContent().size(), 2);
+        assertEquals(foundUserFeedsSecond.getContent().get(0), createdUserFeedFirst);
+        assertEquals(foundUserFeedsSecond.getContent().get(1), createdUserFeedSecond);
     }
 
     @Test
@@ -288,23 +288,11 @@ class FeedServiceTest {
         return allFeeds;
     }
 
-    private void checkFoundAllFeedsSuccess(List<Feed> cratedAllFeeds, Page<FeedDTO.Response> foundAllFeeds, int allNonUserFeedsNum, int allUserFeedsNum) {
+    private void checkFoundAllFeedsSuccess(List<Feed> cratedAllFeeds, Page<Feed> foundAllFeeds, int allNonUserFeedsNum, int allUserFeedsNum) {
         assertEquals(foundAllFeeds.getContent().size(), allNonUserFeedsNum + allUserFeedsNum);
         for (int num = 0; num < allNonUserFeedsNum + allUserFeedsNum; num++) {
-            checkFeedDTOResponseEqualsFeed(foundAllFeeds.getContent().get(num), cratedAllFeeds.get(num));
+            assertEquals(foundAllFeeds.getContent().get(num), cratedAllFeeds.get(num));
         }
-    }
-
-    private void checkFeedDTOResponseEqualsFeed(FeedDTO.Response response, Feed feed) {
-        assertEquals(response.getId(), feed.getId());
-        assertEquals(response.getIsUser(), feed.getIsUser().getIsUser());
-        assertEquals(response.getIp(), feed.getIp().getIp());
-        assertEquals(response.getContent(), feed.getContent().getContent());
-        if (response.getIsUser()) {
-            assertEquals(response.getUserId(), feed.getUserId().getId());
-            return;
-        }
-        assertEquals(response.getPassword(), feed.getPassword().getPassword());
     }
 
     private void checkFoundAllFeedsFail(Pageable pageable, String errorMessage) {
