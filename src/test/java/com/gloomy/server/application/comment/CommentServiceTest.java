@@ -20,8 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
@@ -168,10 +166,29 @@ class CommentServiceTest {
         checkFoundAllCommentFail(null, testCommentDTO.getFeedId(), "[CommentService] pageable이 유효하지 않습니다.");
     }
 
-    private void createComments(int commentSize) {
-        for (int num = 0; num < commentSize; num++) {
-            commentService.createComment(testCommentDTO.makeUserCommentDTO());
-        }
+    @Test
+    void 피드_활성_댓글_전체_조회_성공() {
+        Comment activeComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment inactiveComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+
+        commentService.deleteComment(inactiveComment.getId());
+        Page<Comment> feedAllActiveComments = commentService.getFeedAllActiveComments(
+                PageRequest.of(0, 10), testCommentDTO.getFeedId());
+
+        assertEquals(feedAllActiveComments.getContent().size(), 1);
+        assertEquals(feedAllActiveComments.getContent().get(0), activeComment);
+    }
+    
+    @Test
+    void 피드_활성_댓글_전체_조회_실패() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        checkFoundAllActiveCommentFail(null, testCommentDTO.getFeedId(),
+                "[CommentService] Pageable이 유효하지 않습니다.");
+        checkFoundAllActiveCommentFail(pageable, 0L,
+                "[CommentService] Pageable이 유효하지 않습니다.");
+        checkFoundAllActiveCommentFail(pageable, null,
+                "[CommentService] Pageable이 유효하지 않습니다.");
     }
 
     @Test
@@ -226,6 +243,12 @@ class CommentServiceTest {
         checkDeletedCommentFail(createdComment.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
     }
 
+    private void createComments(int commentSize) {
+        for (int num = 0; num < commentSize; num++) {
+            commentService.createComment(testCommentDTO.makeUserCommentDTO());
+        }
+    }
+
     private void checkCreatedCommentFail(CommentDTO.Request commentDTO) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.createComment(commentDTO);
@@ -241,6 +264,12 @@ class CommentServiceTest {
     private void checkFoundAllCommentFail(Pageable pageable, Long feedId, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.getFeedAllComments(pageable, feedId);
+        }, errorMessage);
+    }
+
+    private void checkFoundAllActiveCommentFail(Pageable pageable, Long feedId, String errorMessage) {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentService.getFeedAllActiveComments(pageable, feedId);
         }, errorMessage);
     }
 
