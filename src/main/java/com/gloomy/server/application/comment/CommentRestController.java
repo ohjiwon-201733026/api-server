@@ -62,6 +62,16 @@ public class CommentRestController {
         }
     }
 
+    @DeleteMapping("/{commentId}")
+    public Object deleteComment(@PathVariable Long commentId) {
+        try {
+            commentService.deleteComment(commentId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private Page<CommentDTO.Response> makeResult(Page<Comment> allComments) {
         List<CommentDTO.Response> result = new ArrayList<>();
         for (Comment comment : allComments.getContent()) {
