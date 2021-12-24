@@ -33,9 +33,9 @@ public class CommentRestController {
     }
 
     @GetMapping("/feed/{feedId}")
-    public Object getFeedAllComments(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long feedId) {
+    public Object getFeedAllActiveComments(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long feedId) {
         try {
-            Page<Comment> feedAllComments = commentService.getFeedAllComments(pageable, feedId);
+            Page<Comment> feedAllComments = commentService.getFeedAllActiveComments(pageable, feedId);
             return new ResponseEntity<>(makeResult(feedAllComments), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
