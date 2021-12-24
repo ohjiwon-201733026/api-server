@@ -6,6 +6,7 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -146,6 +147,29 @@ class CommentRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
                                 fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
                                 fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
+                        )
+                ));
+    }
+
+    @DisplayName("댓글_조회")
+    @Test
+    void getComment() throws Exception {
+        CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
+
+        Comment createdComment = commentService.createComment(request);
+
+        this.mockMvc.perform(get("/comment/{commentId}", createdComment.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("commentId").description("조회할 댓글 ID")),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
                         )
                 ));
     }
