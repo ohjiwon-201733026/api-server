@@ -3,9 +3,8 @@ package com.gloomy.server.application.comment;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
-import com.gloomy.server.application.feed.UpdateFeedDTO;
+import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -163,6 +162,24 @@ class CommentServiceTest {
                 "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
     }
 
+    @Test
+    void 댓글_삭제_성공() {
+        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment deletedComment = commentService.deleteComment(createdComment.getId());
+        assertEquals(deletedComment.getStatus(), COMMENT_STATUS.INACTIVE);
+    }
+
+    @Test
+    void 댓글_삭제_실패() {
+        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+
+        commentService.deleteAll();
+
+        checkDeletedCommentFail(0L, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkDeletedCommentFail(null, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkDeletedCommentFail(createdComment.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+    }
+
     private void checkCreatedCommentFail(CommentDTO.Request commentDTO) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.createComment(commentDTO);
@@ -178,6 +195,12 @@ class CommentServiceTest {
     private void checkUpdatedCommentFail(Long commentId, UpdateCommentDTO.Request updateCommentDTO, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.updateComment(commentId, updateCommentDTO);
+        }, errorMessage);
+    }
+
+    private void checkDeletedCommentFail(Long feedId, String errorMessage) {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentService.deleteComment(feedId);
         }, errorMessage);
     }
 }
