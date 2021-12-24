@@ -8,6 +8,9 @@ import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -79,6 +82,17 @@ public class CommentService {
 
     public void deleteAll() {
         commentRepository.deleteAll();
+    }
+
+    public Page<Comment> getFeedAllComments(Pageable pageable, Long feedId) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[CommentService] Pageable이 유효하지 않습니다.");
+        }
+        if (feedId == null || feedId <= 0L) {
+            throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        }
+        List<Comment> feedAllComments = findAllComments(feedId);
+        return new PageImpl<>(feedAllComments, pageable, feedAllComments.size());
     }
 
     public List<Comment> findAllComments(Long feedId) {
