@@ -1,0 +1,147 @@
+= API문서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 3
+:sectlinks:
+:basedir: {docdir}/../../../
+:snippets: {basedir}/build/generated-snippets
+
+[[create-nonuser-comment]]
+== 댓글 등록 (비회원)
+
+CURL
+
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/request-body.adoc[]
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/response-fields.adoc[]
+
+[[create-user-comment]]
+== 댓글 등록 (회원)
+
+CURL
+
+include::{snippets}/comment-rest-controller-test/create-user-comment/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/comment-rest-controller-test/create-user-comment/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/create-user-comment/request-body.adoc[]
+include::{snippets}/comment-rest-controller-test/create-user-comment/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/comment-rest-controller-test/create-user-comment/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/comment-rest-controller-test/create-user-comment/response-fields.adoc[]
+
+[[get-feed-all-comments]]
+== 피드 활성 댓글 전체 조회
+
+CURL
+
+include::{snippets}/comment-rest-controller-test/get-feed-all-comments/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/comment-rest-controller-test/get-feed-all-comments/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/get-feed-all-comments/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/comment-rest-controller-test/get-feed-all-comments/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/comment-rest-controller-test/get-feed-all-comments/response-fields.adoc[]
+
+[[get-comment]]
+== 댓글 조회
+
+CURL
+
+include::{snippets}/comment-rest-controller-test/get-comment/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/comment-rest-controller-test/get-comment/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/get-comment/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/comment-rest-controller-test/get-comment/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/comment-rest-controller-test/get-comment/response-fields.adoc[]
+
+[[update-comment]]
+== 댓글 수정
+
+CURL
+
+include::{snippets}/comment-rest-controller-test/update-comment/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/comment-rest-controller-test/update-comment/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/update-comment/request-body.adoc[]
+include::{snippets}/comment-rest-controller-test/update-comment/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/comment-rest-controller-test/update-comment/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/comment-rest-controller-test/update-comment/response-fields.adoc[]
+
+
+[[delete-comment]]
+== 댓글 삭제
+
+CURL
+
+include::{snippets}/comment-rest-controller-test/delete-comment/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/comment-rest-controller-test/delete-comment/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/delete-comment/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/comment-rest-controller-test/delete-comment/http-response.adoc[]
