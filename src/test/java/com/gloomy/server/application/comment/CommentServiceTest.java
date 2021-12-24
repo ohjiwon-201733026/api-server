@@ -3,17 +3,21 @@ package com.gloomy.server.application.comment;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
+import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,6 +32,8 @@ class CommentServiceTest {
     private UserService userService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private ImageService imageService;
 
     private TestCommentDTO testCommentDTO;
 
@@ -38,6 +44,14 @@ class CommentServiceTest {
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testUser.getId(), testFeed.getId());
+    }
+
+    @AfterEach
+    void afterEach() {
+        imageService.deleteAll();
+        commentService.deleteAll();
+        feedService.deleteAll();
+        userService.deleteAll();
     }
 
     @Test
@@ -129,6 +143,31 @@ class CommentServiceTest {
     }
 
     @Test
+    void 댓글_전체_조회_성공() {
+        createComments(3);
+
+        List<Comment> foundAllComments = commentService.findAllComments(testCommentDTO.getFeedId());
+
+        assertEquals(foundAllComments.size(), 3);
+    }
+
+    @Test
+    void 댓글_전체_조회_실패() {
+        imageService.deleteAll();
+        feedService.deleteAll();
+
+        checkFoundAllCommentFail(0L, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllCommentFail((Long) null, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllCommentFail(testCommentDTO.getFeedId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+    }
+
+    private void createComments(int commentSize) {
+        for (int num = 0; num < commentSize; num++) {
+            commentService.createComment(testCommentDTO.makeUserCommentDTO());
+        }
+    }
+
+    @Test
     void 댓글_수정_성공() {
         Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
         String updateContent = "새 댓글";
@@ -189,6 +228,12 @@ class CommentServiceTest {
     private void checkFoundCommentFail(Long commentId, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.findComment(commentId);
+        }, errorMessage);
+    }
+
+    private void checkFoundAllCommentFail(Long feedId, String errorMessage) {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentService.findAllComments(feedId);
         }, errorMessage);
     }
 
