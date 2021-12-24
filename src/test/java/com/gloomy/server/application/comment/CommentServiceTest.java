@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
@@ -143,22 +146,26 @@ class CommentServiceTest {
     }
 
     @Test
-    void 댓글_전체_조회_성공() {
+    void 피드_댓글_전체_조회_성공() {
         createComments(3);
 
-        List<Comment> foundAllComments = commentService.findAllComments(testCommentDTO.getFeedId());
+        Page<Comment> foundAllComments = commentService.getFeedAllComments(
+                PageRequest.of(0, 10), testCommentDTO.getFeedId());
 
-        assertEquals(foundAllComments.size(), 3);
+        assertEquals(foundAllComments.getContent().size(), 3);
     }
 
     @Test
-    void 댓글_전체_조회_실패() {
+    void 피드_댓글_전체_조회_실패() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
         imageService.deleteAll();
         feedService.deleteAll();
 
-        checkFoundAllCommentFail(0L, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
-        checkFoundAllCommentFail((Long) null, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
-        checkFoundAllCommentFail(testCommentDTO.getFeedId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+        checkFoundAllCommentFail(pageable, 0L, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllCommentFail(pageable, null, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllCommentFail(pageable, testCommentDTO.getFeedId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+        checkFoundAllCommentFail(null, testCommentDTO.getFeedId(), "[CommentService] pageable이 유효하지 않습니다.");
     }
 
     private void createComments(int commentSize) {
@@ -231,9 +238,9 @@ class CommentServiceTest {
         }, errorMessage);
     }
 
-    private void checkFoundAllCommentFail(Long feedId, String errorMessage) {
+    private void checkFoundAllCommentFail(Pageable pageable, Long feedId, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
-            commentService.findAllComments(feedId);
+            commentService.getFeedAllComments(pageable, feedId);
         }, errorMessage);
     }
 
