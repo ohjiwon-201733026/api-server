@@ -17,8 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -106,6 +109,43 @@ class CommentRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
                                 fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                        )
+                ));
+    }
+
+    @DisplayName("피드_댓글_전체_조회")
+    @Test
+    void getFeedAllComments() throws Exception {
+        CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
+
+        commentService.createComment(request);
+        commentService.createComment(request);
+
+        this.mockMvc.perform(get("/comment/feed/{feedId}", request.getFeedId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("feedId").description("조회할 댓글의 피드 ID")),
+                        responseFields(
+                                fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("content[].feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("content[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("content[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+
+                                fieldWithPath("pageable").type(JsonFieldType.STRING).description("pageable 정보"),
+                                fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                                fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("전체 페이지 내 요소의 수"),
+                                fieldWithPath("last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
+                                fieldWithPath("numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 내 요소의 수"),
+                                fieldWithPath("first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
+                                fieldWithPath("size").type(JsonFieldType.NUMBER).description("페이지 당 출력 갯수"),
+                                fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
+                                fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
+                                fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
+                                fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
+                                fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
                         )
                 ));
     }
