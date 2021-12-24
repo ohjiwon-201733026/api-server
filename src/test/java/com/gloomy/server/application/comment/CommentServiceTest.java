@@ -3,7 +3,9 @@ package com.gloomy.server.application.comment;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
+import com.gloomy.server.application.feed.UpdateFeedDTO;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -127,6 +129,40 @@ class CommentServiceTest {
         checkFoundCommentFail(null, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
     }
 
+    @Test
+    void 댓글_수정_성공() {
+        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        String updateContent = "새 댓글";
+        UpdateCommentDTO.Request updateCommentDTO = new UpdateCommentDTO.Request();
+        updateCommentDTO.setContent(updateContent);
+
+        Comment updatedComment = commentService.updateComment(createdComment.getId(), updateCommentDTO);
+        Comment foundComment = commentService.findComment(createdComment.getId());
+
+        assertEquals(updatedComment, foundComment);
+    }
+
+    @Test
+    void 댓글_수정_실패() {
+        Comment deletedComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        String updateContent = "새 댓글";
+        UpdateCommentDTO.Request updateCommentDTO = new UpdateCommentDTO.Request();
+        updateCommentDTO.setContent(updateContent);
+        UpdateCommentDTO.Request updateCommentDTOWithoutContent = new UpdateCommentDTO.Request();
+
+        commentService.deleteAll();
+        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+
+        checkUpdatedCommentFail(createdComment.getId(), updateCommentDTOWithoutContent,
+                "[CommentService] 댓글 수정 요청 메시지가 잘못되었습니다.");
+        checkUpdatedCommentFail(0L, updateCommentDTO,
+                "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkUpdatedCommentFail(null, updateCommentDTO,
+                "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkUpdatedCommentFail(deletedComment.getId(), updateCommentDTO,
+                "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+    }
+
     private void checkCreatedCommentFail(CommentDTO.Request commentDTO) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.createComment(commentDTO);
@@ -136,6 +172,12 @@ class CommentServiceTest {
     private void checkFoundCommentFail(Long commentId, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
             commentService.findComment(commentId);
+        }, errorMessage);
+    }
+
+    private void checkUpdatedCommentFail(Long commentId, UpdateCommentDTO.Request updateCommentDTO, String errorMessage) {
+        assertThrows(IllegalArgumentException.class, () -> {
+            commentService.updateComment(commentId, updateCommentDTO);
         }, errorMessage);
     }
 }
