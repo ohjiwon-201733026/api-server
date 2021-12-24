@@ -52,6 +52,16 @@ public class CommentRestController {
         }
     }
 
+    @PatchMapping(value = "/{commentId}")
+    public Object updateComment(@PathVariable Long commentId, @Validated @RequestBody UpdateCommentDTO.Request updateCommentDTO) {
+        try {
+            Comment updatedComment = commentService.updateComment(commentId, updateCommentDTO);
+            return new ResponseEntity<>(makeCommentDTOResponse(updatedComment), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), updateCommentDTO.toString()), HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private Page<CommentDTO.Response> makeResult(Page<Comment> allComments) {
         List<CommentDTO.Response> result = new ArrayList<>();
         for (Comment comment : allComments.getContent()) {
