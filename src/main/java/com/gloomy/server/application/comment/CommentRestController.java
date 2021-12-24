@@ -32,6 +32,24 @@ public class CommentRestController {
         }
     }
 
+    @GetMapping("/feed/{feedId}")
+    public Object getFeedAllComments(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long feedId) {
+        try {
+            Page<Comment> feedAllComments = commentService.getFeedAllComments(pageable, feedId);
+            return new ResponseEntity<>(makeResult(feedAllComments), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private Page<CommentDTO.Response> makeResult(Page<Comment> allComments) {
+        List<CommentDTO.Response> result = new ArrayList<>();
+        for (Comment comment : allComments.getContent()) {
+            result.add(makeCommentDTOResponse(comment));
+        }
+        return new PageImpl<>(result);
+    }
+
     private CommentDTO.Response makeCommentDTOResponse(Comment comment) {
         return CommentDTO.Response.of(comment);
     }
@@ -43,5 +61,3 @@ public class CommentRestController {
         return errorMessages;
     }
 }
-
-
