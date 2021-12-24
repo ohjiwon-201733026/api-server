@@ -166,6 +166,24 @@ class FeedServiceTest {
     }
 
     @Test
+    void 활성_피드_전체_조회_성공() {
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+        Feed activeFeed = feedService.createFeed(nonUserFeedDTO);
+        Feed inactiveFeed = feedService.createFeed(nonUserFeedDTO);
+
+        feedService.deleteFeed(inactiveFeed.getId());
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10));
+
+        assertEquals(foundActiveFeeds.getContent().size(), 1);
+        assertEquals(foundActiveFeeds.getContent().get(0), activeFeed);
+    }
+
+    @Test
+    void 활성_피드_전체_조회_실패() {
+        checkFoundAllActiveFeedsFail(null, "[FeedService] pageable이 유효하지 않습니다.");
+    }
+
+   @Test
     void 피드_수정_공통_성공() {
         Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
         String updateContent = "새 글";
@@ -301,6 +319,12 @@ class FeedServiceTest {
                     feedService.findAllFeeds(pageable);
                 }).getMessage(),
                 errorMessage);
+    }
+
+    private void checkFoundAllActiveFeedsFail(Pageable pageable, String errorMessage) {
+        assertThrows(IllegalArgumentException.class, () -> {
+            feedService.findAllActiveFeeds(pageable);
+        }, errorMessage);
     }
 
     private void checkUpdatedFeedFail(Long feedId, UpdateFeedDTO.Request feedDTO, String errorMessage) {
