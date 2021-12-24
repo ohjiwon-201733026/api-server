@@ -10,6 +10,8 @@ import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CommentService {
     private UserService userService;
@@ -77,5 +79,10 @@ public class CommentService {
 
     public void deleteAll() {
         commentRepository.deleteAll();
+    }
+
+    public List<Comment> findAllComments(Long feedId) {
+        Feed foundFeed = feedService.findOneFeed(feedId);
+        return commentRepository.findAllByFeedId(foundFeed);
     }
 }
