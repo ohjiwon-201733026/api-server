@@ -1,6 +1,7 @@
 package com.gloomy.server.application.comment;
 
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
@@ -44,8 +45,15 @@ public class CommentService {
     }
 
     public Comment findComment(Long commentId) {
+        if (commentId == null || commentId <= 0L) {
+            throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        }
         return commentRepository.findById(commentId).orElseThrow(() -> {
             throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
         });
+    }
+
+    public void deleteAll() {
+        commentRepository.deleteAll();
     }
 }
