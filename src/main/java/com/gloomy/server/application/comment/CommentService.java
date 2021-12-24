@@ -95,6 +95,18 @@ public class CommentService {
         return new PageImpl<>(feedAllComments, pageable, feedAllComments.size());
     }
 
+    public Page<Comment> getFeedAllActiveComments(Pageable pageable, Long feedId) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[CommentService] Pageable이 유효하지 않습니다.");
+        }
+        if (feedId == null || feedId <= 0L) {
+            throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
+        }
+        Feed foundFeed = feedService.findOneFeed(feedId);
+        return commentRepository.findAllByFeedIdAndStatus(pageable,
+                foundFeed, COMMENT_STATUS.ACTIVE);
+    }
+
     public List<Comment> findAllComments(Long feedId) {
         Feed foundFeed = feedService.findOneFeed(feedId);
         return commentRepository.findAllByFeedId(foundFeed);
