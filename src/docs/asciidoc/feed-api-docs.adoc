@@ -13,48 +13,48 @@
 
 CURL
 
-include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/curl-request.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/curl-request.adoc[]
 
 요청 정보
 
-include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/http-request.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/http-request.adoc[]
 
 요청 형식
 
-include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/request-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/request-parts.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-parts.adoc[]
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/http-response.adoc[]
 
 응답 형식
 
-include::{snippets}/feed-rest-controller-test/post-create-nonuser-feed/response-fields.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/response-fields.adoc[]
 
 [[create-user-feed]]
 == 피드 등록 (회원)
 
 CURL
 
-include::{snippets}/feed-rest-controller-test/post-create-user-feed/curl-request.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/curl-request.adoc[]
 
 요청 정보
 
-include::{snippets}/feed-rest-controller-test/post-create-user-feed/http-request.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/http-request.adoc[]
 
 요청 형식
 
-include::{snippets}/feed-rest-controller-test/post-create-user-feed/request-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/post-create-user-feed/request-parts.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/request-parts.adoc[]
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/post-create-user-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/http-response.adoc[]
 
 응답 형식
 
-include::{snippets}/feed-rest-controller-test/post-create-user-feed/response-fields.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/response-fields.adoc[]
 
 [[get-all-user]]
 == 피드 전체 조회
