@@ -51,12 +51,9 @@ public class ReplyService {
     }
 
     private boolean validateCommonElements(ReplyDTO.Request replyDTO) throws IllegalArgumentException {
-        if ((replyDTO.getContent() == null || replyDTO.getContent().length() <= 0)
-                || (replyDTO.getFeedId() == null || replyDTO.getFeedId() <= 0L)
-                || (replyDTO.getCommentId() == null || replyDTO.getCommentId() <= 0L)) {
-            return false;
-        }
-        return true;
+        return (replyDTO.getContent() != null && replyDTO.getContent().length() > 0)
+                && validateId(replyDTO.getFeedId())
+                && validateId(replyDTO.getCommentId());
     }
 
     private void validateUserReplyDTO(ReplyDTO.Request replyDTO) {
@@ -72,9 +69,16 @@ public class ReplyService {
     }
 
     public Reply findReply(Long replyId) {
+        if (!validateId(replyId)) {
+            throw new IllegalArgumentException("[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
+        }
         return replyRepository.findById(replyId).orElseThrow(() -> {
             throw new IllegalArgumentException("[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
         });
+    }
+
+    public boolean validateId(Long id) {
+        return id != null && id > 0L;
     }
 
     public void deleteAll() {
