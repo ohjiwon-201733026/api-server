@@ -128,12 +128,68 @@ public class ReplyServiceTest {
         checkCreatedReplyFail(replyWithCommentIdZeroOrLess, errorMessage);
     }
 
+    @Test
+    void 대댓글_조회_회원_성공() {
+        User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
+        ReplyDTO.Request userReplyDTO = testReplyDTO.makeUserReplyDTO(replyUser);
+
+        Reply createdUserReply = replyService.createReply(userReplyDTO);
+        Reply foundUserReply = replyService.findReply(createdUserReply.getId());
+
+        assertEquals(foundUserReply, createdUserReply);
+    }
+
+    @Test
+    void 대댓글_조회_회원_실패() {
+        User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
+        ReplyDTO.Request userReplyDTO = testReplyDTO.makeUserReplyDTO(replyUser);
+
+        Reply deletedUserReply = replyService.createReply(userReplyDTO);
+        replyService.deleteAll();
+
+        checkFoundReplyFail(deletedUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
+    }
+
+    @Test
+    void 대댓글_조회_비회원_성공() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
+        Reply foundNonUserReply = replyService.findReply(createdNonUserReply.getId());
+
+        assertEquals(foundNonUserReply, createdNonUserReply);
+    }
+
+    @Test
+    void 대댓글_조회_비회원_실패() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply deletedNonUserReply = replyService.createReply(nonUserReplyDTO);
+        replyService.deleteAll();
+
+        checkFoundReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
+    }
+
+    @Test
+    void 대댓글_조회_공통_실패() {
+        checkFoundReplyFail(0L, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
+        checkFoundReplyFail(null, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
+    }
+
     private void checkCreatedReplyFail(ReplyDTO.Request replyDTO, String errorMessage) {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             replyService.createReply(replyDTO);
         });
         assertEquals(exception.getMessage(), errorMessage);
     }
+
+    private void checkFoundReplyFail(Long replyId, String errorMessage) {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            replyService.findReply(replyId);
+        });
+        assertEquals(exception.getMessage(), errorMessage);
+    }
+
 
     static class TestReplyDTO {
         private final String content;
