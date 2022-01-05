@@ -20,7 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -179,6 +185,28 @@ public class ReplyServiceTest {
     }
 
     @Test
+    void 대댓글_전체_조회_성공() {
+        List<Reply> createdReplies = createReplies(3);
+
+        Page<Reply> foundAllReplies = replyService.getCommentAllReplies(
+                PageRequest.of(0, 10), testReplyDTO.commentId.getId());
+
+        checkFoundAllRepliesSuccess(foundAllReplies, createdReplies);
+    }
+
+    @Test
+    void 대댓글_전체_조회_실패() {
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        commentService.deleteAll();
+
+        checkFoundAllRepliesFail(pageable, 0L, "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllRepliesFail(pageable, null, "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllRepliesFail(pageable, testReplyDTO.commentId.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+        checkFoundAllRepliesFail(null, testReplyDTO.commentId.getId(), "[ReplyService] Pageable이 유효하지 않습니다.");
+    }
+
+    @Test
     void 대댓글_수정_성공() {
         User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
 
@@ -258,6 +286,15 @@ public class ReplyServiceTest {
         checkDeletedReplyFail(null, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
     }
 
+    private List<Reply> createReplies(int replySize) {
+        List<Reply> createdReplies = new ArrayList<>();
+        for (int num = 0; num < replySize; num++) {
+            Reply createdReply = replyService.createReply(testReplyDTO.makeNonUserReplyDTO());
+            createdReplies.add(createdReply);
+        }
+        return createdReplies;
+    }
+
     private void checkCreatedReplyFail(ReplyDTO.Request replyDTO, String errorMessage) {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             replyService.createReply(replyDTO);
@@ -268,6 +305,20 @@ public class ReplyServiceTest {
     private void checkFoundReplyFail(Long replyId, String errorMessage) {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             replyService.findReply(replyId);
+        });
+        assertEquals(exception.getMessage(), errorMessage);
+    }
+
+    private void checkFoundAllRepliesSuccess(Page<Reply> foundAllReplies, List<Reply> createdReplies) {
+        assertEquals(foundAllReplies.getContent().size(), createdReplies.size());
+        for (int num = 0; num < createdReplies.size(); num++) {
+            assertEquals(foundAllReplies.getContent().get(num), createdReplies.get(num));
+        }
+    }
+
+    private void checkFoundAllRepliesFail(Pageable pageable, Long commentId, String errorMessage) {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            replyService.getCommentAllReplies(pageable, commentId);
         });
         assertEquals(exception.getMessage(), errorMessage);
     }
