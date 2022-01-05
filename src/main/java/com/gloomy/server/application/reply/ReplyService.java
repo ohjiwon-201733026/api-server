@@ -6,6 +6,7 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.reply.REPLY_STATUS;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -83,10 +84,6 @@ public class ReplyService {
         return id != null && id > 0L;
     }
 
-    public void deleteAll() {
-        replyRepository.deleteAll();
-    }
-
     public Reply updateReply(Long replyId, UpdateReplyDTO.Request updateReplyDTO) {
         validateUpdateReplyRequest(replyId, updateReplyDTO);
         Reply foundReply = findReply(replyId);
@@ -104,5 +101,15 @@ public class ReplyService {
         if (updateReplyDTO.getContent() == null || updateReplyDTO.getContent().length() <= 0) {
             throw new IllegalArgumentException("[ReplyService] 대댓글 수정 요청 메시지가 잘못되었습니다.");
         }
+    }
+
+    public Reply deleteReply(Long replyId) {
+        Reply foundReply = findReply(replyId);
+        foundReply.setStatus(REPLY_STATUS.INACTIVE);
+        return replyRepository.save(foundReply);
+    }
+
+    public void deleteAll() {
+        replyRepository.deleteAll();
     }
 }

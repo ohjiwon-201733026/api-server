@@ -85,6 +85,10 @@ public class Reply {
         this.content = content;
     }
 
+    public void setStatus(REPLY_STATUS status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
