@@ -10,7 +10,13 @@ import com.gloomy.server.domain.reply.REPLY_STATUS;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ReplyService {
@@ -78,6 +84,22 @@ public class ReplyService {
         return replyRepository.findById(replyId).orElseThrow(() -> {
             throw new IllegalArgumentException("[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
         });
+    }
+
+    public Page<Reply> getCommentAllReplies(Pageable pageable, Long commentId) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[ReplyService] Pageable이 유효하지 않습니다.");
+        }
+        if (commentId == null || commentId <= 0L) {
+            throw new IllegalArgumentException("[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
+        }
+        List<Reply> feedAllReplies = findAllReplies(commentId);
+        return new PageImpl<>(feedAllReplies, pageable, feedAllReplies.size());
+    }
+
+    public List<Reply> findAllReplies(Long commentId) {
+        Comment foundComment = commentService.findComment(commentId);
+        return replyRepository.findAllByCommentId(foundComment);
     }
 
     public boolean validateId(Long id) {
