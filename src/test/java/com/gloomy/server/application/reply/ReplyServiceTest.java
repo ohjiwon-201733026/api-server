@@ -2,6 +2,7 @@ package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.comment.TestCommentDTO;
+import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
@@ -176,6 +177,38 @@ public class ReplyServiceTest {
         checkFoundReplyFail(null, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
     }
 
+    @Test
+    void 대댓글_수정_성공() {
+        User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
+
+        Reply userReply = replyService.createReply(testReplyDTO.makeUserReplyDTO(replyUser));
+        Reply nonUserReply = replyService.createReply(testReplyDTO.makeNonUserReplyDTO());
+
+        checkUpdatedReplySuccess(userReply);
+        checkUpdatedReplySuccess(nonUserReply);
+    }
+
+    @Test
+    void 대댓글_수정_실패() {
+        String updateContent = "새 대댓글";
+        UpdateReplyDTO.Request updateReplyDTO = new UpdateReplyDTO.Request();
+        updateReplyDTO.setContent(updateContent);
+        UpdateReplyDTO.Request updateReplyDTOWithContentNull = new UpdateReplyDTO.Request();
+        UpdateReplyDTO.Request updateReplyDTOWithContentBlank = new UpdateReplyDTO.Request();
+        updateReplyDTOWithContentBlank.setContent("");
+
+        Reply deletedReply = replyService.createReply(testReplyDTO.makeNonUserReplyDTO());
+        replyService.deleteAll();
+        Reply createdReply = replyService.createReply(testReplyDTO.makeNonUserReplyDTO());
+
+        checkUpdatedReplyFail(0L, updateReplyDTO, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
+        checkUpdatedReplyFail(null, updateReplyDTO, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
+        checkUpdatedReplyFail(deletedReply.getId(), updateReplyDTO, "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
+        checkUpdatedReplyFail(createdReply.getId(), null, "[ReplyService] 대댓글 수정 요청 메시지가 존재하지 않습니다.");
+        checkUpdatedReplyFail(createdReply.getId(), updateReplyDTOWithContentNull, "[ReplyService] 대댓글 수정 요청 메시지가 잘못되었습니다.");
+        checkUpdatedReplyFail(createdReply.getId(), updateReplyDTOWithContentBlank, "[ReplyService] 대댓글 수정 요청 메시지가 잘못되었습니다.");
+    }
+
     private void checkCreatedReplyFail(ReplyDTO.Request replyDTO, String errorMessage) {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             replyService.createReply(replyDTO);
@@ -190,6 +223,24 @@ public class ReplyServiceTest {
         assertEquals(exception.getMessage(), errorMessage);
     }
 
+    private void checkUpdatedReplySuccess(Reply reply) {
+        String updateContent = "새 대댓글";
+        UpdateReplyDTO.Request updateReplyDTO = new UpdateReplyDTO.Request();
+        updateReplyDTO.setContent(updateContent);
+
+        Reply updatedUserReply = replyService.updateReply(reply.getId(), updateReplyDTO);
+        Reply foundUserReply = replyService.findReply(reply.getId());
+
+        assertEquals(foundUserReply, updatedUserReply);
+        assertEquals(foundUserReply.getContent().getContent(), updateContent);
+    }
+
+    private void checkUpdatedReplyFail(Long replyId, UpdateReplyDTO.Request updateReplyDTO, String errorMessage) {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            replyService.updateReply(replyId, updateReplyDTO);
+        });
+        assertEquals(exception.getMessage(), errorMessage);
+    }
 
     static class TestReplyDTO {
         private final String content;
