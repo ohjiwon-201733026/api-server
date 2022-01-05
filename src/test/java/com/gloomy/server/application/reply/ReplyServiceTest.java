@@ -207,6 +207,31 @@ public class ReplyServiceTest {
     }
 
     @Test
+    void 활성_대댓글_전체_조회_성공() {
+        Reply activeReply = replyService.createReply(testReplyDTO.makeNonUserReplyDTO());
+        Reply inactiveReply = replyService.createReply(testReplyDTO.makeNonUserReplyDTO());
+
+        replyService.deleteReply(inactiveReply.getId());
+        Page<Reply> commentAllActiveReplies = replyService.getCommentAllActiveReplies(
+                PageRequest.of(0, 10), testReplyDTO.commentId.getId());
+
+        assertEquals(commentAllActiveReplies.getContent().size(), 1);
+        assertEquals(commentAllActiveReplies.getContent().get(0), activeReply);
+    }
+
+    @Test
+    void 활성_대댓글_전체_조회_실패() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        checkFoundAllActiveRepliesFail(null, testReplyDTO.commentId.getId(),
+                "[ReplyService] Pageable이 유효하지 않습니다.");
+        checkFoundAllActiveRepliesFail(pageable, 0L,
+                "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
+        checkFoundAllActiveRepliesFail(pageable, null,
+                "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
+    }
+
+    @Test
     void 대댓글_수정_성공() {
         User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
 
@@ -319,6 +344,13 @@ public class ReplyServiceTest {
     private void checkFoundAllRepliesFail(Pageable pageable, Long commentId, String errorMessage) {
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             replyService.getCommentAllReplies(pageable, commentId);
+        });
+        assertEquals(exception.getMessage(), errorMessage);
+    }
+
+    private void checkFoundAllActiveRepliesFail(Pageable pageable, Long commentId, String errorMessage) {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            replyService.getCommentAllActiveReplies(pageable, commentId);
         });
         assertEquals(exception.getMessage(), errorMessage);
     }
