@@ -81,6 +81,10 @@ public class Reply {
                 .build();
     }
 
+    public void setContent(Content content) {
+        this.content = content;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,8 +1,10 @@
 package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
+import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
@@ -38,7 +40,7 @@ public class ReplyService {
         return replyRepository.save(Reply.of(replyDTO.getContent(), foundFeed, foundComment, replyDTO.getPassword()));
     }
 
-    private void validateReplyDTO(ReplyDTO.Request replyDTO) throws IllegalArgumentException {
+    private void validateReplyDTO(ReplyDTO.Request replyDTO) {
         if ((replyDTO.getUserId() == null) == (replyDTO.getPassword() == null)
             || !validateCommonElements(replyDTO)) {
             throw new IllegalArgumentException("[ReplyService] 대댓글 등록 요청 메시지가 잘못되었습니다.");
@@ -50,7 +52,7 @@ public class ReplyService {
         validateNonUserReplyDTO(replyDTO);
     }
 
-    private boolean validateCommonElements(ReplyDTO.Request replyDTO) throws IllegalArgumentException {
+    private boolean validateCommonElements(ReplyDTO.Request replyDTO) {
         return (replyDTO.getContent() != null && replyDTO.getContent().length() > 0)
                 && validateId(replyDTO.getFeedId())
                 && validateId(replyDTO.getCommentId());
@@ -83,5 +85,24 @@ public class ReplyService {
 
     public void deleteAll() {
         replyRepository.deleteAll();
+    }
+
+    public Reply updateReply(Long replyId, UpdateReplyDTO.Request updateReplyDTO) {
+        validateUpdateReplyRequest(replyId, updateReplyDTO);
+        Reply foundReply = findReply(replyId);
+        foundReply.setContent(new Content(updateReplyDTO.getContent()));
+        return replyRepository.save(foundReply);
+    }
+
+    private void validateUpdateReplyRequest(Long replyId, UpdateReplyDTO.Request updateReplyDTO) {
+        if (!validateId(replyId)) {
+            throw new IllegalArgumentException("[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
+        }
+        if (updateReplyDTO == null) {
+            throw new IllegalArgumentException("[ReplyService] 대댓글 수정 요청 메시지가 존재하지 않습니다.");
+        }
+        if (updateReplyDTO.getContent() == null || updateReplyDTO.getContent().length() <= 0) {
+            throw new IllegalArgumentException("[ReplyService] 대댓글 수정 요청 메시지가 잘못되었습니다.");
+        }
     }
 }
