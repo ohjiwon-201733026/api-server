@@ -3,6 +3,7 @@ package com.gloomy.server.application.reply;
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
@@ -100,6 +101,18 @@ public class ReplyService {
     public List<Reply> findAllReplies(Long commentId) {
         Comment foundComment = commentService.findComment(commentId);
         return replyRepository.findAllByCommentId(foundComment);
+    }
+
+    public Page<Reply> getCommentAllActiveReplies(Pageable pageable, Long commentId) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[ReplyService] Pageable이 유효하지 않습니다.");
+        }
+        if (!validateId(commentId)) {
+            throw new IllegalArgumentException("[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
+        }
+        Comment foundComment = commentService.findComment(commentId);
+        return replyRepository.findAllByCommentIdAndStatus(pageable,
+                foundComment, REPLY_STATUS.ACTIVE);
     }
 
     public boolean validateId(Long id) {
