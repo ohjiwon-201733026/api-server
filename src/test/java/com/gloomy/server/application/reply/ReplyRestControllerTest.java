@@ -214,4 +214,21 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
                         )
                 ));
     }
+
+    @DisplayName("대댓글 삭제")
+    @Test
+    void deleteReply() throws Exception {
+        ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply createdReply = replyService.createReply(request);
+
+        this.mockMvc.perform(delete("/reply/{replyId}", createdReply.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("replyId").description("삭제할 대댓글 ID")
+                        )
+                ));
+    }
 }
