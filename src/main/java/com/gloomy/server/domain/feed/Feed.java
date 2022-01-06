@@ -4,6 +4,7 @@ import com.gloomy.server.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -21,7 +22,7 @@ public class Feed {
     @Embedded
     private Ip ip;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
 
@@ -37,14 +38,24 @@ public class Feed {
     @Embedded
     private LikeCount likeCount;
 
+
     Feed() {
     }
 
+
+    /**
+     * User - Feed 연관관계 메소드
+     */
+    public void changeUser(User user){
+        this.userId=user;
+        user.getFeeds().add(this);
+    }
+
     @Builder(builderClassName = "userFeedBuilder", builderMethodName = "userFeedBuilder", access = AccessLevel.PRIVATE)
-    private Feed(IsUser isUser, Ip ip, User userId, FEED_STATUS status, Content content, LikeCount likeCount) {
+    private Feed(IsUser isUser, Ip ip, User user, FEED_STATUS status, Content content, LikeCount likeCount) {
         this.isUser = isUser;
         this.ip = ip;
-        this.userId = userId;
+        changeUser(user);
         this.status = status;
         this.content = content;
         this.likeCount = likeCount;
@@ -60,11 +71,11 @@ public class Feed {
         this.likeCount = likeCount;
     }
 
-    public static Feed of(String ip, User userId, String content) {
+    public static Feed of(String ip, User user, String content) {
         return Feed.userFeedBuilder()
                 .isUser(new IsUser(true))
                 .ip(new Ip(ip))
-                .userId(userId)
+                .user(user)
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))
                 .likeCount(new LikeCount(0))
@@ -82,6 +93,7 @@ public class Feed {
                 .build();
     }
 
+    public void setId(Long id){ this.id=id;}
     public void setStatus(FEED_STATUS status) {
         this.status = status;
     }
