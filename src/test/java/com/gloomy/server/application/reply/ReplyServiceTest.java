@@ -70,6 +70,26 @@ public class ReplyServiceTest {
     }
 
     @Test
+    void 대댓글_생성_비회원_성공() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
+        Reply foundNonUserReply = replyService.findReply(createdNonUserReply.getId());
+
+        Assertions.assertEquals(foundNonUserReply, createdNonUserReply);
+    }
+
+    @Test
+    void 대댓글_생성_비회원_실패() {
+        String errorMessage = "[ReplyService] 비회원 대댓글 등록 요청 메시지가 잘못되었습니다.";
+
+        ReplyDTO.Request nonUserReplyWithPasswordBlank =
+                new ReplyDTO.Request(testReplyDTO.getContent(), testComment.getId(), "");
+
+        checkCreatedReplyFail(nonUserReplyWithPasswordBlank, errorMessage);
+    }
+
+    @Test
     void 대댓글_생성_회원_성공() {
         User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
         ReplyDTO.Request userReplyDTO = testReplyDTO.makeUserReplyDTO(replyUser);
@@ -85,29 +105,9 @@ public class ReplyServiceTest {
         String errorMessage = "[ReplyService] 회원 대댓글 등록 요청 메시지가 잘못되었습니다.";
 
         ReplyDTO.Request userReplyWithUserIdZeroOrLess =
-                new ReplyDTO.Request(testReplyDTO.content, testComment.getId(), 0L);
+                new ReplyDTO.Request(testReplyDTO.getContent(), testComment.getId(), 0L);
 
         checkCreatedReplyFail(userReplyWithUserIdZeroOrLess, errorMessage);
-    }
-
-    @Test
-    void 대댓글_생성_비회원_성공() {
-        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
-
-        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
-        Reply foundNonUserReply = replyService.findReply(createdNonUserReply.getId());
-
-        Assertions.assertEquals(foundNonUserReply, createdNonUserReply);
-    }
-
-    @Test
-    void 대댓글_생성_비회원_실패() {
-        String errorMessage = "[ReplyService] 비회원 대댓글 등록 요청 메시지가 잘못되었습니다.";
-
-        ReplyDTO.Request nonUserReplyWithPasswordBlank =
-                new ReplyDTO.Request(testReplyDTO.content, testComment.getId(), "");
-
-        checkCreatedReplyFail(nonUserReplyWithPasswordBlank, errorMessage);
     }
 
     @Test
@@ -115,18 +115,38 @@ public class ReplyServiceTest {
         String errorMessage = "[ReplyService] 대댓글 등록 요청 메시지가 잘못되었습니다.";
 
         ReplyDTO.Request replyWithContentNull =
-                new ReplyDTO.Request(null, testComment.getId(), testReplyDTO.password);
+                new ReplyDTO.Request(null, testComment.getId(), testReplyDTO.getPassword());
         ReplyDTO.Request replyWithContentBlank =
-                new ReplyDTO.Request("", testComment.getId(), testReplyDTO.password);
+                new ReplyDTO.Request("", testComment.getId(), testReplyDTO.getPassword());
         ReplyDTO.Request replyWithCommentIdNull =
-                new ReplyDTO.Request(testReplyDTO.content, null, testReplyDTO.password);
+                new ReplyDTO.Request(testReplyDTO.getContent(), null, testReplyDTO.getPassword());
         ReplyDTO.Request replyWithCommentIdZeroOrLess =
-                new ReplyDTO.Request(testReplyDTO.content, 0L, testReplyDTO.password);
+                new ReplyDTO.Request(testReplyDTO.getContent(), 0L, testReplyDTO.getPassword());
 
         checkCreatedReplyFail(replyWithContentNull, errorMessage);
         checkCreatedReplyFail(replyWithContentBlank, errorMessage);
         checkCreatedReplyFail(replyWithCommentIdNull, errorMessage);
         checkCreatedReplyFail(replyWithCommentIdZeroOrLess, errorMessage);
+    }
+
+    @Test
+    void 대댓글_조회_비회원_성공() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
+        Reply foundNonUserReply = replyService.findReply(createdNonUserReply.getId());
+
+        assertEquals(foundNonUserReply, createdNonUserReply);
+    }
+
+    @Test
+    void 대댓글_조회_비회원_실패() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply deletedNonUserReply = replyService.createReply(nonUserReplyDTO);
+        replyService.deleteAll();
+
+        checkFoundReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
     }
 
     @Test
@@ -152,26 +172,6 @@ public class ReplyServiceTest {
     }
 
     @Test
-    void 대댓글_조회_비회원_성공() {
-        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
-
-        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
-        Reply foundNonUserReply = replyService.findReply(createdNonUserReply.getId());
-
-        assertEquals(foundNonUserReply, createdNonUserReply);
-    }
-
-    @Test
-    void 대댓글_조회_비회원_실패() {
-        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
-
-        Reply deletedNonUserReply = replyService.createReply(nonUserReplyDTO);
-        replyService.deleteAll();
-
-        checkFoundReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
-    }
-
-    @Test
     void 대댓글_조회_공통_실패() {
         checkFoundReplyFail(0L, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
         checkFoundReplyFail(null, "[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
@@ -182,7 +182,7 @@ public class ReplyServiceTest {
         List<Reply> createdReplies = createReplies(3);
 
         Page<Reply> foundAllReplies = replyService.getCommentAllReplies(
-                PageRequest.of(0, 10), testReplyDTO.commentId.getId());
+                PageRequest.of(0, 10), testReplyDTO.getCommentId().getId());
 
         checkFoundAllRepliesSuccess(foundAllReplies, createdReplies);
     }
@@ -195,8 +195,8 @@ public class ReplyServiceTest {
 
         checkFoundAllRepliesFail(pageable, 0L, "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
         checkFoundAllRepliesFail(pageable, null, "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
-        checkFoundAllRepliesFail(pageable, testReplyDTO.commentId.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
-        checkFoundAllRepliesFail(null, testReplyDTO.commentId.getId(), "[ReplyService] Pageable이 유효하지 않습니다.");
+        checkFoundAllRepliesFail(pageable, testReplyDTO.getCommentId().getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
+        checkFoundAllRepliesFail(null, testReplyDTO.getCommentId().getId(), "[ReplyService] Pageable이 유효하지 않습니다.");
     }
 
     @Test
@@ -206,7 +206,7 @@ public class ReplyServiceTest {
 
         replyService.deleteReply(inactiveReply.getId());
         Page<Reply> commentAllActiveReplies = replyService.getCommentAllActiveReplies(
-                PageRequest.of(0, 10), testReplyDTO.commentId.getId());
+                PageRequest.of(0, 10), testReplyDTO.getCommentId().getId());
 
         assertEquals(commentAllActiveReplies.getContent().size(), 1);
         assertEquals(commentAllActiveReplies.getContent().get(0), activeReply);
@@ -216,7 +216,7 @@ public class ReplyServiceTest {
     void 활성_대댓글_전체_조회_실패() {
         Pageable pageable = PageRequest.of(0, 10);
 
-        checkFoundAllActiveRepliesFail(null, testReplyDTO.commentId.getId(),
+        checkFoundAllActiveRepliesFail(null, testReplyDTO.getCommentId().getId(),
                 "[ReplyService] Pageable이 유효하지 않습니다.");
         checkFoundAllActiveRepliesFail(pageable, 0L,
                 "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
@@ -257,6 +257,26 @@ public class ReplyServiceTest {
     }
 
     @Test
+    void 대댓글_삭제_비회원_성공() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
+        Reply deletedNonUserReply = replyService.deleteReply(createdNonUserReply.getId());
+
+        assertEquals(deletedNonUserReply.getStatus(), REPLY_STATUS.INACTIVE);
+    }
+
+    @Test
+    void 대댓글_삭제_비회원_실패() {
+        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply deletedNonUserReply = replyService.createReply(nonUserReplyDTO);
+        replyService.deleteAll();
+
+        checkDeletedReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
+    }
+
+    @Test
     void 대댓글_삭제_회원_성공() {
         User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
         ReplyDTO.Request userReplyDTO = testReplyDTO.makeUserReplyDTO(replyUser);
@@ -276,26 +296,6 @@ public class ReplyServiceTest {
         replyService.deleteAll();
 
         checkDeletedReplyFail(deletedUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
-    }
-
-    @Test
-    void 대댓글_삭제_비회원_성공() {
-        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
-
-        Reply createdNonUserReply = replyService.createReply(nonUserReplyDTO);
-        Reply deletedNonUserReply = replyService.deleteReply(createdNonUserReply.getId());
-
-        assertEquals(deletedNonUserReply.getStatus(), REPLY_STATUS.INACTIVE);
-    }
-
-    @Test
-    void 대댓글_삭제_비회원_실패() {
-        ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
-
-        Reply deletedNonUserReply = replyService.createReply(nonUserReplyDTO);
-        replyService.deleteAll();
-
-        checkDeletedReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
     }
 
     @Test
@@ -372,25 +372,5 @@ public class ReplyServiceTest {
             replyService.deleteReply(replyId);
         });
         assertEquals(exception.getMessage(), errorMessage);
-    }
-
-    static class TestReplyDTO {
-        private final String content;
-        private final String password;
-        private final Comment commentId;
-
-        TestReplyDTO(Comment commentId) {
-            this.content = "새 대댓글";
-            this.password = "12345";
-            this.commentId = commentId;
-        }
-
-        ReplyDTO.Request makeUserReplyDTO(User user) {
-            return new ReplyDTO.Request(content, commentId.getId(), user.getId());
-        }
-
-        ReplyDTO.Request makeNonUserReplyDTO() {
-            return new ReplyDTO.Request(content, commentId.getId(), password);
-        }
     }
 }
