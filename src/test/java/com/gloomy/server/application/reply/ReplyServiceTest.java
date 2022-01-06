@@ -2,7 +2,6 @@ package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.comment.TestCommentDTO;
-import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
@@ -58,7 +57,7 @@ public class ReplyServiceTest {
         Feed testFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
         TestCommentDTO testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
         testComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
-        testReplyDTO = new TestReplyDTO(testFeed, testComment);
+        testReplyDTO = new TestReplyDTO(testComment);
     }
 
     @AfterEach
@@ -86,7 +85,7 @@ public class ReplyServiceTest {
         String errorMessage = "[ReplyService] 회원 대댓글 등록 요청 메시지가 잘못되었습니다.";
 
         ReplyDTO.Request userReplyWithUserIdZeroOrLess =
-                new ReplyDTO.Request(testReplyDTO.content, testComment.getFeedId().getId(), testComment.getId(), 0L);
+                new ReplyDTO.Request(testReplyDTO.content, testComment.getId(), 0L);
 
         checkCreatedReplyFail(userReplyWithUserIdZeroOrLess, errorMessage);
     }
@@ -106,7 +105,7 @@ public class ReplyServiceTest {
         String errorMessage = "[ReplyService] 비회원 대댓글 등록 요청 메시지가 잘못되었습니다.";
 
         ReplyDTO.Request nonUserReplyWithPasswordBlank =
-                new ReplyDTO.Request(testReplyDTO.content, testComment.getFeedId().getId(), testComment.getId(), "");
+                new ReplyDTO.Request(testReplyDTO.content, testComment.getId(), "");
 
         checkCreatedReplyFail(nonUserReplyWithPasswordBlank, errorMessage);
     }
@@ -116,22 +115,16 @@ public class ReplyServiceTest {
         String errorMessage = "[ReplyService] 대댓글 등록 요청 메시지가 잘못되었습니다.";
 
         ReplyDTO.Request replyWithContentNull =
-                new ReplyDTO.Request(null, testComment.getFeedId().getId(), testComment.getId(), testReplyDTO.password);
+                new ReplyDTO.Request(null, testComment.getId(), testReplyDTO.password);
         ReplyDTO.Request replyWithContentBlank =
-                new ReplyDTO.Request("", testComment.getFeedId().getId(), testComment.getId(), testReplyDTO.password);
-        ReplyDTO.Request replyWithFeedIdNull =
-                new ReplyDTO.Request(testReplyDTO.content, null, testComment.getId(), testReplyDTO.password);
-        ReplyDTO.Request replyWithFeedIdZeroOrLess =
-                new ReplyDTO.Request(testReplyDTO.content, 0L, testComment.getId(), testReplyDTO.password);
+                new ReplyDTO.Request("", testComment.getId(), testReplyDTO.password);
         ReplyDTO.Request replyWithCommentIdNull =
-                new ReplyDTO.Request(testReplyDTO.content, testComment.getFeedId().getId(), null, testReplyDTO.password);
+                new ReplyDTO.Request(testReplyDTO.content, null, testReplyDTO.password);
         ReplyDTO.Request replyWithCommentIdZeroOrLess =
-                new ReplyDTO.Request(testReplyDTO.content, testComment.getFeedId().getId(), 0L, testReplyDTO.password);
+                new ReplyDTO.Request(testReplyDTO.content, 0L, testReplyDTO.password);
 
         checkCreatedReplyFail(replyWithContentNull, errorMessage);
         checkCreatedReplyFail(replyWithContentBlank, errorMessage);
-        checkCreatedReplyFail(replyWithFeedIdNull, errorMessage);
-        checkCreatedReplyFail(replyWithFeedIdZeroOrLess, errorMessage);
         checkCreatedReplyFail(replyWithCommentIdNull, errorMessage);
         checkCreatedReplyFail(replyWithCommentIdZeroOrLess, errorMessage);
     }
@@ -384,22 +377,20 @@ public class ReplyServiceTest {
     static class TestReplyDTO {
         private final String content;
         private final String password;
-        private final Feed feedId;
         private final Comment commentId;
 
-        TestReplyDTO(Feed feedId, Comment commentId) {
+        TestReplyDTO(Comment commentId) {
             this.content = "새 대댓글";
             this.password = "12345";
-            this.feedId = feedId;
             this.commentId = commentId;
         }
 
         ReplyDTO.Request makeUserReplyDTO(User user) {
-            return new ReplyDTO.Request(content, feedId.getId(), commentId.getId(), user.getId());
+            return new ReplyDTO.Request(content, commentId.getId(), user.getId());
         }
 
         ReplyDTO.Request makeNonUserReplyDTO() {
-            return new ReplyDTO.Request(content, feedId.getId(), commentId.getId(), password);
+            return new ReplyDTO.Request(content, commentId.getId(), password);
         }
     }
 }

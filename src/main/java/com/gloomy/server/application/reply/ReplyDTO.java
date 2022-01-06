@@ -15,22 +15,18 @@ public class ReplyDTO {
         @NotBlank
         private String content;
         @NotNull
-        private Long feedId;
-        @NotNull
         private Long commentId;
         private Long userId;
         private String password;
 
-        public Request(String content, Long feedId, Long commentId, Long userId) {
+        public Request(String content, Long commentId, Long userId) {
             this.content = content;
-            this.feedId = feedId;
             this.commentId = commentId;
             this.userId = userId;
         }
 
-        public Request(String content, Long feedId, Long commentId, String password) {
+        public Request(String content, Long commentId, String password) {
             this.content = content;
-            this.feedId = feedId;
             this.commentId = commentId;
             this.password = password;
         }

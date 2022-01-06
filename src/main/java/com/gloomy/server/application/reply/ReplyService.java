@@ -1,19 +1,15 @@
 package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
-import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
-import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Content;
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.reply.REPLY_STATUS;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -39,13 +35,12 @@ public class ReplyService {
     }
 
     private Reply makeReply(ReplyDTO.Request replyDTO) {
-        Feed foundFeed = feedService.findOneFeed(replyDTO.getFeedId());
         Comment foundComment = commentService.findComment(replyDTO.getCommentId());
         if (replyDTO.getUserId() != null) {
             User foundUser = userService.findUser(replyDTO.getUserId());
-            return replyRepository.save(Reply.of(replyDTO.getContent(), foundFeed, foundComment, foundUser));
+            return replyRepository.save(Reply.of(replyDTO.getContent(), foundComment, foundUser));
         }
-        return replyRepository.save(Reply.of(replyDTO.getContent(), foundFeed, foundComment, replyDTO.getPassword()));
+        return replyRepository.save(Reply.of(replyDTO.getContent(), foundComment, replyDTO.getPassword()));
     }
 
     private void validateReplyDTO(ReplyDTO.Request replyDTO) {
@@ -62,7 +57,6 @@ public class ReplyService {
 
     private boolean validateCommonElements(ReplyDTO.Request replyDTO) {
         return (replyDTO.getContent() != null && replyDTO.getContent().length() > 0)
-                && validateId(replyDTO.getFeedId())
                 && validateId(replyDTO.getCommentId());
     }
 

@@ -24,10 +24,6 @@ public class Reply {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private Feed feedId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
     private Comment commentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,37 +40,33 @@ public class Reply {
     }
 
     @Builder(builderClassName = "userReplyBuilder", builderMethodName = "userReplyBuilder", access = AccessLevel.PRIVATE)
-    private Reply(Content content, Feed feedId, Comment commentId, User userId, REPLY_STATUS status) {
+    private Reply(Content content, Comment commentId, User userId, REPLY_STATUS status) {
         this.content = content;
-        this.feedId = feedId;
         this.commentId = commentId;
         this.userId = userId;
         this.status = status;
     }
 
     @Builder(builderClassName = "nonUserReplyBuilder", builderMethodName = "nonUserReplyBuilder", access = AccessLevel.PRIVATE)
-    private Reply(Content content, Feed feedId, Comment commentId, Password password, REPLY_STATUS status) {
+    private Reply(Content content, Comment commentId, Password password, REPLY_STATUS status) {
         this.content = content;
-        this.feedId = feedId;
         this.commentId = commentId;
         this.password = password;
         this.status = status;
     }
 
-    public static Reply of(String content, Feed feedId, Comment commentId, User userId) {
+    public static Reply of(String content, Comment commentId, User userId) {
         return Reply.userReplyBuilder()
                 .content(new Content(content))
-                .feedId(feedId)
                 .commentId(commentId)
                 .userId(userId)
                 .status(REPLY_STATUS.ACTIVE)
                 .build();
     }
 
-    public static Reply of(String content, Feed feedId, Comment commentId, String password) {
+    public static Reply of(String content, Comment commentId, String password) {
         return Reply.nonUserReplyBuilder()
                 .content(new Content(content))
-                .feedId(feedId)
                 .commentId(commentId)
                 .password(new Password(password))
                 .status(REPLY_STATUS.ACTIVE)
@@ -96,7 +88,6 @@ public class Reply {
         Reply reply = (Reply) o;
         boolean result = Objects.equals(id, reply.getId())
                 && Objects.equals(content.getContent(), reply.getContent().getContent())
-                && Objects.equals(feedId.getId(), reply.getFeedId().getId())
                 && Objects.equals(commentId.getId(), reply.getCommentId().getId())
                 && status == reply.getStatus();
         if (Objects.nonNull(userId)) {
