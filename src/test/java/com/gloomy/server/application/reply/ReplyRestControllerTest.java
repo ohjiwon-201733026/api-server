@@ -2,6 +2,7 @@ package com.gloomy.server.application.reply;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.AbstractControllerTest;
+import com.gloomy.server.application.comment.CommentDTO;
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.comment.TestCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
@@ -10,6 +11,7 @@ import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -156,6 +158,29 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
                                 fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
                                 fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
+                        )
+                ));
+    }
+
+    @DisplayName("댓글_상세_조회")
+    @Test
+    void getReply() throws Exception {
+        ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
+
+        Reply createdReply = replyService.createReply(request);
+
+        this.mockMvc.perform(get("/reply/{replyId}", createdReply.getId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("replyId").description("조회할 대댓글 ID")),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("대댓글 ID"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("대댓글 내용"),
+                                fieldWithPath("commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
                         )
                 ));
     }
