@@ -44,6 +44,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/feed/**").permitAll()
                 .antMatchers("/comment/**").permitAll()
+                .antMatchers("/reply/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
                 .anyRequest().authenticated();
 
