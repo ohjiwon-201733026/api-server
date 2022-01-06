@@ -5,6 +5,7 @@ import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.comment.CommentDTO;
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.comment.TestCommentDTO;
+import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
@@ -22,8 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -175,6 +175,36 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         pathParameters(
                                 parameterWithName("replyId").description("조회할 대댓글 ID")),
+                        responseFields(
+                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("대댓글 ID"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("대댓글 내용"),
+                                fieldWithPath("commentId").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                        )
+                ));
+    }
+
+    @DisplayName("대댓글_수정")
+    @Test
+    void updateReply() throws Exception {
+        String updateContent = "새 글";
+        ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
+        UpdateReplyDTO.Request updateRequest = new UpdateReplyDTO.Request();
+        updateRequest.setContent(updateContent);
+
+        Reply createdReply = replyService.createReply(request);
+        String body = objectMapper.writeValueAsString(updateRequest);
+
+        this.mockMvc.perform(patch("/reply/{replyId}", createdReply.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .content(body))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("replyId").description("수정할 대댓글 ID")),
                         responseFields(
                                 fieldWithPath("id").type(JsonFieldType.NUMBER).description("대댓글 ID"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("대댓글 내용"),
