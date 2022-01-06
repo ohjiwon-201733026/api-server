@@ -1,10 +1,13 @@
 package com.gloomy.server.domain.user;
 
+import lombok.Getter;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 
 @Embeddable
+@Getter
 public class Profile {
 
     @Column(name = "name")
@@ -31,5 +34,8 @@ public class Profile {
 
     void changeName(String name) {
         this.name = name;
+    }
+    void changeImage(Image image) {
+        this.image = image;
     }
 }

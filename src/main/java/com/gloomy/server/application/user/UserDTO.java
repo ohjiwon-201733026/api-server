@@ -1,11 +1,15 @@
 package com.gloomy.server.application.user;
 
+import com.gloomy.server.domain.user.Image;
+import com.gloomy.server.domain.user.Sex;
 import com.gloomy.server.domain.user.User;
 import lombok.*;
 import org.json.JSONObject;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 public class UserDTO {
 
@@ -96,5 +100,19 @@ public class UserDTO {
         public static Response fromUserAndToken(User user, String token) {
             return new Response(user.getId(), user.getEmail(), user.getName(), token, "");
         }
+    }
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @Getter
+    @ToString
+    public static class UpdateUserDTO{
+        Long userId;
+        @Email
+        String email;
+        Sex sex;
+        Image image;
+        LocalDate dateOfBirth;
     }
 }
