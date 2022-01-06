@@ -1,5 +1,6 @@
 package com.gloomy.server.application.reply;
 
+import com.gloomy.server.application.comment.UpdateCommentDTO;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.reply.Reply;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,16 @@ public class ReplyRestController {
             return new ResponseEntity<>(makeReplyDTOResponse(foundReply), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), replyId), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PatchMapping(value = "/{replyId}")
+    public Object updateReply(@PathVariable Long replyId, @Validated @RequestBody UpdateReplyDTO.Request updateReplyDTO) {
+        try {
+            Reply updatedReply = replyService.updateReply(replyId, updateReplyDTO);
+            return new ResponseEntity<>(makeReplyDTOResponse(updatedReply), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), updateReplyDTO.toString()), HttpStatus.BAD_REQUEST);
         }
     }
 
