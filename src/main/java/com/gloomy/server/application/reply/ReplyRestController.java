@@ -1,5 +1,6 @@
 package com.gloomy.server.application.reply;
 
+import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.reply.Reply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -39,6 +40,16 @@ public class ReplyRestController {
             return new ResponseEntity<>(makeResult(commentAllReplies), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/{replyId}")
+    public Object getReply(@PathVariable Long replyId) {
+        try {
+            Reply foundReply = replyService.findReply(replyId);
+            return new ResponseEntity<>(makeReplyDTOResponse(foundReply), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), replyId), HttpStatus.BAD_REQUEST);
         }
     }
 
