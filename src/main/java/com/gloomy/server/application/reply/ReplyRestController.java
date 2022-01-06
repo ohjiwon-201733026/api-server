@@ -64,6 +64,17 @@ public class ReplyRestController {
         }
     }
 
+    @DeleteMapping("/{replyId}")
+    public Object deleteReply(@PathVariable Long replyId) {
+        try {
+            replyService.deleteReply(replyId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     private Page<ReplyDTO.Response> makeResult(Page<Reply> allReplies) {
         List<ReplyDTO.Response> result = new ArrayList<>();
         for (Reply reply : allReplies.getContent()) {
