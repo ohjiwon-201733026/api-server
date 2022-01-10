@@ -5,6 +5,7 @@ import com.gloomy.server.application.comment.CommentDTO;
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.*;
@@ -13,11 +14,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,32 +35,61 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     FeedService feedService;
     @Autowired
     CommentService commentService;
-    @Autowired
-    WebApplicationContext webApplicationContext;
     User user;
     UserDTO.UpdateUserDTO updateUserDTO;
-
+    private User testUser;
+    TestFeedDTO testFeedDTO;
     @BeforeEach
     public void setUp() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         this.user = User.of("test@email.com", "testName", new Password("test")
                 , Sex.MALE, 2020, 01, 01, JoinStatus.JOIN);
+        testUser = userService.createUser(user);
+        testFeedDTO = new TestFeedDTO(testUser, 1);
     }
 
     @DisplayName("find user feed")
     @Test
     public void userFeed() throws Exception {
-        User saveUser=userService.createUser(user);
-        FeedDTO.Request feedDto1=new FeedDTO.Request(true, "111.111.111.111", saveUser.getId(), "test content 1", new TestImage().makeImages(1));
-        FeedDTO.Request feedDto2=new FeedDTO.Request(true, "222.222.222.222", saveUser.getId(), "test content 2", new TestImage().makeImages(1));
+        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
 
-        feedService.createFeed(feedDto1);
-        feedService.createFeed(feedDto2);
-
-        this.mockMvc.perform(get("/myPage/feed/{userId}", saveUser.getId())
+        this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
+                .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestParameters(
+                                parameterWithName("page").description("페이지 넘버")
+                        ),
+                        pathParameters(
+                                parameterWithName("userId").description("조회할 사용자 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("content[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
+                                fieldWithPath("content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
+                                fieldWithPath("content[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
+                                fieldWithPath("content[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("content[].content").type(JsonFieldType.STRING).description("게시글 내용"),
+                                fieldWithPath("content[].likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
+                                fieldWithPath("content[].imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트").optional(),
+                                fieldWithPath("content[].commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+
+                                fieldWithPath("pageable").type(JsonFieldType.STRING).description("pageable 정보"),
+                                fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                                fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("전체 페이지 내 요소의 수"),
+                                fieldWithPath("last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
+                                fieldWithPath("numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 내 요소의 수"),
+                                fieldWithPath("first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
+                                fieldWithPath("size").type(JsonFieldType.NUMBER).description("페이지 당 출력 갯수"),
+                                fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
+                                fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
+                                fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
+                                fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
+                                fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
+                        )
+                ));
     }
 
     @DisplayName("find user Comment")
@@ -73,9 +107,38 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
         commentService.createComment(comment2);
 
         this.mockMvc.perform(get("/myPage/comment/{userId}", saveUser.getId())
+                .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestParameters(
+                                parameterWithName("page").description("페이지 넘버")
+                        ),
+                        pathParameters(
+                                parameterWithName("userId").description("댓글 조회할 사용자 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("content[].feedId").type(JsonFieldType.NUMBER).description("해당 피드 ID"),
+                                fieldWithPath("content[].userId").type(JsonFieldType.NUMBER).description("회원 ID"),
+                                fieldWithPath("content[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+
+                                fieldWithPath("pageable").type(JsonFieldType.STRING).description("pageable 정보"),
+                                fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                                fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("전체 페이지 내 요소의 수"),
+                                fieldWithPath("last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
+                                fieldWithPath("numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 내 요소의 수"),
+                                fieldWithPath("first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
+                                fieldWithPath("size").type(JsonFieldType.NUMBER).description("페이지 당 출력 갯수"),
+                                fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
+                                fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
+                                fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
+                                fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
+                                fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
+                        )
+                ));
     }
 
 }

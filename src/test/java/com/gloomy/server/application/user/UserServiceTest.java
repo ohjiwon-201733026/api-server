@@ -38,7 +38,7 @@ public class UserServiceTest {
     @Autowired
     CommentService commentService;
     User user;
-    UserDTO.UpdateUserDTO updateUserDTO;
+    UserDTO.UpdateUserDTO.Request updateUserDTO;
     TestFeedDTO testFeedDTO;
 
 
@@ -47,11 +47,11 @@ public class UserServiceTest {
     public void setUp(){
         this.user= User.of("test@email.com","testName",new Password("test")
         , Sex.MALE,2020,01,01, JoinStatus.JOIN);
-        this.updateUserDTO= UserDTO.UpdateUserDTO.builder()
+        this.updateUserDTO= UserDTO.UpdateUserDTO.Request.builder()
                 .email("updateEmail@email.com")
                 .sex(Sex.FEMALE)
                 .dateOfBirth(LocalDate.of(2022,01,01))
-                .image(null)
+                .image("testImg")
                 .build();
         testFeedDTO = new TestFeedDTO(user, 1);
 
