@@ -124,7 +124,6 @@ public class FeedService {
     public Feed deleteFeed(Long feedId) {
         Feed foundFeed = findOneFeed(feedId);
         foundFeed.setStatus(FEED_STATUS.INACTIVE);
-        foundFeed.getUserId().removeFeed(feedId);
         return feedRepository.save(foundFeed);
     }
 
