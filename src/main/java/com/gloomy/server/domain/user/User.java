@@ -91,7 +91,10 @@ public class User {
      */
     public void changeEmail(String email){this.email=email;}
     public void changeSex(Sex sex){this.sex=sex;}
-    public void changeImage(Image image){this.profile.changeImage(image);}
+    public void changeImage(String image){
+        System.out.println(">>>>>>>>>>"+this.profile);
+        System.out.println(">>>>>>>>>>"+this.profile.getImage());
+        this.profile.getImage().changeImage(image);}
     public void changeDateOfBirth(LocalDate dateOfBirth){this.dateOfBirth=dateOfBirth;}
 
     /**

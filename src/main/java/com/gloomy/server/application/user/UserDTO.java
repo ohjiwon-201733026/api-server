@@ -5,6 +5,7 @@ import com.gloomy.server.domain.user.Sex;
 import com.gloomy.server.domain.user.User;
 import lombok.*;
 import org.json.JSONObject;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -102,17 +103,34 @@ public class UserDTO {
         }
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    @Getter
-    @ToString
+
     public static class UpdateUserDTO{
-        Long userId;
-        @Email
-        String email;
-        Sex sex;
-        Image image;
-        LocalDate dateOfBirth;
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        @Getter
+        @ToString
+        public static class Request{
+            @Email
+            String email;
+            Sex sex;
+            String image;
+            LocalDate dateOfBirth;
+        }
+
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        @Getter
+        @ToString
+        public static class Response{
+            Long userId;
+            @Email
+            String email;
+            Sex sex;
+            String image;
+            LocalDate dateOfBirth;
+        }
+
     }
 }

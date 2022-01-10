@@ -20,7 +20,7 @@ public class Profile {
     }
 
     static Profile from(String name) {
-        return new Profile(name, null);
+        return new Profile(name, new Image());
     }
 
     private Profile(String name, Image image) {

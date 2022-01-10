@@ -98,7 +98,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long userId, UpdateUserDTO updateUserDTO){
+    public User updateUser(Long userId, UpdateUserDTO.Request updateUserDTO){
         Optional<User> updateUser=userRepository.findById(userId);
         if(updateUser.isPresent()){
             User user= updateUserEntity(updateUser.get(),updateUserDTO);
@@ -107,7 +107,7 @@ public class UserService {
         else throw new IllegalArgumentException();
     }
 
-    public User updateUserEntity(User user,UpdateUserDTO updateUserDTO){
+    public User updateUserEntity(User user,UpdateUserDTO.Request updateUserDTO){
 
         if(updateUserDTO.getEmail()!=null) user.changeEmail(updateUserDTO.getEmail());
         if(updateUserDTO.getSex()!=null) user.changeSex(updateUserDTO.getSex());

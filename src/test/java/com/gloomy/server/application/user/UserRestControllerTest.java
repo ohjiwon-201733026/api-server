@@ -21,6 +21,8 @@ import java.time.LocalDate;
 import static com.gloomy.server.application.user.UserDTO.*;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,18 +35,19 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Autowired
     WebApplicationContext webApplicationContext;
     User user;
-    UpdateUserDTO updateUserDTO;
+    UpdateUserDTO.Request updateUserDTO;
 
     @BeforeEach
     public void setUp(){
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+//        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         this.user= User.of("test@email.com","testName",new Password("test")
                 , Sex.MALE,2020,01,01, JoinStatus.JOIN);
-        this.updateUserDTO= UserDTO.UpdateUserDTO.builder()
+        user.setId(1L);
+        this.updateUserDTO= UserDTO.UpdateUserDTO.Request.builder()
                 .email("updateEmail@email.com")
                 .sex(Sex.FEMALE)
                 .dateOfBirth(LocalDate.of(2022,01,01))
-                .image(null)
+                .image("testImg")
                 .build();
     }
 
@@ -54,10 +57,10 @@ class UserRestControllerTest extends AbstractControllerTest {
     void postUser() throws Exception {
 
         PostRequest postRequest = PostRequest.builder()
-                                            .email("test1@gamil.com")
-                                            .userName("test1")
-                                            .password("test1234")
-                                            .build();
+                .email("test1@gamil.com")
+                .userName("test1")
+                .password("test1234")
+                .build();
 
         MvcResult mvcResult = mockMvc.perform(post("/user")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -70,7 +73,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일"),
                                 fieldWithPath("userName").type(JsonFieldType.STRING).description("유저 이름"),
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드")
-                                ),
+                        ),
                         responseFields(
 //                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
 //                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
@@ -96,9 +99,9 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .build();
 
         mockMvc.perform(post("/user/login")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -113,8 +116,8 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("token").type(JsonFieldType.STRING).description("토큰").optional(),
                                 fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 링크")
                         )
-                )
-        );
+                        )
+                );
     }
 
     @Order(3)
@@ -126,9 +129,9 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .build();
 
         mockMvc.perform(post("/user/login/kakao")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .accept(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
                 .andDo(print())
                 .andExpect(status().isOk());
 //                .andDo(document.document(
@@ -163,7 +166,23 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(updateUserDTO)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestFields(
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("sex").type(JsonFieldType.STRING).description("유저 성별"),
+                                fieldWithPath("image").type(JsonFieldType.STRING).description("유저 이미지"),
+                                fieldWithPath("dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일")
+                        ),
+                        responseFields(
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 아이디"),
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("sex").type(JsonFieldType.STRING).description("유저 성별"),
+                                fieldWithPath("image").type(JsonFieldType.STRING).description("유저 이미지"),
+                                fieldWithPath("dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일")
+                        )
+                        )
+                ).andReturn();
     }
 
     @DisplayName("User Detail")
@@ -174,8 +193,19 @@ class UserRestControllerTest extends AbstractControllerTest {
         this.mockMvc.perform(get("/user/detail/{userId}", saveUser.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isOk());
-
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("userId").description("조회할 유저 ID")
+                        ),
+                        responseFields(
+                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 아이디"),
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("sex").type(JsonFieldType.STRING).description("유저 성별"),
+                                fieldWithPath("image").type(JsonFieldType.STRING).description("유저 이미지"),
+                                fieldWithPath("dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일")
+                        )
+                        )
+                ).andReturn();
     }
 
 

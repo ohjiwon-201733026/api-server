@@ -64,8 +64,8 @@ public class UserRestController {
 
 
     @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UpdateUserDTO> updateUser(@PathVariable("userId") Long userId,
-                                                    @RequestBody UpdateUserDTO updateUserDTO, Model model){
+    public ResponseEntity<UpdateUserDTO.Response> updateUser(@PathVariable("userId") Long userId,
+                                                    @RequestBody UpdateUserDTO.Request updateUserDTO, Model model){
         try {
             User updateUser = userService.updateUser(userId,updateUserDTO);
             model.addAttribute("updateUserDTO",updateUserDTO);
@@ -75,18 +75,19 @@ public class UserRestController {
         }
     }
 
-    private UpdateUserDTO makeUpdateUserDTO(User user){
-        return UpdateUserDTO.builder()
+    private UpdateUserDTO.Response makeUpdateUserDTO(User user){
+        return UpdateUserDTO.Response.builder()
+                .userId(user.getId())
                 .email(user.getEmail())
                 .sex(user.getSex())
-                .image(user.getProfile().getImage())
+                .image(user.getProfile().getImage().getImage())
                 .dateOfBirth(user.getDateOfBirth())
                 .build();
 
     }
 
     @GetMapping(value ="/detail/{userId}")
-    public ResponseEntity<UpdateUserDTO> userDetail(@PathVariable("userId")Long userId,Model model){
+    public ResponseEntity<UpdateUserDTO.Response> userDetail(@PathVariable("userId")Long userId,Model model){
         try {
             User findUser = userService.findUser(userId);
             return ResponseEntity.ok().body(makeUpdateUserDTO(findUser));
