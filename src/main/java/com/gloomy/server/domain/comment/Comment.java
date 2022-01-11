@@ -41,7 +41,7 @@ public class Comment {
     private Comment(Content content, Feed feedId, User userId, COMMENT_STATUS status) {
         this.content = content;
         this.feedId = feedId;
-        changeUser(userId);
+        this.userId=userId;
         this.status = status;
     }
 

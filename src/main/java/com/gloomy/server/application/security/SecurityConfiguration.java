@@ -39,15 +39,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
-                .antMatchers("/user/**").hasRole(Role.USER.name())
                 .antMatchers(GET, "/user").permitAll()
                 .antMatchers(POST, "/user", "/user/login", "/user/login/kakao").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/feed/**").permitAll()
                 .antMatchers("/comment/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
-
-                .antMatchers("/myPage/**").hasRole(Role.ADMIN.name())
+                .antMatchers("/user/**").hasRole(Role.USER.name())
+                .antMatchers("/myPage/**").hasRole(Role.USER.name())
                 .anyRequest().authenticated();
 
         http.formLogin().disable();

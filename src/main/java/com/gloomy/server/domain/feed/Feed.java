@@ -55,7 +55,7 @@ public class Feed {
     private Feed(IsUser isUser, Ip ip, User user, FEED_STATUS status, Content content, LikeCount likeCount) {
         this.isUser = isUser;
         this.ip = ip;
-        changeUser(user);
+        this.userId=user;
         this.status = status;
         this.content = content;
         this.likeCount = likeCount;
