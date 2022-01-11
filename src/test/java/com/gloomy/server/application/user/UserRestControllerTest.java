@@ -125,7 +125,7 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("Pj1NBbO3PyTEDiKUX3L5vtks3MY_hr3dkhY0sOmiUbpoIvgrTsxEhYe3YH1juvGXUJ9Fogo9dRsAAAF9n6Ky1Q")
+                .code("XeIyujddRulu3SQwRmizuiE6xqBCoNrEbXSpoAYDED85MsOkDck-iu4Wz9uRlBeqPbBSyQo9dGkAAAF-R72aig")
                 .build();
 
         mockMvc.perform(post("/user/login/kakao")
@@ -133,20 +133,20 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
                 .andDo(print())
-                .andExpect(status().isOk());
-//                .andDo(document.document(
-//                                requestFields(
-//                                        fieldWithPath("code").type(JsonFieldType.STRING).description("인가 코드")
-//                                ),
-//                                responseFields(
-//                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
-//                                        fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
-//                                        fieldWithPath("username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-//                                        fieldWithPath("token").type(JsonFieldType.STRING).description("토큰").optional(),
-//                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 링크")
-//                                )
-//                        )
-//                );
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                                requestFields(
+                                        fieldWithPath("code").type(JsonFieldType.STRING).description("인가 코드")
+                                ),
+                                responseFields(
+                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
+                                        fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
+                                        fieldWithPath("username").type(JsonFieldType.STRING).description("유저 이름").optional(),
+                                        fieldWithPath("token").type(JsonFieldType.STRING).description("토큰").optional(),
+                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 링크")
+                                )
+                        )
+                );
     }
 
 //    @Test
