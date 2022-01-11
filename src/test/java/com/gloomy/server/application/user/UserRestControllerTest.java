@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,6 +26,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,10 +40,11 @@ class UserRestControllerTest extends AbstractControllerTest {
     WebApplicationContext webApplicationContext;
     User user;
     UpdateUserDTO.Request updateUserDTO;
+    Authentication authentication;
 
     @BeforeEach
     public void setUp(){
-//        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        authentication= SecurityContextHolder.getContext().getAuthentication();
         this.user= User.of("test@email.com","testName",new Password("test")
                 , Sex.MALE,2020,01,01, JoinStatus.JOIN);
         user.setId(1L);
@@ -159,11 +164,13 @@ class UserRestControllerTest extends AbstractControllerTest {
 
     @DisplayName("Update controller test")
     @Test
+    @WithMockUser
     public void updateUser() throws Exception {
         User saveUser=userService.createUser(user);
-        mockMvc.perform(post("/user/update/"+saveUser.getId())
+        mockMvc.perform(post("/user/update/{userId}",saveUser.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaType.APPLICATION_JSON_VALUE)
+                .with(authentication(authentication))
                 .content(objectMapper.writeValueAsString(updateUserDTO)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -187,10 +194,12 @@ class UserRestControllerTest extends AbstractControllerTest {
 
     @DisplayName("User Detail")
     @Test
+    @WithMockUser
     public void userDetail() throws Exception {
         User saveUser=userService.createUser(user);
 
         this.mockMvc.perform(get("/user/detail/{userId}", saveUser.getId())
+                .with(authentication(authentication))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andDo(document.document(

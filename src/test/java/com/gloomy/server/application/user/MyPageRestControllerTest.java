@@ -15,14 +15,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.net.Authenticator;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,8 +46,10 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     UserDTO.UpdateUserDTO updateUserDTO;
     private User testUser;
     TestFeedDTO testFeedDTO;
+    Authentication authentication;
     @BeforeEach
     public void setUp() {
+        authentication= SecurityContextHolder.getContext().getAuthentication();
         this.user = User.of("test@email.com", "testName", new Password("test")
                 , Sex.MALE, 2020, 01, 01, JoinStatus.JOIN);
         testUser = userService.createUser(user);
@@ -94,6 +103,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
 
     @DisplayName("find user Comment")
     @Test
+    @WithMockUser
     public void userComment() throws Exception {
         User saveUser=userService.createUser(user);
         FeedDTO.Request feedDto1=new FeedDTO.Request(true, "111.111.111.111", saveUser.getId(), "test content 1", new TestImage().makeImages(1));
@@ -107,6 +117,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
         commentService.createComment(comment2);
 
         this.mockMvc.perform(get("/myPage/comment/{userId}", saveUser.getId())
+                .with(authentication(authentication))
                 .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
