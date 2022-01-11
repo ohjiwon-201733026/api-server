@@ -23,6 +23,10 @@ repositories {
 ext {
     set('snippetsDir', file("build/generated-snippets"))
 }
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'

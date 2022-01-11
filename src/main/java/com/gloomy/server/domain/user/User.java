@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,6 +28,10 @@ public class User {
 
     @Column(name = "email", nullable = false)
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private Role role;
 
     @Embedded
     private Profile profile;
@@ -57,12 +62,14 @@ public class User {
     private User(String email, Profile profile, Password password) {
         this.email = email;
         this.profile = profile;
+        this.role=Role.USER;
         this.password = password;
     }
 
     private User(String email, Profile profile, Password password,Sex sex, LocalDate dateOfBirth,JoinStatus joinStatus){
         this.email = email;
         this.profile = profile;
+        this.role=Role.USER;
         this.password = password;
         this.sex=sex;
         this.dateOfBirth=dateOfBirth;

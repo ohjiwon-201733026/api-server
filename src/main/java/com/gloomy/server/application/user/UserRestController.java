@@ -31,6 +31,11 @@ public class UserRestController {
         this.jwtSerializer = jwtSerializer;
     }
 
+    /**
+     * 일반 회원가입
+     * @param request
+     * @return
+     */
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> addUser(@Validated @RequestBody PostRequest request) {
         final User userSaved = userService.signUp(request);
@@ -45,6 +50,7 @@ public class UserRestController {
 
     @PostMapping(value = "/login/kakao", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
+        System.out.println(request.code);
         return of(userService.kakaoLogin(request)
                 .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
