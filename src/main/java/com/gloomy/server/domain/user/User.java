@@ -24,6 +24,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class User {
 
     @Id @GeneratedValue(strategy = IDENTITY)
+    @Column(name="user_id")
     private Long id;
 
     @Column(name = "email", nullable = false)
@@ -59,16 +60,16 @@ public class User {
     protected User() {
     }
 
-    private User(String email, Profile profile, Password password) {
+    private User(String email, Password password) {
         this.email = email;
         this.profile = profile;
         this.role=Role.USER;
         this.password = password;
     }
 
-    private User(String email, Profile profile, Password password,Sex sex, LocalDate dateOfBirth,JoinStatus joinStatus){
+    private User(String email, Password password,Sex sex, LocalDate dateOfBirth,JoinStatus joinStatus){
         this.email = email;
-        this.profile = profile;
+//        this.profile = profile;
         this.role=Role.USER;
         this.password = password;
         this.sex=sex;
@@ -78,15 +79,15 @@ public class User {
 
     public static User of(String email, String name, Password password,
                           Sex sex, int year,int month,int day,JoinStatus joinStatus){
-        return new User(email, Profile.from(name), password,sex,LocalDate.of(year,month,day),joinStatus);
+        return new User(email, password,sex,LocalDate.of(year,month,day),joinStatus);
     }
 
     public static User of(String email, String name, Password password) {
-        return new User(email, Profile.from(name), password);
+        return new User(email, password);
     }
 
     public static User of(String email, String name) {
-        return new User(email, Profile.from(name), null);
+        return new User(email, null);
     }
 
     boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {
@@ -96,12 +97,15 @@ public class User {
     /**
      * change*
      */
+    public void changeId(Long id){
+        this.id=id;
+    }
     public void changeEmail(String email){this.email=email;}
     public void changeSex(Sex sex){this.sex=sex;}
-    public void changeImage(String image){
-        System.out.println(">>>>>>>>>>"+this.profile);
-        System.out.println(">>>>>>>>>>"+this.profile.getImage());
-        this.profile.getImage().changeImage(image);}
+//    public void changeImage(String image){
+//        System.out.println(">>>>>>>>>>"+this.profile);
+//        System.out.println(">>>>>>>>>>"+this.profile.getImage());
+//        this.profile.getImage().changeImage(image);}
     public void changeDateOfBirth(LocalDate dateOfBirth){this.dateOfBirth=dateOfBirth;}
 
     /**

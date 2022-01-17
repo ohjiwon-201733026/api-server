@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 
 @Embeddable
 @Getter

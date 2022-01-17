@@ -50,6 +50,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: '2.13.0'
     implementation group: 'org.springframework.restdocs', name: 'spring-restdocs-asciidoctor'
     testImplementation group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 test {
