@@ -44,4 +44,15 @@ public class TestImage {
             throw new IllegalArgumentException("[TestImage] 이미지 파일 변환 중 오류가 발생했습니다.");
         }
     }
+
+    public static MockMultipartFile convertOne(MultipartFile image) {
+        try {
+            return new MockMultipartFile("image",
+                    image.getOriginalFilename(),
+                    MediaType.MULTIPART_FORM_DATA_VALUE,
+                    image.getInputStream());
+        } catch (IOException e) {
+            throw new IllegalArgumentException("[TestImage] 이미지 파일 변환 중 오류가 발생했습니다.");
+        }
+    }
 }
