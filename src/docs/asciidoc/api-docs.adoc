@@ -451,3 +451,165 @@ include::{snippets}/reply-rest-controller-test/delete-reply/path-parameters.adoc
 응답 정보
 
 include::{snippets}/reply-rest-controller-test/delete-reply/http-response.adoc[]
+
+
+== 4. 유저 API
+[[post-user]]
+=== 4.1 유저 일반 회원가입
+
+CURL
+
+include::{snippets}/user-rest-controller-test/post-user-test/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/user-rest-controller-test/post-user-test/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/user-rest-controller-test/post-user-test/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/user-rest-controller-test/post-user-test/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/user-rest-controller-test/post-user-test/response-fields.adoc[]
+
+[[login-user]]
+=== 4.2 유저 일반 로그인
+CURL
+
+include::{snippets}/user-rest-controller-test/login-test/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/user-rest-controller-test/login-test/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/user-rest-controller-test/login-test/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/user-rest-controller-test/login-test/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/user-rest-controller-test/login-test/response-fields.adoc[]
+
+[[login-kakao]]
+=== 4.3 유저 카카오 로그인
+CURL
+
+include::{snippets}/user-rest-controller-test/kakao-login/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/user-rest-controller-test/kakao-login/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/user-rest-controller-test/kakao-login/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/user-rest-controller-test/kakao-login/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/user-rest-controller-test/kakao-login/response-fields.adoc[]
+
+[[update-user]]
+=== 4.3 유저 정보 수정
+CURL
+
+include::{snippets}/user-rest-controller-test/update-user/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/user-rest-controller-test/update-user/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/user-rest-controller-test/update-user/path-parameters.adoc[]
+include::{snippets}/user-rest-controller-test/update-user/request-parameters.adoc[]
+include::{snippets}/user-rest-controller-test/update-user/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/user-rest-controller-test/update-user/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/user-rest-controller-test/update-user/response-fields.adoc[]
+
+[[user-detail]]
+=== 4.3 유저 세부사항
+CURL
+
+include::{snippets}/user-rest-controller-test/user-detail/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/user-rest-controller-test/user-detail/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/user-rest-controller-test/user-detail/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/user-rest-controller-test/user-detail/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/user-rest-controller-test/user-detail/response-fields.adoc[]
+
+== 5. MyPage API
+[[user-feed]]
+=== 5.1 유저 피드 조회
+CURL
+
+include::{snippets}/my-page-rest-controller-test/user-feed/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/my-page-rest-controller-test/user-feed/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/my-page-rest-controller-test/user-feed/path-parameters.adoc[]
+include::{snippets}/my-page-rest-controller-test/user-feed/request-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/my-page-rest-controller-test/user-feed/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/my-page-rest-controller-test/user-feed/response-fields.adoc[]
+
+[[user-comment]]
+=== 5.1 유저 피드 조회
+CURL
+
+include::{snippets}/my-page-rest-controller-test/user-comment/curl-request.adoc[]
+
+요청 정보
+
+include::{snippets}/my-page-rest-controller-test/user-comment/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/my-page-rest-controller-test/user-comment/path-parameters.adoc[]
+include::{snippets}/my-page-rest-controller-test/user-comment/request-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/my-page-rest-controller-test/user-comment/http-response.adoc[]
+
+응답 형식
+
+include::{snippets}/my-page-rest-controller-test/user-comment/response-fields.adoc[]
