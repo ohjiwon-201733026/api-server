@@ -70,7 +70,7 @@ public class UserServiceTest {
     private void checkUpdateUser(User user){
         Assertions.assertEquals(user.getEmail(),updateUserDTO.getEmail());
         Assertions.assertEquals(user.getSex(),updateUserDTO.getSex());
-        Assertions.assertEquals(user.getDateOfBirth(),updateUserDTO.getDateOfBirth());
+        Assertions.assertEquals(user.getDateOfBirth().toString(),updateUserDTO.getDateOfBirth());
 //        Assertions.assertEquals(user.getProfile().getImage().getImage(),updateUserDTO.getImage());
     }
 
