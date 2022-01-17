@@ -1,5 +1,6 @@
 package com.gloomy.server.domain.user;
 
+import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class UserService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileImageService userProfileImageService;
 
     @Transactional
     public User signUp(PostRequest postRequest) {
@@ -111,8 +114,10 @@ public class UserService {
 
         if(updateUserDTO.getEmail()!=null) user.changeEmail(updateUserDTO.getEmail());
         if(updateUserDTO.getSex()!=null) user.changeSex(updateUserDTO.getSex());
-        if(updateUserDTO.getImage()!=null) user.changeImage(updateUserDTO.getImage());
-        if(updateUserDTO.getDateOfBirth()!=null) user.changeDateOfBirth(updateUserDTO.getDateOfBirth());
+//        if(updateUserDTO.getImage()!=null) {
+//            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
+//        }
+        if(updateUserDTO.getDateOfBirth()!=null) user.changeDateOfBirth(LocalDate.parse(updateUserDTO.getDateOfBirth()));
         return user;
     }
 

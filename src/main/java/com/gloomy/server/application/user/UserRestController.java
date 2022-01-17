@@ -1,23 +1,31 @@
 package com.gloomy.server.application.user;
 
+import com.gloomy.server.application.feed.UpdateFeedDTO;
+import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
+
+import java.io.IOException;
 
 import static com.gloomy.server.application.user.UserDTO.*;
 import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RequestMapping("/user")
 @RestController
@@ -25,10 +33,12 @@ public class UserRestController {
 
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
+    private final UserProfileImageService userProfileImageService;
 
-    UserRestController(UserService userService, JWTSerializer jwtSerializer) {
+    UserRestController(UserService userService, JWTSerializer jwtSerializer, UserProfileImageService userProfileImageService) {
         this.userService = userService;
         this.jwtSerializer = jwtSerializer;
+        this.userProfileImageService = userProfileImageService;
     }
 
     /**
@@ -68,26 +78,51 @@ public class UserRestController {
                 .toString();
     }
 
-
-    @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UpdateUserDTO.Response> updateUser(@PathVariable("userId") Long userId,
-                                                    @RequestBody UpdateUserDTO.Request updateUserDTO, Model model){
+    @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UpdateUserDTO.Response> updateUser(@PathVariable("userId") Long userId
+            ,@ModelAttribute UpdateUserDTO.Request updateUserDTO
+//                                                             @RequestPart(required = false) MultipartFile image
+                                                             ){
+//                                                    @ModelAttribute UpdateUserDTO.Request updateUserDTO, Model model){
+        System.out.println(updateUserDTO.toString());
         try {
+//            updateUserDTO.setImage(profileImage);
             User updateUser = userService.updateUser(userId,updateUserDTO);
-            model.addAttribute("updateUserDTO",updateUserDTO);
             return ResponseEntity.ok().body(makeUpdateUserDTO(updateUser));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
+    /*
+@RequestMapping(path = "/update/{userId}", method = POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+//    @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> updateUser(@PathVariable Long userId,
+                                             @RequestParam UpdateUserDTO.Request updateUserDTO,
+                                @RequestPart MultipartFile image ) throws IOException {
+//                             @ModelAttribute UpdateUserDTO.Request updateUserDTO) {
+
+        System.out.println(updateUserDTO.toString());
+        System.out.println(image);
+        try {
+            updateUserDTO.setImage(image);
+            User updateUser = userService.updateUser(userId, updateUserDTO);
+            return new ResponseEntity<>(makeUpdateUserDTO(updateUser), HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    */
+
+
+
 
     private UpdateUserDTO.Response makeUpdateUserDTO(User user){
         return UpdateUserDTO.Response.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
                 .sex(user.getSex())
-                .image(user.getProfile().getImage().getImage())
-                .dateOfBirth(user.getDateOfBirth())
+                .imageUrl(userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl())
+                .dateOfBirth(user.getDateOfBirth().toString())
                 .build();
 
     }
