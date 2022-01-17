@@ -73,6 +73,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .build();
     }
 
+    /*
     @Order(1)
     @DisplayName("일반 회원가입")
     @Test
@@ -169,6 +170,8 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 );
     }
+
+     */
 
 //    @Test
 //    public void test() throws JsonProcessingException {
