@@ -193,7 +193,7 @@ class UserRestControllerTest extends AbstractControllerTest {
 
 
         this.mockMvc.perform(fileUpload("/user/update/{userId}", saveUser.getId())
-                .file(firstUpdateImageFile)
+//                .file(firstUpdateImageFile)
                 .params(params)
                 .with(authentication(authentication)))
                 .andDo(print())

@@ -523,6 +523,9 @@ include::{snippets}/user-rest-controller-test/kakao-login/response-fields.adoc[]
 
 [[update-user]]
 === 4.3 유저 정보 수정
+CURL
+
+include::{snippets}/user-rest-controller-test/update-user/curl-request.adoc[]
 
 요청 정보
 
