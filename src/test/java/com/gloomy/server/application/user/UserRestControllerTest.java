@@ -72,7 +72,7 @@ class UserRestControllerTest extends AbstractControllerTest {
     void postUser() throws Exception {
 
         PostRequest postRequest = PostRequest.builder()
-                .email("test1@gamil.com")
+                .email("test1@gmail.com")
                 .userName("test1")
                 .password("test1234")
                 .build();

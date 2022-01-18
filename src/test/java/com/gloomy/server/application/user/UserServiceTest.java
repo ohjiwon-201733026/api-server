@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(properties = {
         "spring.config.location=classpath:application.yml,classpath:aws.yml"
 })
-//@Transactional
+@Transactional
 public class UserServiceTest {
 
     @Autowired
@@ -134,11 +134,6 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class,
                 ()->userService.deleteUser(user.getId()));
-    }
-
-    @Test
-    public void test(){
-        userService.deleteAll();
     }
 
 }
