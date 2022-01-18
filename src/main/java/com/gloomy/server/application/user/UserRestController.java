@@ -27,7 +27,6 @@ import static org.springframework.http.ResponseEntity.of;
 import static org.springframework.http.ResponseEntity.ok;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@RequestMapping("/user")
 @RestController
 public class UserRestController {
 
@@ -46,26 +45,26 @@ public class UserRestController {
      * @param request
      * @return
      */
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/user" ,produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> addUser(@Validated @RequestBody PostRequest request) {
         final User userSaved = userService.signUp(request);
         return ok(Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved)));
     }
 
-    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/user/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> login(@Validated @RequestBody LoginRequest request) {
         return of(userService.login(request)
                 .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
 
-    @PostMapping(value = "/login/kakao", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/kakao/signUp", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
         System.out.println(request.code);
         return of(userService.kakaoLogin(request)
                 .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
 
-    @GetMapping
+    @GetMapping(value = "/user")
     public ResponseEntity<Response> getUser(@AuthenticationPrincipal UserJWTPayload jwtPayload) {
         return of(userService.findById(jwtPayload.getUserId())
                 .map(user -> Response.fromUserAndToken(user, getCurrentCredential())));
@@ -78,7 +77,7 @@ public class UserRestController {
                 .toString();
     }
 
-    @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/user/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UpdateUserDTO.Response> updateUser(@PathVariable("userId") Long userId
             ,@ModelAttribute UpdateUserDTO.Request updateUserDTO){
         try {
@@ -104,7 +103,7 @@ public class UserRestController {
 
     }
 
-    @GetMapping(value ="/detail/{userId}")
+    @GetMapping(value ="/user/detail/{userId}")
     public ResponseEntity<UpdateUserDTO.Response> userDetail(@PathVariable("userId")Long userId,Model model){
         try {
             User findUser = userService.findUser(userId);
