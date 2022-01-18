@@ -134,17 +134,18 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 );
     }
-/*
+
     @Order(3)
     @DisplayName("카카오 로그인")
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("rWh2vl8xAb6r1cnGDfDzIZRfz6Z1LHqeraFzywtwJSozFF1qhcy07ENmVu0nlO_7inZOXAo9dZwAAAF-Yqd-sA")
+                .code("Vog_CxzwmXeVr_i2lkr_-sEdYGc7sNdsWFU1qsrJhyfvKlF5fo7eXj4B6PzwNo1VXrY5uQopyNkAAAF-bUwFUQ")
                 .build();
 
         mockMvc.perform(post("/user/login/kakao")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -163,7 +164,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 );
     }
 
- */
+
 
 
 
