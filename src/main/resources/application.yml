@@ -1,12 +1,13 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   jpa:
+    generate-ddl: true
     open-in-view: false
     hibernate:
       hbm2ddl:
-        auto: create
+        auto: update
       show_sql: true
   datasource:
 #    url: jdbc:h2:tcp://localhost/~/gloomy;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
@@ -21,7 +22,7 @@ spring:
 
 
 security:
-  allowedOrigins: http://localhost:8080,http://localhost:8081
+  allowedOrigins: http://localhost:8080,http://localhost:3000
 
 logging:
   level:
