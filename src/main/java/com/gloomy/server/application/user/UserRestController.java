@@ -80,38 +80,15 @@ public class UserRestController {
 
     @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UpdateUserDTO.Response> updateUser(@PathVariable("userId") Long userId
-            ,@ModelAttribute UpdateUserDTO.Request updateUserDTO
-//                                                             @RequestPart(required = false) MultipartFile image
-                                                             ){
-//                                                    @ModelAttribute UpdateUserDTO.Request updateUserDTO, Model model){
-        System.out.println(updateUserDTO.toString());
+            ,@ModelAttribute UpdateUserDTO.Request updateUserDTO){
         try {
-//            updateUserDTO.setImage(profileImage);
             User updateUser = userService.updateUser(userId,updateUserDTO);
             return ResponseEntity.ok().body(makeUpdateUserDTO(updateUser));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
     }
-    /*
-@RequestMapping(path = "/update/{userId}", method = POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-//    @PostMapping(value = "/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Object> updateUser(@PathVariable Long userId,
-                                             @RequestParam UpdateUserDTO.Request updateUserDTO,
-                                @RequestPart MultipartFile image ) throws IOException {
-//                             @ModelAttribute UpdateUserDTO.Request updateUserDTO) {
 
-        System.out.println(updateUserDTO.toString());
-        System.out.println(image);
-        try {
-            updateUserDTO.setImage(image);
-            User updateUser = userService.updateUser(userId, updateUserDTO);
-            return new ResponseEntity<>(makeUpdateUserDTO(updateUser), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    */
 
 
 

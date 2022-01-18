@@ -459,45 +459,45 @@ include::{snippets}/reply-rest-controller-test/delete-reply/http-response.adoc[]
 
 CURL
 
-include::{snippets}/user-rest-controller-test/post-user-test/curl-request.adoc[]
+include::{snippets}/user-rest-controller-test/post-user/curl-request.adoc[]
 
 요청 정보
 
-include::{snippets}/user-rest-controller-test/post-user-test/http-request.adoc[]
+include::{snippets}/user-rest-controller-test/post-user/http-request.adoc[]
 
 요청 형식
 
-include::{snippets}/user-rest-controller-test/post-user-test/request-fields.adoc[]
+include::{snippets}/user-rest-controller-test/post-user/request-fields.adoc[]
 
 응답 정보
 
-include::{snippets}/user-rest-controller-test/post-user-test/http-response.adoc[]
+include::{snippets}/user-rest-controller-test/post-user/http-response.adoc[]
 
 응답 형식
 
-include::{snippets}/user-rest-controller-test/post-user-test/response-fields.adoc[]
+include::{snippets}/user-rest-controller-test/post-user/response-fields.adoc[]
 
 [[login-user]]
 === 4.2 유저 일반 로그인
 CURL
 
-include::{snippets}/user-rest-controller-test/login-test/curl-request.adoc[]
+include::{snippets}/user-rest-controller-test/login/curl-request.adoc[]
 
 요청 정보
 
-include::{snippets}/user-rest-controller-test/login-test/http-request.adoc[]
+include::{snippets}/user-rest-controller-test/login/http-request.adoc[]
 
 요청 형식
 
-include::{snippets}/user-rest-controller-test/login-test/request-fields.adoc[]
+include::{snippets}/user-rest-controller-test/login/request-fields.adoc[]
 
 응답 정보
 
-include::{snippets}/user-rest-controller-test/login-test/http-response.adoc[]
+include::{snippets}/user-rest-controller-test/login/http-response.adoc[]
 
 응답 형식
 
-include::{snippets}/user-rest-controller-test/login-test/response-fields.adoc[]
+include::{snippets}/user-rest-controller-test/login/response-fields.adoc[]
 
 [[login-kakao]]
 === 4.3 유저 카카오 로그인
@@ -592,7 +592,7 @@ include::{snippets}/my-page-rest-controller-test/user-feed/http-response.adoc[]
 include::{snippets}/my-page-rest-controller-test/user-feed/response-fields.adoc[]
 
 [[user-comment]]
-=== 5.1 유저 피드 조회
+=== 5.2 유저 댓글 조회
 CURL
 
 include::{snippets}/my-page-rest-controller-test/user-comment/curl-request.adoc[]
