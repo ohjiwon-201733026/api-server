@@ -1,6 +1,8 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.comment.CommentService;
+import com.gloomy.server.application.core.response.ErrorResponse;
+import com.gloomy.server.application.core.response.RestResponse;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.comment.Comment;
@@ -10,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
 
 @Slf4j
 @RestController
@@ -37,59 +41,59 @@ public class FeedRestController {
     public ResponseEntity<?> createFeed(@Validated @ModelAttribute FeedDTO.Request feedDTO) {
         try {
             Feed createFeed = feedService.createFeed(feedDTO);
-            return new ResponseEntity<>(makeFeedDTOResponse(createFeed), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "피드 생성 성공", makeFeedDTOResponse(createFeed)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedDTO.toString()), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "피드 생성 성공", makeErrorMessage(e.getMessage(), feedDTO)));
         }
     }
 
-    @GetMapping("")
-    public Object getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
+    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
         try {
             Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
-            return new ResponseEntity<>(makeResult(allFeeds), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "피드 전체 조회 성공", makeResult(allFeeds)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "피드 전체 조회 실패", makeErrorMessage(e.getMessage(), null)));
         }
     }
 
     @GetMapping("/{feedId}")
-    public Object getFeed(@PathVariable Long feedId) {
+    public ResponseEntity<?> getFeed(@PathVariable Long feedId) {
         try {
             Feed foundFeed = feedService.findOneFeed(feedId);
-            return new ResponseEntity<>(makeFeedDTOResponse(foundFeed), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "피드 상세 조회 성공", makeFeedDTOResponse(foundFeed)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedId), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "피드 상세 조회 실패", makeErrorMessage(e.getMessage(), feedId)));
         }
     }
 
     @GetMapping("/user/{userId}")
-    public Object getUserFeeds(@PathVariable Long userId, @PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<?> getUserFeeds(@PathVariable Long userId, @PageableDefault(size = 10) Pageable pageable) {
         try {
             Page<Feed> userFeeds = feedService.findUserFeeds(pageable, userId);
-            return new ResponseEntity<>(makeResult(userFeeds), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "사용자 피드 상세 조회 성공", makeResult(userFeeds)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), userId), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "사용자 피드 상세 조회 실패", makeErrorMessage(e.getMessage(), userId)));
         }
     }
 
     @PostMapping(value = "/{feedId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Object updateFeed(@PathVariable Long feedId, @ModelAttribute UpdateFeedDTO.Request feedDTO) {
+    public ResponseEntity<?> updateFeed(@PathVariable Long feedId, @ModelAttribute UpdateFeedDTO.Request feedDTO) {
         try {
             Feed updatedFeed = feedService.updateOneFeed(feedId, feedDTO);
-            return new ResponseEntity<>(makeFeedDTOResponse(updatedFeed), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "피드 수정 성공", makeFeedDTOResponse(updatedFeed)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), feedDTO.toString()), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "피드 수정 실패", makeErrorMessage(e.getMessage(), feedDTO)));
         }
     }
 
     @DeleteMapping("/{feedId}")
-    public Object deleteFeed(@PathVariable Long feedId) {
+    public ResponseEntity<?> deleteFeed(@PathVariable Long feedId) {
         try {
             feedService.deleteFeed(feedId);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ok(new RestResponse<>(200, "피드 삭제 성공", feedId));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "피드 삭제 실패", makeErrorMessage(e.getMessage(), feedId)));
         }
     }
 
@@ -107,10 +111,10 @@ public class FeedRestController {
         return FeedDTO.Response.of(feed, activeImages, allComments.size());
     }
 
-    private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<String> errorMessages = new ArrayList<>();
+    private List<Object> makeErrorMessage(String errorMessage, Object errorObject) {
+        List<Object> errorMessages = new ArrayList<>();
         errorMessages.add(errorMessage);
-        errorMessages.add(errorObject.toString());
+        errorMessages.add(errorObject);
         return errorMessages;
     }
 }

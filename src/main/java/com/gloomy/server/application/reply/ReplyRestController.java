@@ -1,19 +1,21 @@
 package com.gloomy.server.application.reply;
 
-import com.gloomy.server.application.comment.UpdateCommentDTO;
-import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.application.core.response.ErrorResponse;
+import com.gloomy.server.application.core.response.RestResponse;
 import com.gloomy.server.domain.reply.Reply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/reply")
@@ -28,52 +30,51 @@ public class ReplyRestController {
     public ResponseEntity<?> createReply(@Validated @RequestBody ReplyDTO.Request replyDTO) {
         try {
             Reply createdReply = replyService.createReply(replyDTO);
-            return new ResponseEntity<>(makeReplyDTOResponse(createdReply), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "대댓글 생성 성공", (makeReplyDTOResponse(createdReply))));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), replyDTO.toString()), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", makeErrorMessage(e.getMessage(), replyDTO)));
         }
     }
 
     @GetMapping("/comment/{commentId}")
-    public Object getCommentAllActiveReplies(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long commentId) {
+    public ResponseEntity<?> getCommentAllActiveReplies(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long commentId) {
         try {
             Page<Reply> commentAllReplies = replyService.getCommentAllActiveReplies(pageable, commentId);
-            return new ResponseEntity<>(makeResult(commentAllReplies), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", makeResult(commentAllReplies)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "대댓글 전체 조회 실패", makeErrorMessage(e.getMessage(), commentId)));
         }
     }
 
     @GetMapping("/{replyId}")
-    public Object getReply(@PathVariable Long replyId) {
+    public ResponseEntity<?> getReply(@PathVariable Long replyId) {
         try {
             Reply foundReply = replyService.findReply(replyId);
-            return new ResponseEntity<>(makeReplyDTOResponse(foundReply), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "대댓글 상세 조회 성공", makeReplyDTOResponse(foundReply)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), replyId), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "대댓글 상세 조회 실패", makeErrorMessage(e.getMessage(), replyId)));
         }
     }
 
     @PatchMapping(value = "/{replyId}")
-    public Object updateReply(@PathVariable Long replyId, @Validated @RequestBody UpdateReplyDTO.Request updateReplyDTO) {
+    public ResponseEntity<?> updateReply(@PathVariable Long replyId, @Validated @RequestBody UpdateReplyDTO.Request updateReplyDTO) {
         try {
             Reply updatedReply = replyService.updateReply(replyId, updateReplyDTO);
-            return new ResponseEntity<>(makeReplyDTOResponse(updatedReply), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "대댓글 수정 성공", makeReplyDTOResponse(updatedReply)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), updateReplyDTO.toString()), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "대댓글 수정 실패", makeErrorMessage(e.getMessage(), updateReplyDTO)));
         }
     }
 
     @DeleteMapping("/{replyId}")
-    public Object deleteReply(@PathVariable Long replyId) {
+    public ResponseEntity<?> deleteReply(@PathVariable Long replyId) {
         try {
             replyService.deleteReply(replyId);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", replyId));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", makeErrorMessage(e.getMessage(), replyId)));
         }
     }
-
 
     private Page<ReplyDTO.Response> makeResult(Page<Reply> allReplies) {
         List<ReplyDTO.Response> result = new ArrayList<>();
@@ -87,10 +88,10 @@ public class ReplyRestController {
         return ReplyDTO.Response.of(reply);
     }
 
-    private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<String> errorMessages = new ArrayList<>();
+    private List<Object> makeErrorMessage(String errorMessage, Object errorObject) {
+        List<Object> errorMessages = new ArrayList<>();
         errorMessages.add(errorMessage);
-        errorMessages.add(errorObject.toString());
+        errorMessages.add(errorObject);
         return errorMessages;
     }
 }

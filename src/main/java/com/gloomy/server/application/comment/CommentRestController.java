@@ -1,17 +1,21 @@
 package com.gloomy.server.application.comment;
 
+import com.gloomy.server.application.core.response.ErrorResponse;
+import com.gloomy.server.application.core.response.RestResponse;
 import com.gloomy.server.domain.comment.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.badRequest;
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/comment")
@@ -26,49 +30,49 @@ public class CommentRestController {
     public ResponseEntity<?> createComment(@Validated @RequestBody CommentDTO.Request commentDTO) {
         try {
             Comment createdComment = commentService.createComment(commentDTO);
-            return new ResponseEntity<>(makeCommentDTOResponse(createdComment), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "댓글 생성 성공", makeCommentDTOResponse(createdComment)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), commentDTO.toString()), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "댓글 생성 실패", makeErrorMessage(e.getMessage(), commentDTO)));
         }
     }
 
     @GetMapping("/feed/{feedId}")
-    public Object getFeedAllActiveComments(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long feedId) {
+    public ResponseEntity<?> getFeedAllActiveComments(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long feedId) {
         try {
             Page<Comment> feedAllComments = commentService.getFeedAllActiveComments(pageable, feedId);
-            return new ResponseEntity<>(makeResult(feedAllComments), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "댓글 전체 조회 성공", makeResult(feedAllComments)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), null), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "댓글 전체 조회 실패", makeErrorMessage(e.getMessage(), feedId)));
         }
     }
 
     @GetMapping("/{commentId}")
-    public Object getComment(@PathVariable Long commentId) {
+    public ResponseEntity<?> getComment(@PathVariable Long commentId) {
         try {
             Comment foundComment = commentService.findComment(commentId);
-            return new ResponseEntity<>(makeCommentDTOResponse(foundComment), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "댓글 상세 조회 성공", makeCommentDTOResponse(foundComment)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), commentId), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "댓글 상세 조회 실패", makeErrorMessage(e.getMessage(), commentId)));
         }
     }
 
     @PatchMapping(value = "/{commentId}")
-    public Object updateComment(@PathVariable Long commentId, @Validated @RequestBody UpdateCommentDTO.Request updateCommentDTO) {
+    public ResponseEntity<?> updateComment(@PathVariable Long commentId, @Validated @RequestBody UpdateCommentDTO.Request updateCommentDTO) {
         try {
             Comment updatedComment = commentService.updateComment(commentId, updateCommentDTO);
-            return new ResponseEntity<>(makeCommentDTOResponse(updatedComment), HttpStatus.OK);
+            return ok(new RestResponse<>(200, "댓글 수정 성공", makeCommentDTOResponse(updatedComment)));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(makeErrorMessage(e.getMessage(), updateCommentDTO.toString()), HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "댓글 수정 실패", makeErrorMessage(e.getMessage(), updateCommentDTO)));
         }
     }
 
     @DeleteMapping("/{commentId}")
-    public Object deleteComment(@PathVariable Long commentId) {
+    public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
         try {
             commentService.deleteComment(commentId);
-            return new ResponseEntity<>(HttpStatus.OK);
+            return ok(new RestResponse<>(200, "댓글 삭제 성공", commentId));
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return badRequest().body(new ErrorResponse(400, "댓글 생성 실패", makeErrorMessage(e.getMessage(), commentId)));
         }
     }
 
@@ -84,10 +88,10 @@ public class CommentRestController {
         return CommentDTO.Response.of(comment);
     }
 
-    private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<String> errorMessages = new ArrayList<>();
+    private List<Object> makeErrorMessage(String errorMessage, Object errorObject) {
+        List<Object> errorMessages = new ArrayList<>();
         errorMessages.add(errorMessage);
-        errorMessages.add(errorObject.toString());
+        errorMessages.add(errorObject);
         return errorMessages;
     }
 }
