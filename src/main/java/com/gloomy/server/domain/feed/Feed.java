@@ -60,10 +60,10 @@ public class Feed {
         this.likeCount = likeCount;
     }
 
-    public static Feed of(String ip, User userId, String content) {
+    public static Feed of(User userId, String content) {
         return Feed.userFeedBuilder()
                 .isUser(new IsUser(true))
-                .ip(new Ip(ip))
+                .ip(new Ip("111.111.111.111"))
                 .userId(userId)
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))
@@ -71,10 +71,10 @@ public class Feed {
                 .build();
     }
 
-    public static Feed of(String ip, String password, String content) {
+    public static Feed of(String password, String content) {
         return Feed.nonUserFeedBuilder()
                 .isUser(new IsUser(false))
-                .ip(new Ip(ip))
+                .ip(new Ip("111.111.111.111"))
                 .password(new Password(password))
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))

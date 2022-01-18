@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,25 +18,21 @@ public class FeedDTO {
     public static class Request {
         @NotNull
         private Boolean isUser;
-        @Pattern(regexp = "[0-9]{3}.[0-9]{3}.[0-9]{3}.[0-9]{3}")
-        private String ip;
         private Long userId;
         private String password;
         @NotBlank
         private String content;
         private List<MultipartFile> images;
 
-        public Request(Boolean isUser, String ip, Long userId, String content, List<MultipartFile> images) {
+        public Request(Boolean isUser, Long userId, String content, List<MultipartFile> images) {
             this.isUser = isUser;
-            this.ip = ip;
             this.userId = userId;
             this.content = content;
             this.images = images;
         }
 
-        public Request(Boolean isUser, String ip, String password, String content, List<MultipartFile> images) {
+        public Request(Boolean isUser, String password, String content, List<MultipartFile> images) {
             this.isUser = isUser;
-            this.ip = ip;
             this.password = password;
             this.content = content;
             this.images = images;

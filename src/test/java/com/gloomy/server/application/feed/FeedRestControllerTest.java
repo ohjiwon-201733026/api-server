@@ -62,7 +62,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestParameters(
                                 parameterWithName("isUser").description("회원 여부"),
-                                parameterWithName("ip").description("작성자 IP"),
                                 parameterWithName("userId").description("회원 ID").optional(),
                                 parameterWithName("password").description("비밀번호"),
                                 parameterWithName("content").description("게시글 내용")),
@@ -98,7 +97,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestParameters(
                                 parameterWithName("isUser").description("회원 여부"),
-                                parameterWithName("ip").description("작성자 IP"),
                                 parameterWithName("userId").description("회원 ID"),
                                 parameterWithName("password").description("비밀번호").optional(),
                                 parameterWithName("content").description("게시글 내용")),

@@ -51,9 +51,9 @@ public class FeedService {
     private Feed makeFeed(FeedDTO.Request feedDTO) {
         if (feedDTO.getIsUser()) {
             User findUser = userService.findUser(feedDTO.getUserId());
-            return Feed.of(feedDTO.getIp(), findUser, feedDTO.getContent());
+            return Feed.of(findUser, feedDTO.getContent());
         }
-        return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
+        return Feed.of(feedDTO.getPassword(), feedDTO.getContent());
     }
 
     public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
