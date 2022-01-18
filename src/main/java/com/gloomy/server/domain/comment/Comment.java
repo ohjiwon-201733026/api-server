@@ -74,10 +74,10 @@ public class Comment {
     /**
      * User - Comment 연관관계
      */
-    public void changeUser(User user){
-        this.userId=user;
-        this.userId.getComments().add(this);
-    }
+//    public void changeUser(User user){
+//        this.userId=user;
+//        this.userId.getComments().add(this);
+//    }
 
     public void setContent(Content content) {
         this.content = content;

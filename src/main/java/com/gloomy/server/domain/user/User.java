@@ -3,6 +3,7 @@ package com.gloomy.server.domain.user;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import lombok.ToString;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,11 +49,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private JoinStatus joinStatus;
 
-    @OneToMany(mappedBy = "userId")
-    private List<Feed> feeds=new ArrayList<>();
-
-    @OneToMany(mappedBy = "userId")
-    private List<Comment> comments=new ArrayList<>();
+//    @OneToMany(mappedBy = "userId")
+//    private List<Feed> feeds=new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "userId")
+//    private List<Comment> comments=new ArrayList<>();
 
 //    @Embedded
 //    private Token token;
@@ -60,16 +61,16 @@ public class User {
     protected User() {
     }
 
-    private User(String email, Password password) {
+    private User(String email, Profile profile,Password password) {
         this.email = email;
         this.profile = profile;
         this.role=Role.USER;
         this.password = password;
     }
 
-    private User(String email, Password password,Sex sex, LocalDate dateOfBirth,JoinStatus joinStatus){
+    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth,JoinStatus joinStatus){
         this.email = email;
-//        this.profile = profile;
+        this.profile = profile;
         this.role=Role.USER;
         this.password = password;
         this.sex=sex;
@@ -79,15 +80,15 @@ public class User {
 
     public static User of(String email, String name, Password password,
                           Sex sex, int year,int month,int day,JoinStatus joinStatus){
-        return new User(email, password,sex,LocalDate.of(year,month,day),joinStatus);
+        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day),joinStatus);
     }
 
     public static User of(String email, String name, Password password) {
-        return new User(email, password);
+        return new User(email, Profile.from(name),password);
     }
 
     public static User of(String email, String name) {
-        return new User(email, null);
+        return new User(email,Profile.from(name), null);
     }
 
     boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {
@@ -111,18 +112,18 @@ public class User {
     /**
      * 비즈니스 로직
      */
-    public void removeFeed(Long feedId){
-        List<Feed> feeds=this.getFeeds();
-
-        for(Iterator<Feed> itr=feeds.iterator();itr.hasNext();){
-            Feed feed=itr.next();
-            if(feed.getId()==feedId) {
-                itr.remove();
-            }
-        }
-
-
-    }
+//    public void removeFeed(Long feedId){
+//        List<Feed> feeds=this.getFeeds();
+//
+//        for(Iterator<Feed> itr=feeds.iterator();itr.hasNext();){
+//            Feed feed=itr.next();
+//            if(feed.getId()==feedId) {
+//                itr.remove();
+//            }
+//        }
+//
+//
+//    }
 
     /**
      * getter

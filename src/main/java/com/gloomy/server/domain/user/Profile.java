@@ -13,19 +13,20 @@ public class Profile {
     @Column(name = "name")
     private String name;
 
-    @Embedded
-    private Image image;
+//    @Embedded
+//    private Image image;
 
     protected Profile() {
     }
 
     static Profile from(String name) {
-        return new Profile(name, new Image());
+        return new Profile(name);
     }
 
-    private Profile(String name, Image image) {
+    private Profile(String name){
+//            , Image image) {
         this.name = name;
-        this.image = image;
+//        this.image = image;
     }
 
     public String getUserName() {
@@ -35,7 +36,7 @@ public class Profile {
     void changeName(String name) {
         this.name = name;
     }
-    void changeImage(Image image) {
-        this.image = image;
-    }
+//    void changeImage(Image image) {
+//        this.image = image;
+//    }
 }

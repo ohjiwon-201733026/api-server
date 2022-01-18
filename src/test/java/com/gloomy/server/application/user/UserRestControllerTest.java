@@ -49,31 +49,23 @@ class UserRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     UserService userService;
-    @Autowired
-    WebApplicationContext webApplicationContext;
     TestImage testImage;
     User user;
     UpdateUserDTO.Request updateUserDTO;
     Authentication authentication;
-    ArrayList<MultipartFile> imageList;
+    MultipartFile profileImage;
 
     @BeforeEach
     public void setUp(){
         authentication= SecurityContextHolder.getContext().getAuthentication();
-        this.user= User.of("test@email.com","testName",new Password("test")
-                , Sex.MALE,2020,01,01, JoinStatus.JOIN);
+        this.user= TestUserDTO.TestUser.makeTestUser();
         user.changeId(1L);
         testImage=new TestImage();
-        imageList=testImage.makeImages(1);
-        this.updateUserDTO= UserDTO.UpdateUserDTO.Request.builder()
-                .email("updateEmail@email.com")
-                .sex(Sex.FEMALE)
-                .dateOfBirth(LocalDate.of(2022,01,01).toString())
-                .image(imageList.get(0))
-                .build();
+        profileImage=testImage.makeImages(1).get(0);
+        this.updateUserDTO= TestUserDTO.UpdateUserTestDTO.makeUpdateUserDtoRequest();
     }
 
-    /*
+
     @Order(1)
     @DisplayName("일반 회원가입")
     @Test
@@ -142,7 +134,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 );
     }
-
+/*
     @Order(3)
     @DisplayName("카카오 로그인")
     @Test
@@ -171,7 +163,9 @@ class UserRestControllerTest extends AbstractControllerTest {
                 );
     }
 
-     */
+ */
+
+
 
 //    @Test
 //    public void test() throws JsonProcessingException {
@@ -187,24 +181,10 @@ class UserRestControllerTest extends AbstractControllerTest {
     public void updateUser() throws Exception {
         User saveUser=userService.createUser(user);
 
-        List<MultipartFile> list=new ArrayList<>();
-        list.add(imageList.get(0));
+        MockMultipartFile firstUpdateImageFile = TestImage.convertOne(profileImage);
 
-        MockMultipartFile firstUpdateImageFile = TestImage.convertOne(imageList.get(0));
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        if (updateUserDTO.getEmail() != null) {
-            params.add("email", updateUserDTO.getEmail());
-        }
-        if (updateUserDTO.getSex() != null) {
-            params.add("sex", updateUserDTO.getSex().name());
-        }
-        if (updateUserDTO.getDateOfBirth() != null) {
-            params.add("dateOfBirth", updateUserDTO.getDateOfBirth().toString());
-        }
-//        if(updateUserDTO.getImage()!=null){
-//            params.add("image",firstUpdateImageFile.getBytes().toString());
-//        }
+        MultiValueMap<String, String> params=
+                TestUserDTO.UpdateUserTestDTO.generateParamMap(updateUserDTO);
 
 
         this.mockMvc.perform(fileUpload("/user/update/{userId}", saveUser.getId())

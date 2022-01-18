@@ -107,16 +107,16 @@ public class UserService {
             User user= updateUserEntity(updateUser.get(),updateUserDTO);
             return userRepository.save(user);
         }
-        else throw new IllegalArgumentException();
+        else throw new IllegalArgumentException("[ UserService ] : 존재하지 않는 user 입니다.");
     }
 
     public User updateUserEntity(User user,UpdateUserDTO.Request updateUserDTO){
 
         if(updateUserDTO.getEmail()!=null) user.changeEmail(updateUserDTO.getEmail());
         if(updateUserDTO.getSex()!=null) user.changeSex(updateUserDTO.getSex());
-//        if(updateUserDTO.getImage()!=null) {
-//            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
-//        }
+        if(updateUserDTO.getImage()!=null) {
+            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
+        }
         if(updateUserDTO.getDateOfBirth()!=null) user.changeDateOfBirth(LocalDate.parse(updateUserDTO.getDateOfBirth()));
         return user;
     }
@@ -128,20 +128,13 @@ public class UserService {
     }
 
     public void deleteUser(Long userId) {
-        userRepository.delete(findUser(userId));
+        if(userRepository.findById(userId).isEmpty()) throw new IllegalArgumentException();
+        else userRepository.delete(findUser(userId));
     }
 
     public void deleteAll() {
         userRepository.deleteAll();
     }
 
-    @Transactional(readOnly = true)
-    public List<Feed> findFeeds(Long userId){
-        return findUser(userId).getFeeds();
-    }
 
-    @Transactional(readOnly = true)
-    public List<Comment> findComments(Long userId){
-        return findUser(userId).getComments();
-    }
 }

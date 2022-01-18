@@ -46,10 +46,10 @@ public class Feed {
     /**
      * User - Feed 연관관계 메소드
      */
-    public void changeUser(User user){
-        this.userId=user;
-        user.getFeeds().add(this);
-    }
+//    public void changeUser(User user){
+//        this.userId=user;
+//        user.getFeeds().add(this);
+//    }
 
     @Builder(builderClassName = "userFeedBuilder", builderMethodName = "userFeedBuilder", access = AccessLevel.PRIVATE)
     private Feed(IsUser isUser, Ip ip, User user, FEED_STATUS status, Content content, LikeCount likeCount) {

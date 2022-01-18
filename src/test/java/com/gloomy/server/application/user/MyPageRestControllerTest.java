@@ -43,24 +43,25 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     @Autowired
     CommentService commentService;
     User user;
-    UserDTO.UpdateUserDTO updateUserDTO;
     private User testUser;
-    TestFeedDTO testFeedDTO;
+    TestFeedDTO testFeedDTO1;
+    TestFeedDTO testFeedDTO2;
     Authentication authentication;
+
     @BeforeEach
     public void setUp() {
         authentication= SecurityContextHolder.getContext().getAuthentication();
-        this.user = User.of("test@email.com", "testName", new Password("test")
-                , Sex.MALE, 2020, 01, 01, JoinStatus.JOIN);
+        this.user = TestUserDTO.TestUser.makeTestUser();
         testUser = userService.createUser(user);
-        testFeedDTO = new TestFeedDTO(testUser, 1);
+        testFeedDTO1 = new TestFeedDTO(testUser, 1);
+        testFeedDTO2 = new TestFeedDTO(testUser, 2);
     }
 
     @DisplayName("find user feed")
     @Test
     public void userFeed() throws Exception {
-        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
-        feedService.createFeed(testFeedDTO.makeUserFeedDTO());
+        feedService.createFeed(testFeedDTO1.makeUserFeedDTO());
+        feedService.createFeed(testFeedDTO2.makeUserFeedDTO());
 
         this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
                 .param("page", "0")
@@ -106,6 +107,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     @WithMockUser
     public void userComment() throws Exception {
         User saveUser=userService.createUser(user);
+
         FeedDTO.Request feedDto1=new FeedDTO.Request(true, "111.111.111.111", saveUser.getId(), "test content 1", new TestImage().makeImages(1));
 
         Feed feed1=feedService.createFeed(feedDto1);
