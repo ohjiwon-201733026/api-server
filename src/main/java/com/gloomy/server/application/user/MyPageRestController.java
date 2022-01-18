@@ -41,9 +41,9 @@ public class MyPageRestController {
     public ResponseEntity<?> findUserComments(@PathVariable("userId")Long userId,@PageableDefault(size=10)Pageable pageable){
         try {
             Page<Comment> comments=commentService.getCommentByIdAndActive(pageable,userId);
-            return ok(new RestResponse<>(200,"find user comment  success",makeCommentPage(comments)));
+            return ok(new RestResponse<>(200,"user comment 조회 성공",makeCommentPage(comments)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400,"find user comment fail",makeErrorMessage(e.getMessage(),userId)));
+            return badRequest().body(new ErrorResponse(400,"user comment 조회 실패",e.getMessage(),userId));
         }
     }
 

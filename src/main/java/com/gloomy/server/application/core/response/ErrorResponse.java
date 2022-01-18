@@ -10,17 +10,17 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ErrorResponse {
+public class ErrorResponse<T> {
     private final int code;
     private final String message;
-    private final List<String> errorDetails;
+    private final ErrorDetails<T> errorDetails;
     private final String responseTime;
 
 
-    public ErrorResponse(int code, String message, List<String> errorDetails) {
+    public ErrorResponse(int code, String message, String detailMessage,T data) {
         this.code = code;
         this.message = message;
-        this.errorDetails = errorDetails;
+        this.errorDetails = new ErrorDetails<>(detailMessage,data);
         this.responseTime = LocalDateTimeUtil.getLocalDateTimeNowStringPattern("yyyy-MM-dd hh:mm:ss");
     }
 }

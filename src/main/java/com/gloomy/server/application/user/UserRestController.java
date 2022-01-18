@@ -87,9 +87,9 @@ public class UserRestController {
             ,@ModelAttribute UpdateUserDTO.Request updateUserDTO){
         try {
             User updateUser = userService.updateUser(userId,updateUserDTO);
-            return ok(new RestResponse<>(200,"user update success",makeUpdateUserDTO(updateUser)));
+            return ok(new RestResponse<>(200,"user update 성공",makeUpdateUserDTO(updateUser)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400,"invalid user",makeErrorMessage(e.getMessage(),updateUserDTO)));
+            return badRequest().body(new ErrorResponse(400,"user update 실패",e.getMessage(),updateUserDTO));
         }
     }
 
@@ -109,9 +109,9 @@ public class UserRestController {
     public ResponseEntity<?> userDetail(@PathVariable("userId")Long userId,Model model){
         try {
             User findUser = userService.findUser(userId);
-            return ok(new RestResponse<>(200,"find user detail success",makeUpdateUserDTO(findUser)));
+            return ok(new RestResponse<>(200,"user detail 조회 성공",makeUpdateUserDTO(findUser)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400,"invalid user",makeErrorMessage(e.getMessage(),userId)));
+            return badRequest().body(new ErrorResponse(400,"user detail 조회 실패",e.getMessage(),userId));
         }
     }
 
