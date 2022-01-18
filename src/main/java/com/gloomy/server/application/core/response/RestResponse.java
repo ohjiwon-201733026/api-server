@@ -1,7 +1,11 @@
 package com.gloomy.server.application.core.response;
 
 import com.gloomy.server.application.core.util.LocalDateTimeUtil;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class RestResponse<T> {
     private int code;
     private String message;

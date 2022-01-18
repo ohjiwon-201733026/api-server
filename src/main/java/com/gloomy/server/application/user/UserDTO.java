@@ -99,8 +99,8 @@ public class UserDTO {
         String token;
         String image;
 
-        public static Response fromUserAndToken(User user, String token) {
-            return new Response(user.getId(), user.getEmail(), user.getName(), token, "");
+        public static Response fromUserAndToken(User user, String token,String image) {
+            return new Response(user.getId(), user.getEmail(), user.getName(), token, image);
         }
     }
 

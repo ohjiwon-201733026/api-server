@@ -3,6 +3,8 @@ package com.gloomy.server.application.user;
 
 import com.gloomy.server.application.comment.CommentDTO;
 import com.gloomy.server.application.comment.CommentService;
+import com.gloomy.server.application.core.response.ErrorResponse;
+import com.gloomy.server.application.core.response.RestResponse;
 import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import static org.springframework.http.ResponseEntity.*;
 
 @RequestMapping("/myPage")
 @RestController
@@ -33,43 +36,14 @@ public class MyPageRestController {
         this.commentService = commentService;
     }
 
-//    @GetMapping(value ="/feed/{userId}")
-//    public ResponseEntity<List<FeedDTO.Response>> findMyFeed(@PathVariable("userId")Long userId, @PageableDefault(size = 10) Pageable pageable,Model model){
-//        try {
-//            List<Feed> feeds=userService.findFeeds(userId);
-//            return ResponseEntity.ok().body(makeFeedDTOList(feeds));
-//        } catch (IllegalArgumentException e) {
-//            return ResponseEntity.badRequest().build();
-//        }
-//    }
-//
-//    private List<FeedDTO.Response> makeFeedDTOList(List<Feed> feeds){
-//        List<FeedDTO.Response> feedDTOList=new ArrayList<>();
-//        for (Feed feed : feeds) {
-//            feedDTOList.add(makeFeedDTO(feed));
-//        }
-//        return feedDTOList;
-//    }
-//
-//    private FeedDTO.Response makeFeedDTO(Feed feed){
-//        return FeedDTO.Response.userFeedResponse()
-//                .id(feed.getId())
-//                .isUser(feed.getIsUser().getIsUser())
-//                .ip(feed.getIp().getIp())
-//                .userId(feed.getUserId().getId())
-//                .content(feed.getContent().getContent())
-//                .likeCount(feed.getLikeCount().getLikeCount())
-//                .build();
-//
-//    }
 
     @GetMapping(value ="/comment/{userId}")
-    public ResponseEntity<Page<CommentDTO.Response>> findUserComments(@PathVariable("userId")Long userId,@PageableDefault(size=10)Pageable pageable){
+    public ResponseEntity<?> findUserComments(@PathVariable("userId")Long userId,@PageableDefault(size=10)Pageable pageable){
         try {
             Page<Comment> comments=commentService.getCommentByIdAndActive(pageable,userId);
-            return ResponseEntity.ok().body(makeCommentPage(comments));
+            return ok(new RestResponse<>(200,"find user comment  success",makeCommentPage(comments)));
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
+            return badRequest().body(new ErrorResponse(400,"find user comment fail",makeErrorMessage(e.getMessage(),userId)));
         }
     }
 
@@ -90,5 +64,11 @@ public class MyPageRestController {
                 .build();
     }
 
+    private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
+        List<String> errorMessages = new ArrayList<>();
+        errorMessages.add(errorMessage);
+        errorMessages.add(errorObject.toString());
+        return errorMessages;
+    }
 
 }

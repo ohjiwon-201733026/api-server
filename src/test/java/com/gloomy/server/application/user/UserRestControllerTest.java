@@ -85,19 +85,19 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestFields(
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일"),
-                                fieldWithPath("userName").type(JsonFieldType.STRING).description("유저 이름"),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드")
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일 (필수)"),
+                                fieldWithPath("userName").type(JsonFieldType.STRING).description("유저 이름 (필수)"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드 (필수)")
                         ),
                         responseFields(
-//                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
-//                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
-//                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
-                                fieldWithPath("username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                fieldWithPath("token").type(JsonFieldType.STRING).description("토큰").optional(),
-                                fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 링크")
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드 (필수)"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지 (필수)"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간 (필수)"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
+                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
+                                fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
+                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional(),
+                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크")
                         )
                 ))
                 .andReturn();
@@ -121,15 +121,18 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestFields(
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일"),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드")
+                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일 (필수)"),
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드(필수)")
                         ),
                         responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
-                                fieldWithPath("username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                fieldWithPath("token").type(JsonFieldType.STRING).description("토큰").optional(),
-                                fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 링크")
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
+                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
+                                fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
+                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional(),
+                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크").optional()
                         )
                         )
                 );
@@ -140,7 +143,7 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("ug1_-Drh6aw7pQ7VIEK9c8FsvQzNoFfzl-CCCUS1hAFUe1v9_zE6Uy5AghpLSv4PCn0OvQopcNEAAAF-baUj-A")
+                .code("GuRNQ9tc3Fa9QbZ6zw-D-HAAagDVPAE2GHCTiLyHEy0JwlErMY8DjoPuvAAfEvLekIhZ2wo9dJkAAAF-bip6uQ")
                 .build();
 
         mockMvc.perform(post("/kakao/signUp")
@@ -151,26 +154,23 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                                 requestFields(
-                                        fieldWithPath("code").type(JsonFieldType.STRING).description("인가 코드")
+                                        fieldWithPath("code").type(JsonFieldType.STRING).description("인가 코드 (필수)")
                                 ),
                                 responseFields(
-                                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
-                                        fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
-                                        fieldWithPath("username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                        fieldWithPath("token").type(JsonFieldType.STRING).description("토큰").optional(),
-                                        fieldWithPath("image").type(JsonFieldType.STRING).description("이미지 링크")
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
+                                        fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
+                                        fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
+                                        fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
+                                        fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
+                                        fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional(),
+                                        fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크")
                                 )
                         )
                 );
     }
 
-*/
-
-
-
-
-
-
+     */
 
 //    @Test
 //    public void test() throws JsonProcessingException {
@@ -200,7 +200,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         pathParameters(
-                                parameterWithName("userId").description("수정 유저 ID")),
+                                parameterWithName("userId").description("수정 유저 ID (필수)")),
                         requestParameters(
                                 parameterWithName("email").description("수정 유저 이메일").optional(),
                                 parameterWithName("sex").description("수정 유저 성별").optional(),
@@ -209,11 +209,14 @@ class UserRestControllerTest extends AbstractControllerTest {
                         requestParts(
                                 partWithName("image").description("수정 프로필 이미지").optional()),
                         responseFields(
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("수정된 유저 ID"),
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("수정된 유저 이메일"),
-                                fieldWithPath("sex").type(JsonFieldType.STRING).description("수정된 유저 성별"),
-                                fieldWithPath("imageUrl").type(JsonFieldType.STRING).description("수정된 유저 이미지 url"),
-                                fieldWithPath("dateOfBirth").type(JsonFieldType.STRING).description("수정된 유저 생년월일")
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("수정된 유저 ID"),
+                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("수정된 유저 이메일"),
+                                fieldWithPath("result.sex").type(JsonFieldType.STRING).description("수정된 유저 성별"),
+                                fieldWithPath("result.imageUrl").type(JsonFieldType.STRING).description("수정된 유저 이미지 url"),
+                                fieldWithPath("result.dateOfBirth").type(JsonFieldType.STRING).description("수정된 유저 생년월일"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
 
@@ -232,14 +235,17 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .andDo(print())
                 .andDo(document.document(
                         pathParameters(
-                                parameterWithName("userId").description("조회할 유저 ID")
+                                parameterWithName("userId").description("조회할 유저 ID(필수)")
                         ),
                         responseFields(
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("유저 아이디"),
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 이메일"),
-                                fieldWithPath("sex").type(JsonFieldType.STRING).description("유저 성별"),
-                                fieldWithPath("imageUrl").type(JsonFieldType.STRING).description("유저 이미지"),
-                                fieldWithPath("dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일")
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("유저 아이디"),
+                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일"),
+                                fieldWithPath("result.sex").type(JsonFieldType.STRING).description("유저 성별"),
+                                fieldWithPath("result.imageUrl").type(JsonFieldType.STRING).description("유저 이미지"),
+                                fieldWithPath("result.dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                         )
                 ).andReturn();
