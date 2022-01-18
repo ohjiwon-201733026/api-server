@@ -134,7 +134,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 );
     }
-
+    /*
     @Order(3)
     @DisplayName("카카오 로그인")
     @Test
@@ -164,7 +164,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 );
     }
 
-
+*/
 
 
 
