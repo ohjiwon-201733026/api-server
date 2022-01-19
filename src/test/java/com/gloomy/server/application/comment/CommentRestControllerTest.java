@@ -19,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -76,11 +75,14 @@ class CommentRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("userId").description("회원 ID").optional(),
                                 fieldWithPath("password").description("비밀번호").optional()),
                         responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NULL).description("회원 ID"),
+                                fieldWithPath("result.password").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }
@@ -105,11 +107,14 @@ class CommentRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("userId").description("회원 ID").optional(),
                                 fieldWithPath("password").description("비밀번호").optional()),
                         responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("회원 ID"),
+                                fieldWithPath("result.password").type(JsonFieldType.NULL).description("비밀번호"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }
@@ -129,24 +134,27 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         pathParameters(
                                 parameterWithName("feedId").description("조회할 댓글의 피드 ID")),
                         responseFields(
-                                fieldWithPath("content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
-                                fieldWithPath("content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("content[].feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("content[].userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
-                                fieldWithPath("content[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.content[].userId").description("회원 ID"),
+                                fieldWithPath("result.content[].password").description("비밀번호"),
 
-                                fieldWithPath("pageable").type(JsonFieldType.STRING).description("pageable 정보"),
-                                fieldWithPath("totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
-                                fieldWithPath("totalElements").type(JsonFieldType.NUMBER).description("전체 페이지 내 요소의 수"),
-                                fieldWithPath("last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
-                                fieldWithPath("numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 내 요소의 수"),
-                                fieldWithPath("first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
-                                fieldWithPath("size").type(JsonFieldType.NUMBER).description("페이지 당 출력 갯수"),
-                                fieldWithPath("sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
-                                fieldWithPath("sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
-                                fieldWithPath("sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
-                                fieldWithPath("number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
-                                fieldWithPath("empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
+                                fieldWithPath("result.pageable").type(JsonFieldType.STRING).description("pageable 정보"),
+                                fieldWithPath("result.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
+                                fieldWithPath("result.totalElements").type(JsonFieldType.NUMBER).description("전체 페이지 내 요소의 수"),
+                                fieldWithPath("result.last").type(JsonFieldType.BOOLEAN).description("마지막 페이지 여부"),
+                                fieldWithPath("result.numberOfElements").type(JsonFieldType.NUMBER).description("현재 페이지 내 요소의 수"),
+                                fieldWithPath("result.first").type(JsonFieldType.BOOLEAN).description("첫 페이지 여부"),
+                                fieldWithPath("result.size").type(JsonFieldType.NUMBER).description("페이지 당 출력 갯수"),
+                                fieldWithPath("result.sort.sorted").type(JsonFieldType.BOOLEAN).description("정렬 여부"),
+                                fieldWithPath("result.sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
+                                fieldWithPath("result.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
+                                fieldWithPath("result.number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
+                                fieldWithPath("result.empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }
@@ -165,11 +173,14 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         pathParameters(
                                 parameterWithName("commentId").description("조회할 댓글 ID")),
                         responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.userId").description("회원 ID"),
+                                fieldWithPath("result.password").description("비밀번호"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }
@@ -195,11 +206,14 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         pathParameters(
                                 parameterWithName("commentId").description("수정할 댓글 ID")),
                         responseFields(
-                                fieldWithPath("id").type(JsonFieldType.NUMBER).description("댓글 ID"),
-                                fieldWithPath("content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("userId").type(JsonFieldType.NUMBER).description("회원 ID").optional(),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호").optional()
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
+                                fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.userId").description("회원 ID"),
+                                fieldWithPath("result.password").description("비밀번호"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }
@@ -216,7 +230,12 @@ class CommentRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         pathParameters(
-                                parameterWithName("commentId").description("삭제할 댓글 ID")
+                                parameterWithName("commentId").description("삭제할 댓글 ID")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").type(JsonFieldType.NUMBER).description("삭제한 댓글 ID"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }

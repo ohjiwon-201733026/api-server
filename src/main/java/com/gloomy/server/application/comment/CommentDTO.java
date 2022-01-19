@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 public class CommentDTO {
     @Getter
@@ -43,35 +42,30 @@ public class CommentDTO {
         private Long userId;
         private String password;
 
-        @Builder(builderClassName = "userCommentResponse", builderMethodName = "userCommentResponse")
-        public Response(Long id, String content, Long feedId, Long userId) {
+        @Builder
+        public Response(Long id, String content, Long feedId, Long userId, String password) {
             this.id = id;
             this.content = content;
             this.feedId = feedId;
             this.userId = userId;
-        }
-
-        @Builder(builderClassName = "nonUserCommentResponse", builderMethodName = "nonUserCommentResponse")
-        public Response(Long id, String content, Long feedId, String password) {
-            this.id = id;
-            this.content = content;
-            this.feedId = feedId;
             this.password = password;
         }
 
         public static CommentDTO.Response of(Comment comment) {
-            if (Objects.nonNull(comment.getUserId())) {
-                return userCommentResponse()
+            if (comment.getUserId() != null) {
+                return builder()
                         .id(comment.getId())
                         .content(comment.getContent().getContent())
                         .feedId(comment.getFeedId().getId())
                         .userId(comment.getUserId().getId())
+                        .password(null)
                         .build();
             }
-            return nonUserCommentResponse()
+            return builder()
                     .id(comment.getId())
                     .content(comment.getContent().getContent())
                     .feedId(comment.getFeedId().getId())
+                    .userId(null)
                     .password(comment.getPassword().getPassword())
                     .build();
         }

@@ -56,19 +56,11 @@ public class MyPageRestController {
     }
 
     private CommentDTO.Response makeComment(Comment comment){
-        return CommentDTO.Response.userCommentResponse()
+        return CommentDTO.Response.builder()
                 .id(comment.getId())
                 .content(comment.getContent().getContent())
                 .feedId(comment.getFeedId().getId())
                 .userId(comment.getUserId().getId())
                 .build();
     }
-
-    private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<String> errorMessages = new ArrayList<>();
-        errorMessages.add(errorMessage);
-        errorMessages.add(errorObject.toString());
-        return errorMessages;
-    }
-
 }
