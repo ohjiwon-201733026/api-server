@@ -43,7 +43,7 @@ public class FeedRestController {
             Feed createFeed = feedService.createFeed(feedDTO);
             return ok(new RestResponse<>(200, "피드 생성 성공", makeFeedDTOResponse(createFeed)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "피드 생성 성공", e.getMessage(), feedDTO));
+            return badRequest().body(new ErrorResponse(400, "피드 생성 실패", e.getMessage(), feedDTO));
         }
     }
 
