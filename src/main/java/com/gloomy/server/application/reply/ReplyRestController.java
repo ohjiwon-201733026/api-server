@@ -32,7 +32,7 @@ public class ReplyRestController {
             Reply createdReply = replyService.createReply(replyDTO);
             return ok(new RestResponse<>(200, "대댓글 생성 성공", (makeReplyDTOResponse(createdReply))));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", makeErrorMessage(e.getMessage(), replyDTO)));
+            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", e.getMessage(), replyDTO));
         }
     }
 
@@ -42,7 +42,7 @@ public class ReplyRestController {
             Page<Reply> commentAllReplies = replyService.getCommentAllActiveReplies(pageable, commentId);
             return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", makeResult(commentAllReplies)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 전체 조회 실패", makeErrorMessage(e.getMessage(), commentId)));
+            return badRequest().body(new ErrorResponse(400, "대댓글 전체 조회 실패", e.getMessage(), commentId));
         }
     }
 
@@ -52,7 +52,7 @@ public class ReplyRestController {
             Reply foundReply = replyService.findReply(replyId);
             return ok(new RestResponse<>(200, "대댓글 상세 조회 성공", makeReplyDTOResponse(foundReply)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 상세 조회 실패", makeErrorMessage(e.getMessage(), replyId)));
+            return badRequest().body(new ErrorResponse(400, "대댓글 상세 조회 실패", e.getMessage(), replyId));
         }
     }
 
@@ -62,7 +62,7 @@ public class ReplyRestController {
             Reply updatedReply = replyService.updateReply(replyId, updateReplyDTO);
             return ok(new RestResponse<>(200, "대댓글 수정 성공", makeReplyDTOResponse(updatedReply)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 수정 실패", makeErrorMessage(e.getMessage(), updateReplyDTO)));
+            return badRequest().body(new ErrorResponse(400, "대댓글 수정 실패", e.getMessage(), updateReplyDTO));
         }
     }
 
@@ -72,7 +72,7 @@ public class ReplyRestController {
             replyService.deleteReply(replyId);
             return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", replyId));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", makeErrorMessage(e.getMessage(), replyId)));
+            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", e.getMessage(), replyId));
         }
     }
 
@@ -86,12 +86,5 @@ public class ReplyRestController {
 
     private ReplyDTO.Response makeReplyDTOResponse(Reply reply) {
         return ReplyDTO.Response.of(reply);
-    }
-
-    private List<Object> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<Object> errorMessages = new ArrayList<>();
-        errorMessages.add(errorMessage);
-        errorMessages.add(errorObject);
-        return errorMessages;
     }
 }

@@ -43,7 +43,7 @@ public class FeedRestController {
             Feed createFeed = feedService.createFeed(feedDTO);
             return ok(new RestResponse<>(200, "피드 생성 성공", makeFeedDTOResponse(createFeed)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "피드 생성 성공", makeErrorMessage(e.getMessage(), feedDTO)));
+            return badRequest().body(new ErrorResponse(400, "피드 생성 성공", e.getMessage(), feedDTO));
         }
     }
 
@@ -53,7 +53,7 @@ public class FeedRestController {
             Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
             return ok(new RestResponse<>(200, "피드 전체 조회 성공", makeResult(allFeeds)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "피드 전체 조회 실패", makeErrorMessage(e.getMessage(), null)));
+            return badRequest().body(new ErrorResponse(400, "피드 전체 조회 실패", e.getMessage(), null));
         }
     }
 
@@ -63,7 +63,7 @@ public class FeedRestController {
             Feed foundFeed = feedService.findOneFeed(feedId);
             return ok(new RestResponse<>(200, "피드 상세 조회 성공", makeFeedDTOResponse(foundFeed)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "피드 상세 조회 실패", makeErrorMessage(e.getMessage(), feedId)));
+            return badRequest().body(new ErrorResponse(400, "피드 상세 조회 실패", e.getMessage(), feedId));
         }
     }
 
@@ -73,7 +73,7 @@ public class FeedRestController {
             Page<Feed> userFeeds = feedService.findUserFeeds(pageable, userId);
             return ok(new RestResponse<>(200, "사용자 피드 상세 조회 성공", makeResult(userFeeds)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "사용자 피드 상세 조회 실패", makeErrorMessage(e.getMessage(), userId)));
+            return badRequest().body(new ErrorResponse(400, "사용자 피드 상세 조회 실패", e.getMessage(), userId));
         }
     }
 
@@ -83,7 +83,7 @@ public class FeedRestController {
             Feed updatedFeed = feedService.updateOneFeed(feedId, feedDTO);
             return ok(new RestResponse<>(200, "피드 수정 성공", makeFeedDTOResponse(updatedFeed)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "피드 수정 실패", makeErrorMessage(e.getMessage(), feedDTO)));
+            return badRequest().body(new ErrorResponse(400, "피드 수정 실패", e.getMessage(), feedDTO));
         }
     }
 
@@ -93,7 +93,7 @@ public class FeedRestController {
             feedService.deleteFeed(feedId);
             return ok(new RestResponse<>(200, "피드 삭제 성공", feedId));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "피드 삭제 실패", makeErrorMessage(e.getMessage(), feedId)));
+            return badRequest().body(new ErrorResponse(400, "피드 삭제 실패", e.getMessage(), feedId));
         }
     }
 
@@ -109,12 +109,5 @@ public class FeedRestController {
         Images activeImages = imageService.findActiveImages(feed);
         List<Comment> allComments = commentService.findAllComments(feed.getId());
         return FeedDTO.Response.of(feed, activeImages, allComments.size());
-    }
-
-    private List<Object> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<Object> errorMessages = new ArrayList<>();
-        errorMessages.add(errorMessage);
-        errorMessages.add(errorObject);
-        return errorMessages;
     }
 }

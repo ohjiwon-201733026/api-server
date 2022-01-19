@@ -32,7 +32,7 @@ public class CommentRestController {
             Comment createdComment = commentService.createComment(commentDTO);
             return ok(new RestResponse<>(200, "댓글 생성 성공", makeCommentDTOResponse(createdComment)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "댓글 생성 실패", makeErrorMessage(e.getMessage(), commentDTO)));
+            return badRequest().body(new ErrorResponse(400, "댓글 생성 실패", e.getMessage(), commentDTO));
         }
     }
 
@@ -42,7 +42,7 @@ public class CommentRestController {
             Page<Comment> feedAllComments = commentService.getFeedAllActiveComments(pageable, feedId);
             return ok(new RestResponse<>(200, "댓글 전체 조회 성공", makeResult(feedAllComments)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "댓글 전체 조회 실패", makeErrorMessage(e.getMessage(), feedId)));
+            return badRequest().body(new ErrorResponse(400, "댓글 전체 조회 실패", e.getMessage(), feedId));
         }
     }
 
@@ -52,7 +52,7 @@ public class CommentRestController {
             Comment foundComment = commentService.findComment(commentId);
             return ok(new RestResponse<>(200, "댓글 상세 조회 성공", makeCommentDTOResponse(foundComment)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "댓글 상세 조회 실패", makeErrorMessage(e.getMessage(), commentId)));
+            return badRequest().body(new ErrorResponse(400, "댓글 상세 조회 실패", e.getMessage(), commentId));
         }
     }
 
@@ -62,7 +62,7 @@ public class CommentRestController {
             Comment updatedComment = commentService.updateComment(commentId, updateCommentDTO);
             return ok(new RestResponse<>(200, "댓글 수정 성공", makeCommentDTOResponse(updatedComment)));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "댓글 수정 실패", makeErrorMessage(e.getMessage(), updateCommentDTO)));
+            return badRequest().body(new ErrorResponse(400, "댓글 수정 실패", e.getMessage(), updateCommentDTO));
         }
     }
 
@@ -72,7 +72,7 @@ public class CommentRestController {
             commentService.deleteComment(commentId);
             return ok(new RestResponse<>(200, "댓글 삭제 성공", commentId));
         } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "댓글 생성 실패", makeErrorMessage(e.getMessage(), commentId)));
+            return badRequest().body(new ErrorResponse(400, "댓글 생성 실패", e.getMessage(), commentId));
         }
     }
 
@@ -86,12 +86,5 @@ public class CommentRestController {
 
     private CommentDTO.Response makeCommentDTOResponse(Comment comment) {
         return CommentDTO.Response.of(comment);
-    }
-
-    private List<Object> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<Object> errorMessages = new ArrayList<>();
-        errorMessages.add(errorMessage);
-        errorMessages.add(errorObject);
-        return errorMessages;
     }
 }
