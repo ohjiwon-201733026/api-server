@@ -5,6 +5,7 @@ cloud:
       secretKey: SNrzKL7jz0F1jGkJbvXyEXhz/VKZXYcR8HtZsfAD
     s3:
       bucket: gl00my-bucket
+      feedDir: feed/
     region:
       static: ap-northeast-2
     stack:
