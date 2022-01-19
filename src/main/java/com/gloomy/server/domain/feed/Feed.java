@@ -1,10 +1,8 @@
 package com.gloomy.server.domain.feed;
 
 import com.gloomy.server.domain.user.User;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -15,9 +13,6 @@ public class Feed {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Embedded
-    private IsUser isUser;
 
     @Embedded
     private Ip ip;
@@ -38,54 +33,34 @@ public class Feed {
     @Embedded
     private LikeCount likeCount;
 
-
     Feed() {
     }
 
-
-    /**
-     * User - Feed 연관관계 메소드
-     */
-//    public void changeUser(User user){
-//        this.userId=user;
-//        user.getFeeds().add(this);
-//    }
-
-    @Builder(builderClassName = "userFeedBuilder", builderMethodName = "userFeedBuilder", access = AccessLevel.PRIVATE)
-    private Feed(IsUser isUser, Ip ip, User user, FEED_STATUS status, Content content, LikeCount likeCount) {
-        this.isUser = isUser;
+    @Builder
+    private Feed(Ip ip, User userId, Password password, FEED_STATUS status, Content content, LikeCount likeCount) {
         this.ip = ip;
-        this.userId=user;
-        this.status = status;
-        this.content = content;
-        this.likeCount = likeCount;
-    }
-
-    @Builder(builderClassName = "nonUserFeedBuilder", builderMethodName = "nonUserFeedBuilder", access = AccessLevel.PRIVATE)
-    private Feed(IsUser isUser, Ip ip, Password password, FEED_STATUS status, Content content, LikeCount likeCount) {
-        this.isUser = isUser;
-        this.ip = ip;
+        this.userId = userId;
         this.password = password;
         this.status = status;
         this.content = content;
         this.likeCount = likeCount;
     }
 
-    public static Feed of(String ip, User user, String content) {
-        return Feed.userFeedBuilder()
-                .isUser(new IsUser(true))
-                .ip(new Ip(ip))
-                .user(user)
+    public static Feed of(User userId, String content) {
+        return builder()
+                .ip(new Ip("111.111.111.111"))
+                .userId(userId)
+                .password(null)
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))
                 .likeCount(new LikeCount(0))
                 .build();
     }
 
-    public static Feed of(String ip, String password, String content) {
-        return Feed.nonUserFeedBuilder()
-                .isUser(new IsUser(false))
-                .ip(new Ip(ip))
+    public static Feed of(String password, String content) {
+        return builder()
+                .ip(new Ip("111.111.111.111"))
+                .userId(null)
                 .password(new Password(password))
                 .status(FEED_STATUS.ACTIVE)
                 .content(new Content(content))
@@ -93,7 +68,6 @@ public class Feed {
                 .build();
     }
 
-    public void setId(Long id){ this.id=id;}
     public void setStatus(FEED_STATUS status) {
         this.status = status;
     }
@@ -111,7 +85,6 @@ public class Feed {
         if (o instanceof Feed) {
             Feed targetFeed = (Feed) o;
             boolean result = Objects.equals(id, targetFeed.id)
-                    && Objects.equals(isUser.getIsUser(), targetFeed.isUser.getIsUser())
                     && Objects.equals(ip.getIp(), targetFeed.ip.getIp())
                     && status == targetFeed.status
                     && Objects.equals(content.getContent(), targetFeed.content.getContent());

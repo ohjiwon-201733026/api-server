@@ -57,7 +57,7 @@ class FeedServiceTest {
     @Test
     void 피드_생성_회원_성공() {
         FeedDTO.Request userFeedDTO = new FeedDTO.Request(
-                true, testFeedDTO.getIp(), testFeedDTO.getUserId(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getUserId(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         Feed createdFeed = feedService.createFeed(userFeedDTO);
 
@@ -66,19 +66,18 @@ class FeedServiceTest {
 
     @Test
     void 피드_생성_회원_실패() {
-        FeedDTO.Request userFeedDTOWithPassword = new FeedDTO.Request(
-                true, testFeedDTO.getIp(), testFeedDTO.getPassword(), testFeedDTO.getContent(), testFeedDTO.getImages());
-        FeedDTO.Request userFeedDTOWithNoUserId = new FeedDTO.Request(
-                true, testFeedDTO.getIp(), (Long) null, testFeedDTO.getContent(), testFeedDTO.getImages());
+        userService.deleteAll();
 
-        checkCreatedFeedFail(userFeedDTOWithPassword, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
-        checkCreatedFeedFail(userFeedDTOWithNoUserId, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        FeedDTO.Request userFeedDTOWithInvalidUserId = new FeedDTO.Request(
+                testFeedDTO.getUserId(), testFeedDTO.getContent(), testFeedDTO.getImages());
+
+        checkCreatedFeedFail(userFeedDTOWithInvalidUserId, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
     }
 
     @Test
     void 피드_생성_비회원_성공() {
         FeedDTO.Request nonUserFeedDTO = new FeedDTO.Request(
-                false, testFeedDTO.getIp(), testFeedDTO.getPassword(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getPassword(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         Feed createdFeed = feedService.createFeed(nonUserFeedDTO);
 
@@ -87,13 +86,21 @@ class FeedServiceTest {
 
     @Test
     void 피드_생성_비회원_실패() {
-        FeedDTO.Request nonUserFeedDTOWithUserId = new FeedDTO.Request(
-                false, testFeedDTO.getIp(), testFeedDTO.getUserId(), testFeedDTO.getContent(), testFeedDTO.getImages());
-        FeedDTO.Request nonUserFeedDTOWithNoPassword = new FeedDTO.Request(
-                false, testFeedDTO.getIp(), (String) null, testFeedDTO.getContent(), testFeedDTO.getImages());
+        FeedDTO.Request nonUserFeedDTOWithNoContent = new FeedDTO.Request(
+                "", testFeedDTO.getContent(), testFeedDTO.getImages());
 
-        checkCreatedFeedFail(nonUserFeedDTOWithUserId, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
-        checkCreatedFeedFail(nonUserFeedDTOWithNoPassword, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        checkCreatedFeedFail(nonUserFeedDTOWithNoContent, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
+    }
+
+    @Test
+    void 피드_생성_공통_실패() {
+        FeedDTO.Request userFeedDTOWithNoUserId = new FeedDTO.Request(
+                (Long) null, testFeedDTO.getContent(), testFeedDTO.getImages());
+        FeedDTO.Request nonUserFeedDTOWithNoPassword = new FeedDTO.Request(
+                (String) null, testFeedDTO.getContent(), testFeedDTO.getImages());
+
+        checkCreatedFeedFail(userFeedDTOWithNoUserId, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
+        checkCreatedFeedFail(nonUserFeedDTOWithNoPassword, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
     }
 
     @Test
@@ -255,12 +262,10 @@ class FeedServiceTest {
     }
 
     private void checkCreatedFeedSuccess(FeedDTO.Request feedDTO, Feed createdFeed) {
-        assertEquals(createdFeed.getIsUser().getIsUser(), feedDTO.getIsUser());
-        assertEquals(createdFeed.getIp().getIp(), feedDTO.getIp());
         assertEquals(createdFeed.getContent().getContent(), feedDTO.getContent());
         assertEquals(imageService.findImages(createdFeed).getSize(), feedDTO.getImages().size());
 
-        if (feedDTO.getIsUser()) {
+        if (feedDTO.getUserId() != null) {
             assertEquals(createdFeed.getUserId().getId(), feedDTO.getUserId());
             assertNull(createdFeed.getPassword());
             return;

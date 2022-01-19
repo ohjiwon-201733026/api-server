@@ -24,6 +24,9 @@ public class S3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
 
+    @Value("${cloud.aws.s3.feedDir}")
+    private String feedDir;
+
     public String upload(String dirName, MultipartFile multipartFile) {
         File uploadFile = convert(multipartFile)
                 .orElseThrow(() ->
@@ -85,7 +88,7 @@ public class S3Uploader {
     }
 
     public void deleteAll() {
-        deleteDir("");
+        deleteDir(feedDir);
     }
 
     public void deleteDir(String dirName) {

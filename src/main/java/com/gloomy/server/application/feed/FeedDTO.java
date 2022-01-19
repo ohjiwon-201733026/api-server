@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,27 +16,19 @@ public class FeedDTO {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Request {
-        @NotNull
-        private Boolean isUser;
-        @Pattern(regexp = "[0-9]{3}.[0-9]{3}.[0-9]{3}.[0-9]{3}")
-        private String ip;
         private Long userId;
         private String password;
         @NotBlank
         private String content;
         private List<MultipartFile> images;
 
-        public Request(Boolean isUser, String ip, Long userId, String content, List<MultipartFile> images) {
-            this.isUser = isUser;
-            this.ip = ip;
+        public Request(Long userId, String content, List<MultipartFile> images) {
             this.userId = userId;
             this.content = content;
             this.images = images;
         }
 
-        public Request(Boolean isUser, String ip, String password, String content, List<MultipartFile> images) {
-            this.isUser = isUser;
-            this.ip = ip;
+        public Request(String password, String content, List<MultipartFile> images) {
             this.password = password;
             this.content = content;
             this.images = images;
@@ -47,7 +38,6 @@ public class FeedDTO {
     @Getter
     public static class Response {
         private Long id;
-        private Boolean isUser;
         private String ip;
         private Long userId;
         private String password;
@@ -56,23 +46,11 @@ public class FeedDTO {
         private List<String> imageURLs;
         private Integer commentCount;
 
-        @Builder(builderClassName = "userFeedResponse", builderMethodName = "userFeedResponse")
-        public Response(Long id, Boolean isUser, String ip, Long userId, String content, Integer likeCount, List<String> imageURLs, Integer commentCount) {
+        @Builder
+        public Response(Long id, String ip, Long userId, String password, String content, Integer likeCount, List<String> imageURLs, Integer commentCount) {
             this.id = id;
-            this.isUser = isUser;
             this.ip = ip;
             this.userId = userId;
-            this.content = content;
-            this.likeCount = likeCount;
-            this.imageURLs = imageURLs;
-            this.commentCount = commentCount;
-        }
-
-        @Builder(builderClassName = "nonUserFeedResponse", builderMethodName = "nonUserFeedResponse")
-        public Response(Long id, Boolean isUser, String ip, String password, String content, Integer likeCount, List<String> imageURLs, Integer commentCount) {
-            this.id = id;
-            this.isUser = isUser;
-            this.ip = ip;
             this.password = password;
             this.content = content;
             this.likeCount = likeCount;
@@ -85,22 +63,22 @@ public class FeedDTO {
             for (Image image : images.getImages()) {
                 imageURLs.add(image.getImageUrl().getImageUrl());
             }
-            if (feed.getIsUser().getIsUser()) {
-                return userFeedResponse()
+            if (feed.getUserId() != null) {
+                return builder()
                         .id(feed.getId())
-                        .isUser(feed.getIsUser().getIsUser())
                         .ip(feed.getIp().getIp())
                         .userId(feed.getUserId().getId())
+                        .password(null)
                         .content(feed.getContent().getContent())
                         .likeCount(feed.getLikeCount().getLikeCount())
                         .imageURLs(imageURLs)
                         .commentCount(commentCount)
                         .build();
             }
-            return new nonUserFeedResponse()
+            return builder()
                     .id(feed.getId())
-                    .isUser(feed.getIsUser().getIsUser())
                     .ip(feed.getIp().getIp())
+                    .userId(null)
                     .password(feed.getPassword().getPassword())
                     .content(feed.getContent().getContent())
                     .likeCount(feed.getLikeCount().getLikeCount())

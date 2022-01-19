@@ -20,14 +20,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
         "spring.config.location=classpath:application.yml,classpath:aws.yml"
 })
 class CommentServiceTest {
-    /*
+
     @Autowired
     private FeedService feedService;
     @Autowired
@@ -285,5 +286,4 @@ class CommentServiceTest {
             commentService.deleteComment(feedId);
         }, errorMessage);
     }
-    */
 }

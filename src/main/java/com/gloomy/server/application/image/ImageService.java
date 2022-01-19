@@ -5,6 +5,7 @@ import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.IMAGE_STATUS;
 import com.gloomy.server.domain.image.Image;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -17,6 +18,9 @@ import java.util.List;
 public class ImageService {
     private final S3Uploader s3Uploader;
     private final ImageRepository imageRepository;
+
+    @Value("${cloud.aws.s3.feedDir}")
+    private String feedDir;
 
     public ImageService(S3Uploader s3Uploader, ImageRepository imageRepository) {
         this.s3Uploader = s3Uploader;
@@ -46,7 +50,7 @@ public class ImageService {
     }
 
     private Image uploadOne(Feed feed, MultipartFile multipartFile) {
-        String dirName = String.valueOf(feed.getId());
+        String dirName = feedDir + feed.getId();
         String uploadImageUrl = s3Uploader.upload(dirName, multipartFile);
         Image image = Image.of(feed, uploadImageUrl);
         return imageRepository.save(image);

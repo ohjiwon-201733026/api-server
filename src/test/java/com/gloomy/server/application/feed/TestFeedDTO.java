@@ -1,6 +1,5 @@
 package com.gloomy.server.application.feed;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.user.User;
 import lombok.Getter;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 @Slf4j
 @Getter
 public class TestFeedDTO {
-    private final String ip;
     private final User user;
     private final Long userId;
     private final String password;
@@ -22,7 +20,6 @@ public class TestFeedDTO {
     private ArrayList<MultipartFile> images;
 
     public TestFeedDTO(User testUser, int imageNum) {
-        this.ip = "123.456.789.012";
         this.user = testUser;
         this.userId = testUser.getId();
         this.password = "12345";
@@ -35,20 +32,18 @@ public class TestFeedDTO {
     }
 
     public FeedDTO.Request makeUserFeedDTO() {
-        return new FeedDTO.Request(true, ip, userId, content, images);
+        return new FeedDTO.Request(userId, content, images);
     }
 
     public FeedDTO.Request makeNonUserFeedDTO() {
-        return new FeedDTO.Request(false, ip, password, content, images);
+        return new FeedDTO.Request(password, content, images);
     }
 
     public static MultiValueMap<String, String> convert(FeedDTO.Request feedDTO) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("isUser", feedDTO.getIsUser().toString());
-            params.add("ip", feedDTO.getIp());
             params.add("content", feedDTO.getContent());
-            if (feedDTO.getIsUser()) {
+            if (feedDTO.getUserId() != null) {
                 params.add("userId", feedDTO.getUserId().toString());
                 return params;
             }

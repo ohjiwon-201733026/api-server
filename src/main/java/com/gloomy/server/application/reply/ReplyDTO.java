@@ -43,35 +43,30 @@ public class ReplyDTO {
         private Long userId;
         private String password;
 
-        @Builder(builderClassName = "userReplyResponse", builderMethodName = "userReplyResponse")
-        public Response(Long id, String content, Long commentId, Long userId) {
+        @Builder
+        public Response(Long id, String content, Long commentId, Long userId, String password) {
             this.id = id;
             this.content = content;
             this.commentId = commentId;
             this.userId = userId;
-        }
-
-        @Builder(builderClassName = "nonUserReplyResponse", builderMethodName = "nonUserReplyResponse")
-        public Response(Long id, String content, Long commentId, String password) {
-            this.id = id;
-            this.content = content;
-            this.commentId = commentId;
             this.password = password;
         }
 
         public static ReplyDTO.Response of(Reply reply) {
             if (Objects.nonNull(reply.getUserId())) {
-                return userReplyResponse()
+                return builder()
                         .id(reply.getId())
                         .content(reply.getContent().getContent())
                         .commentId(reply.getCommentId().getId())
                         .userId(reply.getUserId().getId())
+                        .password(null)
                         .build();
             }
-            return nonUserReplyResponse()
+            return builder()
                     .id(reply.getId())
                     .content(reply.getContent().getContent())
                     .commentId(reply.getCommentId().getId())
+                    .userId(null)
                     .password(reply.getPassword().getPassword())
                     .build();
         }

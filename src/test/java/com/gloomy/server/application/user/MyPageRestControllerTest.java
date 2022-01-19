@@ -8,7 +8,8 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.user.*;
+import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,16 +19,11 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-
-import java.net.Authenticator;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -112,7 +108,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     public void userComment() throws Exception {
         User saveUser=userService.createUser(user);
 
-        FeedDTO.Request feedDto1=new FeedDTO.Request(true, "111.111.111.111", saveUser.getId(), "test content 1", new TestImage().makeImages(1));
+        FeedDTO.Request feedDto1=new FeedDTO.Request(saveUser.getId(), "test content 1", new TestImage().makeImages(1));
 
         Feed feed1=feedService.createFeed(feedDto1);
 

@@ -37,23 +37,29 @@ public class FeedService {
     }
 
     private void validateFeedDTO(FeedDTO.Request feedDTO) throws IllegalArgumentException {
-        if (feedDTO.getIsUser()) {
-            if (feedDTO.getUserId() == null || feedDTO.getPassword() != null) {
+        if ((feedDTO.getUserId() == null) == (feedDTO.getPassword() == null)
+            || feedDTO.getContent().length() <= 0) {
+            throw new IllegalArgumentException("[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
+        }
+        if (feedDTO.getUserId() != null) {
+            try {
+                userService.findUser(feedDTO.getUserId());
+            } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
             }
             return;
         }
-        if (feedDTO.getPassword() == null || feedDTO.getUserId() != null) {
+        if (feedDTO.getPassword().length() <= 0) {
             throw new IllegalArgumentException("[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
         }
     }
 
     private Feed makeFeed(FeedDTO.Request feedDTO) {
-        if (feedDTO.getIsUser()) {
+        if (feedDTO.getUserId() != null) {
             User findUser = userService.findUser(feedDTO.getUserId());
-            return Feed.of(feedDTO.getIp(), findUser, feedDTO.getContent());
+            return Feed.of(findUser, feedDTO.getContent());
         }
-        return Feed.of(feedDTO.getIp(), feedDTO.getPassword(), feedDTO.getContent());
+        return Feed.of(feedDTO.getPassword(), feedDTO.getContent());
     }
 
     public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
@@ -115,7 +121,7 @@ public class FeedService {
     }
 
     private void validateUpdateFeedDTO(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
-        if (foundFeed.getIsUser().getIsUser() && feedDTO.getPassword() != null) {
+        if ((foundFeed.getUserId() != null) && feedDTO.getPassword() != null) {
             throw new IllegalArgumentException("[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
         }
     }
