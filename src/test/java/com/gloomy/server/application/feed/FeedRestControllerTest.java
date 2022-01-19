@@ -63,8 +63,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestParameters(
-                                parameterWithName("isUser").description("회원 여부"),
-                                parameterWithName("userId").description("회원 ID").optional(),
                                 parameterWithName("password").description("비밀번호"),
                                 parameterWithName("content").description("게시글 내용")),
                         requestParts(
@@ -73,7 +71,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("생성한 피드 ID"),
-                                fieldWithPath("result.isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").type(JsonFieldType.NULL).description("회원 ID (없음)"),
                                 fieldWithPath("result.password").type(JsonFieldType.STRING).description("비밀번호"),
@@ -101,9 +98,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestParameters(
-                                parameterWithName("isUser").description("회원 여부"),
                                 parameterWithName("userId").description("회원 ID"),
-                                parameterWithName("password").description("비밀번호").optional(),
                                 parameterWithName("content").description("게시글 내용")),
                         requestParts(
                                 partWithName("images").description("이미지 파일 리스트").optional()),
@@ -111,7 +106,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("회원 ID"),
                                 fieldWithPath("result.password").type(JsonFieldType.NULL).description("비밀번호"),
@@ -145,7 +139,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.content[]").description("조회 데이터"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.content[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("result.content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.content[].userId").description("회원 ID"),
                                 fieldWithPath("result.content[].password").description("비밀번호"),
@@ -193,7 +186,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.content[].isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("result.content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.content[].userId").type(JsonFieldType.NUMBER).description("회원 ID"),
                                 fieldWithPath("result.content[].password").type(JsonFieldType.NULL).description("비밀번호"),
@@ -236,7 +228,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").description("회원 ID"),
                                 fieldWithPath("result.password").description("비밀번호"),
@@ -279,7 +270,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.isUser").type(JsonFieldType.BOOLEAN).description("회원 여부"),
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").description("회원 ID"),
                                 fieldWithPath("result.password").description("비밀번호"),

@@ -108,7 +108,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     public void userComment() throws Exception {
         User saveUser=userService.createUser(user);
 
-        FeedDTO.Request feedDto1=new FeedDTO.Request(true, saveUser.getId(), "test content 1", new TestImage().makeImages(1));
+        FeedDTO.Request feedDto1=new FeedDTO.Request(saveUser.getId(), "test content 1", new TestImage().makeImages(1));
 
         Feed feed1=feedService.createFeed(feedDto1);
 

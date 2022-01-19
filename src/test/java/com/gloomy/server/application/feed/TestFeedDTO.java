@@ -1,6 +1,5 @@
 package com.gloomy.server.application.feed;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.user.User;
 import lombok.Getter;
@@ -33,19 +32,18 @@ public class TestFeedDTO {
     }
 
     public FeedDTO.Request makeUserFeedDTO() {
-        return new FeedDTO.Request(true, userId, content, images);
+        return new FeedDTO.Request(userId, content, images);
     }
 
     public FeedDTO.Request makeNonUserFeedDTO() {
-        return new FeedDTO.Request(false, password, content, images);
+        return new FeedDTO.Request(password, content, images);
     }
 
     public static MultiValueMap<String, String> convert(FeedDTO.Request feedDTO) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("isUser", feedDTO.getIsUser().toString());
             params.add("content", feedDTO.getContent());
-            if (feedDTO.getIsUser()) {
+            if (feedDTO.getUserId() != null) {
                 params.add("userId", feedDTO.getUserId().toString());
                 return params;
             }
