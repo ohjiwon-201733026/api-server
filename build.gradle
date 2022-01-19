@@ -23,6 +23,10 @@ repositories {
 ext {
     set('snippetsDir', file("build/generated-snippets"))
 }
+compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -36,13 +40,17 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 //    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     runtimeOnly 'com.h2database:h2'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude group: "com.vaadin.external.google", module:"android-json"
+    }
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
     implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate5', version: '2.13.0'
     implementation group: 'org.springframework.restdocs', name: 'spring-restdocs-asciidoctor'
     testImplementation group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 }
 
 test {

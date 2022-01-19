@@ -1,11 +1,17 @@
 package com.gloomy.server.application.user;
 
+import com.gloomy.server.domain.user.Image;
+import com.gloomy.server.domain.user.Sex;
 import com.gloomy.server.domain.user.User;
 import lombok.*;
 import org.json.JSONObject;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 public class UserDTO {
 
@@ -93,8 +99,40 @@ public class UserDTO {
         String token;
         String image;
 
-        public static Response fromUserAndToken(User user, String token) {
-            return new Response(user.getId(), user.getEmail(), user.getName(), token, "");
+        public static Response fromUserAndToken(User user, String token,String image) {
+            return new Response(user.getId(), user.getEmail(), user.getName(), token, image);
         }
+    }
+
+
+    public static class UpdateUserDTO{
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        @Getter
+        @Setter
+        @ToString
+        public static class Request{
+            @Email
+            String email;
+            Sex sex;
+            MultipartFile image;
+            String dateOfBirth;
+        }
+
+        @NoArgsConstructor
+        @AllArgsConstructor
+        @Builder
+        @Getter
+        @ToString
+        public static class Response{
+            Long userId;
+            @Email
+            String email;
+            Sex sex;
+            String imageUrl;
+            String dateOfBirth;
+        }
+
     }
 }

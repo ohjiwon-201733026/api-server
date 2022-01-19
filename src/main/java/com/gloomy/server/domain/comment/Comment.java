@@ -41,7 +41,7 @@ public class Comment {
     private Comment(Content content, Feed feedId, User userId, COMMENT_STATUS status) {
         this.content = content;
         this.feedId = feedId;
-        this.userId = userId;
+        this.userId=userId;
         this.status = status;
     }
 
@@ -70,6 +70,14 @@ public class Comment {
                 .status(COMMENT_STATUS.ACTIVE)
                 .build();
     }
+
+    /**
+     * User - Comment 연관관계
+     */
+//    public void changeUser(User user){
+//        this.userId=user;
+//        this.userId.getComments().add(this);
+//    }
 
     public void setContent(Content content) {
         this.content = content;

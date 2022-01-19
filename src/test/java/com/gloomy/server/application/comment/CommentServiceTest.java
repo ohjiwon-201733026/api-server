@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
         "spring.config.location=classpath:application.yml,classpath:aws.yml"
 })
 class CommentServiceTest {
+    /*
     @Autowired
     private FeedService feedService;
     @Autowired
@@ -284,4 +285,5 @@ class CommentServiceTest {
             commentService.deleteComment(feedId);
         }, errorMessage);
     }
+    */
 }

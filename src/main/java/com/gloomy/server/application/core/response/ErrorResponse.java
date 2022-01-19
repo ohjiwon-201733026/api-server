@@ -6,21 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ErrorResponse {
+public class ErrorResponse<T> {
     private int code;
     private String message;
-    private List<Object> errorDetails;
+    private ErrorDetails<T> errorDetails;
     private String responseTime;
 
-    public ErrorResponse(int code, String message, List<Object> errorDetails) {
+    public ErrorResponse(int code, String message, String detailMessage,T data) {
         this.code = code;
         this.message = message;
-        this.errorDetails = errorDetails;
+        this.errorDetails = new ErrorDetails<>(detailMessage,data);
         this.responseTime = LocalDateTimeUtil.getLocalDateTimeNowStringPattern("yyyy-MM-dd hh:mm:ss");
     }
 }

@@ -21,7 +21,7 @@ public class Feed {
     @Embedded
     private Ip ip;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
 

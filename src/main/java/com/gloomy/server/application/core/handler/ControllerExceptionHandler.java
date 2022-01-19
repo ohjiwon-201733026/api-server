@@ -18,7 +18,7 @@ public class ControllerExceptionHandler {
     public ErrorResponse handlerRuntimeException(RuntimeException e, HttpServletRequest request) {
         log.error("==================== Handler RuntimeException ====================");
         e.printStackTrace();;
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null,null);
     }
 
 

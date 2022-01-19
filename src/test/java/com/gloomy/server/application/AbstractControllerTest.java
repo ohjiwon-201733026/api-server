@@ -51,7 +51,8 @@ public abstract class AbstractControllerTest {
                 "{class-name}/{method-name}",
                 preprocessResponse(prettyPrint()));
 
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext).apply(documentationConfiguration(restDocumentation))
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webAppContext)
+                .apply(documentationConfiguration(restDocumentation))
                 .addFilters(new CharacterEncodingFilter("UTF-8", true), springSecurityFilterChain)
                 .alwaysDo(document).build();
     }

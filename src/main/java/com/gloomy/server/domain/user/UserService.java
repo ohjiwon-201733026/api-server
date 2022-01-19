@@ -1,5 +1,8 @@
 package com.gloomy.server.domain.user;
 
+import com.gloomy.server.application.image.UserProfileImageService;
+import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.feed.Feed;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -12,16 +15,20 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.net.URI;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static com.gloomy.server.application.user.UserDTO.*;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class UserService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserProfileImageService userProfileImageService;
 
     @Transactional
     public User signUp(PostRequest postRequest) {
@@ -94,6 +101,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public User updateUser(Long userId, UpdateUserDTO.Request updateUserDTO){
+        Optional<User> updateUser=userRepository.findById(userId);
+        if(updateUser.isPresent()){
+            User user= updateUserEntity(updateUser.get(),updateUserDTO);
+            return userRepository.save(user);
+        }
+        else throw new IllegalArgumentException("[ UserService ] : 존재하지 않는 user 입니다.");
+    }
+
+    public User updateUserEntity(User user,UpdateUserDTO.Request updateUserDTO){
+
+        if(updateUserDTO.getEmail()!=null) user.changeEmail(updateUserDTO.getEmail());
+        if(updateUserDTO.getSex()!=null) user.changeSex(updateUserDTO.getSex());
+        if(updateUserDTO.getImage()!=null) {
+            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
+        }
+        if(updateUserDTO.getDateOfBirth()!=null) user.changeDateOfBirth(LocalDate.parse(updateUserDTO.getDateOfBirth()));
+        return user;
+    }
+
     public User findUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> {
             throw new IllegalArgumentException();
@@ -101,10 +128,13 @@ public class UserService {
     }
 
     public void deleteUser(Long userId) {
-        userRepository.delete(findUser(userId));
+        if(userRepository.findById(userId).isEmpty()) throw new IllegalArgumentException();
+        else userRepository.delete(findUser(userId));
     }
 
     public void deleteAll() {
         userRepository.deleteAll();
     }
+
+
 }
