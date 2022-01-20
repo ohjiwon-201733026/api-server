@@ -17,7 +17,7 @@ class Base64URL {
                 .encodeToString(bytes);
     }
 
-    static String stringFromBase64URL(String base64URL) {
+    public static String stringFromBase64URL(String base64URL) {
         return new String(Base64.getUrlDecoder().decode(base64URL));
     }
 

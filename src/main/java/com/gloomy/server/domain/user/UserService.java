@@ -1,8 +1,11 @@
 package com.gloomy.server.domain.user;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -29,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserProfileImageService userProfileImageService;
+    private final JWTDeserializer jwtDeserializer;
 
     @Transactional
     public User signUp(PostRequest postRequest) {
@@ -136,5 +140,7 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-
+    public long userIdFromToken(String token){
+        return jwtDeserializer.getUserId(token);
+    }
 }
