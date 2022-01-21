@@ -45,7 +45,6 @@ class HmacSHA256JWTService implements JWTSerializer, JWTDeserializer {
 
     @Override
     public JWTPayload jwtPayloadFromJWT(String jwtToken) {
-        System.out.println(jwtToken);
         if (!JWT_PATTERN.matcher(jwtToken).matches()) {
             throw new IllegalArgumentException("Malformed JWT: " + jwtToken);
         }

@@ -64,7 +64,6 @@ public class UserRestController {
 
     @PostMapping(value = "/kakao/signUp", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
-        System.out.println(request.code);
         return ok(new RestResponse<>(200,"user kakao login success",userService.kakaoLogin(request)
                 .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl()))));
     }
@@ -84,12 +83,8 @@ public class UserRestController {
 
     @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
-        try {
             User updateUser = userService.updateUser(getCurrentCredential(),updateUserDTO);
             return ok(new RestResponse<>(200,"user update 성공",makeUpdateUserDTO(updateUser)));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400,"user update 실패",e.getMessage(),updateUserDTO));
-        }
     }
 
 
@@ -106,13 +101,8 @@ public class UserRestController {
     @GetMapping(value ="/user/detail")
     public ResponseEntity<?> userDetail(){
         Long userId=userService.userIdFromToken(getCurrentCredential());
-        try {
-
             User findUser = userService.findUser(userId);
             return ok(new RestResponse<>(200,"user detail 조회 성공",makeUpdateUserDTO(findUser)));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400,"user detail 조회 실패",e.getMessage(),userId));
-        }
     }
 
     private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
@@ -121,5 +111,6 @@ public class UserRestController {
         errorMessages.add(errorObject.toString());
         return errorMessages;
     }
+
 
 }

@@ -41,12 +41,12 @@ public class MyPageRestController {
     @GetMapping(value ="/comment")
     public ResponseEntity<?> findUserComments(@PageableDefault(size=10)Pageable pageable){
         Long userId=userService.userIdFromToken(getCurrentCredential());
-        try {
+//        try {
             Page<Comment> comments=commentService.getCommentByIdAndActive(pageable,userId);
             return ok(new RestResponse<>(200,"user comment 조회 성공",makeCommentPage(comments)));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400,"user comment 조회 실패",e.getMessage(),userId));
-        }
+//        } catch (IllegalArgumentException e) {
+//            return badRequest().body(new ErrorResponse(400,"user comment 조회 실패",e.getMessage(),userId));
+//        }
     }
 
     private static String getCurrentCredential() {
