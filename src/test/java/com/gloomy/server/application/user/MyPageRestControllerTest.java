@@ -8,6 +8,7 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +39,8 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     FeedService feedService;
     @Autowired
     CommentService commentService;
+    @Autowired
+    JWTSerializer jwtSerializer;
     User user;
     private User testUser;
     TestFeedDTO testFeedDTO1;
@@ -118,7 +121,11 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
         commentService.createComment(comment1);
         commentService.createComment(comment2);
 
-        this.mockMvc.perform(get("/myPage/comment/{userId}", saveUser.getId())
+        String token=jwtSerializer.jwtFromUser(saveUser);
+
+
+        this.mockMvc.perform(get("/myPage/comment")
+                .header("Authorization","Token "+token)
                 .with(authentication(authentication))
                 .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
@@ -127,9 +134,6 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestParameters(
                                 parameterWithName("page").description("페이지 넘버 (필수)")
-                        ),
-                        pathParameters(
-                                parameterWithName("userId").description("댓글 조회할 사용자 ID (필수)")
                         ),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),

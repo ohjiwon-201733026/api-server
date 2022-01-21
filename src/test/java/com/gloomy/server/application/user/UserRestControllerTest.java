@@ -5,18 +5,23 @@ import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.UpdateFeedDTO;
 import com.gloomy.server.application.image.TestImage;
-import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.application.security.JWTAuthenticationProvider;
+import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.*;
+import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -44,11 +49,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
+@AutoConfigureMockMvc
 class UserRestControllerTest extends AbstractControllerTest {
 
     @Autowired
     UserService userService;
+    @Autowired
+    JWTSerializer jwtSerializer;
+
+    @Autowired JWTAuthenticationProvider jwtAuthenticationProvider;
+
     TestImage testImage;
     User user;
     UpdateUserDTO.Request updateUserDTO;
@@ -102,7 +112,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 ))
                 .andReturn();
     }
-    /*
+
     @Order(2)
     @DisplayName("일반 로그인")
     @Test
@@ -137,7 +147,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 );
     }
-    /*
+
     @Order(3)
     @DisplayName("카카오 로그인")
     @Test
@@ -170,7 +180,6 @@ class UserRestControllerTest extends AbstractControllerTest {
                 );
     }
 
-     */
 
 //    @Test
 //    public void test() throws JsonProcessingException {
@@ -185,22 +194,21 @@ class UserRestControllerTest extends AbstractControllerTest {
     @WithMockUser
     public void updateUser() throws Exception {
         User saveUser=userService.createUser(user);
-
         MockMultipartFile firstUpdateImageFile = TestImage.convertOne(profileImage);
-
+        String token=jwtSerializer.jwtFromUser(saveUser);
         MultiValueMap<String, String> params=
                 TestUserDTO.UpdateUserTestDTO.generateParamMap(updateUserDTO);
 
 
-        this.mockMvc.perform(fileUpload("/user/update/{userId}", saveUser.getId())
+        this.mockMvc.perform(fileUpload("/user/update")
 //                .file(firstUpdateImageFile)
                 .params(params)
-                .with(authentication(authentication)))
+                .header("Authorization","Token "+token)
+//                )
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
-                        pathParameters(
-                                parameterWithName("userId").description("수정 유저 ID (필수)")),
                         requestParameters(
                                 parameterWithName("email").description("수정 유저 이메일").optional(),
                                 parameterWithName("sex").description("수정 유저 성별").optional(),
@@ -211,7 +219,6 @@ class UserRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
-                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("수정된 유저 ID"),
                                 fieldWithPath("result.email").type(JsonFieldType.STRING).description("수정된 유저 이메일"),
                                 fieldWithPath("result.sex").type(JsonFieldType.STRING).description("수정된 유저 성별"),
                                 fieldWithPath("result.imageUrl").type(JsonFieldType.STRING).description("수정된 유저 이미지 url"),
@@ -228,19 +235,18 @@ class UserRestControllerTest extends AbstractControllerTest {
     @WithMockUser
     public void userDetail() throws Exception {
         User saveUser=userService.createUser(user);
+        String token=jwtSerializer.jwtFromUser(saveUser);
 
-        this.mockMvc.perform(get("/user/detail/{userId}", saveUser.getId())
+        this.mockMvc.perform(get("/user/detail")
+                .header("Authorization","Token "+token)
                 .with(authentication(authentication))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
+                .andExpect(status().isOk())
                 .andDo(document.document(
-                        pathParameters(
-                                parameterWithName("userId").description("조회할 유저 ID(필수)")
-                        ),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
-                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("유저 아이디"),
                                 fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일"),
                                 fieldWithPath("result.sex").type(JsonFieldType.STRING).description("유저 성별"),
                                 fieldWithPath("result.imageUrl").type(JsonFieldType.STRING).description("유저 이미지"),

@@ -9,6 +9,7 @@ import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
@@ -39,6 +40,8 @@ public class UserServiceTest {
     PasswordEncoder passwordEncoder;
     @Autowired
     UserProfileImageService userProfileImageService;
+    @Autowired
+    JWTSerializer jwtSerializer;
     User user;
     UserDTO.UpdateUserDTO.Request updateUserDTO;
     TestFeedDTO testFeedDTO;
@@ -81,8 +84,9 @@ public class UserServiceTest {
     @Test
     public void user_update_success(){
         User saveUser=userService.createUser(user);
+        String token=jwtSerializer.jwtFromUser(saveUser);
 
-        userService.updateUser(saveUser.getId(),updateUserDTO);
+        userService.updateUser(token,updateUserDTO);
 
         User updateUser=userService.findUser(saveUser.getId());
         checkUpdateUser(updateUser);
@@ -91,11 +95,11 @@ public class UserServiceTest {
     @DisplayName("user update 실패 : 유효하지 않은 user")
     @Test
     public void user_update_fail(){
-
         user.changeId(notExistUserId);
+        String token=jwtSerializer.jwtFromUser(user);
 
         assertThrows(IllegalArgumentException.class,
-                ()->userService.updateUser(user.getId(),updateUserDTO));
+                ()->userService.updateUser(token,updateUserDTO));
     }
 
     private void checkUpdateUser(User user){
@@ -139,6 +143,24 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class,
                 ()->userService.deleteUser(user.getId()));
+    }
+    
+    @DisplayName("토큰에서 userId 가져오기 성공")
+    @Test
+    public void userIdFromToken_success(){
+        final Long testUserId=10L;
+        user.changeId(10L);
+
+        String token=jwtSerializer.jwtFromUser(user);
+
+        Assertions.assertEquals(testUserId,userService.userIdFromToken(token));
+    }
+
+    @DisplayName("토큰에서 userId 가져오기 성공")
+    @Test
+    public void userIdFromToken_fail(){
+        user.changeId(10L);
+        assertThrows(IllegalArgumentException.class,()->userService.userIdFromToken("abc.efg.hij"));
     }
 
 }
