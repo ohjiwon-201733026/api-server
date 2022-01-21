@@ -126,7 +126,6 @@ public class UserDTO {
         @Getter
         @ToString
         public static class Response{
-            Long userId;
             @Email
             String email;
             Sex sex;

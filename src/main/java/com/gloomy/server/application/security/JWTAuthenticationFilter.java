@@ -17,6 +17,7 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("JWTAuthenticationFilter.doFilterInternal");
         ofNullable(request.getHeader(AUTHORIZATION))
                 .map(authHeader -> authHeader.substring("Token ".length()))
                 .map(JWT::new)
