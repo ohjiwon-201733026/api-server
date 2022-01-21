@@ -1,6 +1,6 @@
 package com.gloomy.server.application.reply;
 
-import com.gloomy.server.application.core.response.ErrorResponse;
+import com.gloomy.server.application.core.response.RequestContext;
 import com.gloomy.server.application.core.response.RestResponse;
 import com.gloomy.server.domain.reply.Reply;
 import org.springframework.data.domain.Page;
@@ -14,66 +14,49 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/reply")
 public class ReplyRestController {
     private final ReplyService replyService;
+    private final RequestContext requestContext;
 
-    public ReplyRestController(ReplyService replyService) {
+    public ReplyRestController(ReplyService replyService, RequestContext requestContext) {
         this.replyService = replyService;
+        this.requestContext = requestContext;
     }
 
     @PostMapping(value = "")
     public ResponseEntity<?> createReply(@Validated @RequestBody ReplyDTO.Request replyDTO) {
-        try {
-            Reply createdReply = replyService.createReply(replyDTO);
-            return ok(new RestResponse<>(200, "대댓글 생성 성공", (makeReplyDTOResponse(createdReply))));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", e.getMessage(), replyDTO));
-        }
+        requestContext.setRequestBody(replyDTO);
+        Reply createdReply = replyService.createReply(replyDTO);
+        return ok(new RestResponse<>(200, "대댓글 생성 성공", (makeReplyDTOResponse(createdReply))));
     }
 
     @GetMapping("/comment/{commentId}")
     public ResponseEntity<?> getCommentAllActiveReplies(@PageableDefault(size = 10) Pageable pageable, @PathVariable Long commentId) {
-        try {
-            Page<Reply> commentAllReplies = replyService.getCommentAllActiveReplies(pageable, commentId);
-            return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", makeResult(commentAllReplies)));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 전체 조회 실패", e.getMessage(), commentId));
-        }
+        Page<Reply> commentAllReplies = replyService.getCommentAllActiveReplies(pageable, commentId);
+        return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", makeResult(commentAllReplies)));
     }
 
     @GetMapping("/{replyId}")
     public ResponseEntity<?> getReply(@PathVariable Long replyId) {
-        try {
-            Reply foundReply = replyService.findReply(replyId);
-            return ok(new RestResponse<>(200, "대댓글 상세 조회 성공", makeReplyDTOResponse(foundReply)));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 상세 조회 실패", e.getMessage(), replyId));
-        }
+        Reply foundReply = replyService.findReply(replyId);
+        return ok(new RestResponse<>(200, "대댓글 상세 조회 성공", makeReplyDTOResponse(foundReply)));
     }
 
     @PatchMapping(value = "/{replyId}")
     public ResponseEntity<?> updateReply(@PathVariable Long replyId, @Validated @RequestBody UpdateReplyDTO.Request updateReplyDTO) {
-        try {
-            Reply updatedReply = replyService.updateReply(replyId, updateReplyDTO);
-            return ok(new RestResponse<>(200, "대댓글 수정 성공", makeReplyDTOResponse(updatedReply)));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 수정 실패", e.getMessage(), updateReplyDTO));
-        }
+        requestContext.setRequestBody(updateReplyDTO);
+        Reply updatedReply = replyService.updateReply(replyId, updateReplyDTO);
+        return ok(new RestResponse<>(200, "대댓글 수정 성공", makeReplyDTOResponse(updatedReply)));
     }
 
     @DeleteMapping("/{replyId}")
     public ResponseEntity<?> deleteReply(@PathVariable Long replyId) {
-        try {
-            replyService.deleteReply(replyId);
-            return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", replyId));
-        } catch (IllegalArgumentException e) {
-            return badRequest().body(new ErrorResponse(400, "대댓글 생성 실패", e.getMessage(), replyId));
-        }
+        replyService.deleteReply(replyId);
+        return ok(new RestResponse<>(200, "대댓글 전체 조회 성공", replyId));
     }
 
     private Page<ReplyDTO.Response> makeResult(Page<Reply> allReplies) {
