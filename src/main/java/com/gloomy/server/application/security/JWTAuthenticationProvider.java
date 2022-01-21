@@ -22,7 +22,6 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        System.out.println("JWTAuthenticationProvider.authenticate");
         return of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
                 .map(JWTAuthenticationFilter.JWT::getPrincipal)
                 .map(Object::toString)
