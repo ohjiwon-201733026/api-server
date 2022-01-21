@@ -46,8 +46,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/comment/**").permitAll()
                 .antMatchers("/reply/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
-                .antMatchers("/user/**").hasRole(Role.USER.name())
-                .antMatchers("/myPage/**").hasRole(Role.USER.name())
+                .antMatchers("/user/**").permitAll()
+//                .hasRole(Role.USER.name())
+                .antMatchers("/myPage/**").permitAll()
+//                .hasRole(Role.USER.name())
                 .anyRequest().authenticated();
 
         http.formLogin().disable();
@@ -63,6 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         return new BCryptPasswordEncoder();
     }
 
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
@@ -71,6 +74,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
+
+
 }
 
 @ConstructorBinding

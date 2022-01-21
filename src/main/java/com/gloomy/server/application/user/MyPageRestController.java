@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,14 +38,22 @@ public class MyPageRestController {
     }
 
 
-    @GetMapping(value ="/comment/{userId}")
-    public ResponseEntity<?> findUserComments(@PathVariable("userId")Long userId,@PageableDefault(size=10)Pageable pageable){
+    @GetMapping(value ="/comment")
+    public ResponseEntity<?> findUserComments(@PageableDefault(size=10)Pageable pageable){
+        Long userId=userService.userIdFromToken(getCurrentCredential());
         try {
             Page<Comment> comments=commentService.getCommentByIdAndActive(pageable,userId);
             return ok(new RestResponse<>(200,"user comment 조회 성공",makeCommentPage(comments)));
         } catch (IllegalArgumentException e) {
             return badRequest().body(new ErrorResponse(400,"user comment 조회 실패",e.getMessage(),userId));
         }
+    }
+
+    private static String getCurrentCredential() {
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials()
+                .toString();
     }
 
     private Page<CommentDTO.Response> makeCommentPage(Page<Comment> comments){

@@ -7,20 +7,22 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import static java.util.Collections.singleton;
 import static java.util.Optional.of;
 
-class JWTAuthenticationProvider implements AuthenticationProvider {
+public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     private final JWTDeserializer jwtDeserializer;
 
-    JWTAuthenticationProvider(JWTDeserializer jwtDeserializer) {
+    public JWTAuthenticationProvider(JWTDeserializer jwtDeserializer) {
         this.jwtDeserializer = jwtDeserializer;
     }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        System.out.println("JWTAuthenticationProvider.authenticate");
         return of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
                 .map(JWTAuthenticationFilter.JWT::getPrincipal)
                 .map(Object::toString)
@@ -45,7 +47,6 @@ class JWTAuthenticationProvider implements AuthenticationProvider {
             this.jwtPayload = jwtPayload;
             this.token = token;
         }
-
         @Override
         public Object getPrincipal() {
             return jwtPayload;

@@ -2,6 +2,7 @@ package com.gloomy.server.domain.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.image.UserProfileImageService;
+import com.gloomy.server.application.security.JWTAuthenticationProvider;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -105,7 +107,8 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(Long userId, UpdateUserDTO.Request updateUserDTO){
+    public User updateUser(String token, UpdateUserDTO.Request updateUserDTO){
+        Long userId=userIdFromToken(token);
         Optional<User> updateUser=userRepository.findById(userId);
         if(updateUser.isPresent()){
             User user= updateUserEntity(updateUser.get(),updateUserDTO);
@@ -141,6 +144,7 @@ public class UserService {
     }
 
     public long userIdFromToken(String token){
+
         return jwtDeserializer.getUserId(token);
     }
 }

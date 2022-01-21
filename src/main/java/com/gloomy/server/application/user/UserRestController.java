@@ -82,11 +82,10 @@ public class UserRestController {
                 .toString();
     }
 
-    @PostMapping(value = "/user/update/{userId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateUser(@PathVariable("userId") Long userId
-            ,@ModelAttribute UpdateUserDTO.Request updateUserDTO){
+    @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
         try {
-            User updateUser = userService.updateUser(userId,updateUserDTO);
+            User updateUser = userService.updateUser(getCurrentCredential(),updateUserDTO);
             return ok(new RestResponse<>(200,"user update 성공",makeUpdateUserDTO(updateUser)));
         } catch (IllegalArgumentException e) {
             return badRequest().body(new ErrorResponse(400,"user update 실패",e.getMessage(),updateUserDTO));
@@ -96,18 +95,19 @@ public class UserRestController {
 
     private UpdateUserDTO.Response makeUpdateUserDTO(User user){
         return UpdateUserDTO.Response.builder()
-                .userId(user.getId())
                 .email(user.getEmail())
                 .sex(user.getSex())
                 .imageUrl(userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl())
-                .dateOfBirth(user.getDateOfBirth().toString())
+                .dateOfBirth(user.getDateOfBirth()==null?"":user.getDateOfBirth().toString())
                 .build();
 
     }
 
-    @GetMapping(value ="/user/detail/{userId}")
-    public ResponseEntity<?> userDetail(@PathVariable("userId")Long userId,Model model){
+    @GetMapping(value ="/user/detail")
+    public ResponseEntity<?> userDetail(){
+        Long userId=userService.userIdFromToken(getCurrentCredential());
         try {
+
             User findUser = userService.findUser(userId);
             return ok(new RestResponse<>(200,"user detail 조회 성공",makeUpdateUserDTO(findUser)));
         } catch (IllegalArgumentException e) {
