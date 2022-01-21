@@ -6,19 +6,35 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ErrorResponse<T> {
     private int code;
     private String message;
-    private ErrorDetails<T> errorDetails;
+    private List<T> data;
     private String responseTime;
 
-    public ErrorResponse(int code, String message, String detailMessage,T data) {
+    public ErrorResponse(int code, String message, T data) {
         this.code = code;
         this.message = message;
-        this.errorDetails = new ErrorDetails<>(detailMessage,data);
+        this.data = init(data);
         this.responseTime = LocalDateTimeUtil.getLocalDateTimeNowStringPattern("yyyy-MM-dd hh:mm:ss");
+    }
+
+    public ErrorResponse(int code, String message, List<T> data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+        this.responseTime = LocalDateTimeUtil.getLocalDateTimeNowStringPattern("yyyy-MM-dd hh:mm:ss");
+    }
+
+    private List<T> init(T data) {
+        List<T> init = new ArrayList<>();
+        init.add(data);
+        return init;
     }
 }
