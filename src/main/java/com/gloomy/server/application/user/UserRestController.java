@@ -83,7 +83,8 @@ public class UserRestController {
 
     @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
-            User updateUser = userService.updateUser(getCurrentCredential(),updateUserDTO);
+            Long userId=userService.getMyInfo();
+            User updateUser = userService.updateUser(userId,updateUserDTO);
             return ok(new RestResponse<>(200,"user update 성공",makeUpdateUserDTO(updateUser)));
     }
 
@@ -100,16 +101,9 @@ public class UserRestController {
 
     @GetMapping(value ="/user/detail")
     public ResponseEntity<?> userDetail(){
-        Long userId=userService.userIdFromToken(getCurrentCredential());
+        Long userId=userService.getMyInfo();
             User findUser = userService.findUser(userId);
             return ok(new RestResponse<>(200,"user detail 조회 성공",makeUpdateUserDTO(findUser)));
-    }
-
-    private List<String> makeErrorMessage(String errorMessage, Object errorObject) {
-        List<String> errorMessages = new ArrayList<>();
-        errorMessages.add(errorMessage);
-        errorMessages.add(errorObject.toString());
-        return errorMessages;
     }
 
 

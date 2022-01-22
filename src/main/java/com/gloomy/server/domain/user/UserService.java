@@ -113,8 +113,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(String token, UpdateUserDTO.Request updateUserDTO){
-        Long userId=userIdFromToken(token);
+    public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
         Optional<User> updateUser=userRepository.findById(userId);
         if(updateUser.isPresent()){
             User user= updateUserEntity(updateUser.get(),updateUserDTO);
@@ -149,8 +148,11 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    public long userIdFromToken(String token){
-
+    public long getMyInfo(){
+        String token=SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials()
+                .toString();
         return jwtDeserializer.getUserId(token);
     }
 }
