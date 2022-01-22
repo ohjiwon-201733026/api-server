@@ -117,13 +117,14 @@ public class UserServiceTest {
 
         checkSameUser(saveUser,findUser);
     }
-
+    /*
     @DisplayName("user find 실패 : 존재하지 않는 유저")
     @Test
     public void user_find_fail(){
         assertThrows(IllegalArgumentException.class,
                 ()->userService.findUser(notExistUserId));
     }
+     */
 
     @DisplayName("user delete 성공")
     @Test
@@ -162,5 +163,8 @@ public class UserServiceTest {
         user.changeId(10L);
         assertThrows(IllegalArgumentException.class,()->userService.userIdFromToken("abc.efg.hij"));
     }
+
+
+
 
 }

@@ -39,6 +39,8 @@ public class UserService {
     @Transactional
     public User signUp(PostRequest postRequest) {
         final Password encodedPassword = Password.of(postRequest.getPassword(), passwordEncoder);
+        if(userRepository.findFirstByEmail(postRequest.getEmail()).isPresent())
+            throw new IllegalArgumentException("[ userService ] 이미 존재하는 사용자 입니다.");
         User user = User.of(postRequest.getEmail(),
                 postRequest.getUserName(),
                 encodedPassword);
@@ -47,8 +49,12 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> login(LoginRequest request) {
-        return userRepository.findFirstByEmail(request.getEmail())
-                .filter(user -> user.matchesPassword(request.getPassword(), passwordEncoder));
+        Optional<User> findUser=userRepository.findFirstByEmail(request.getEmail());
+        if(findUser.isEmpty()) throw  new IllegalArgumentException("[ UserService ] : 존재하지 않는 user 입니다.");
+        else{
+            if(findUser.get().matchesPassword(request.getPassword(), passwordEncoder)) return findUser;
+            else throw new IllegalArgumentException("[ UserService ] : password 불일치");
+        }
     }
 
     @Transactional(readOnly = true)
@@ -63,9 +69,9 @@ public class UserService {
 
         Optional<User> user = userRepository.findFirstByEmail(kakaoUser.getEmail());
         if(user.isEmpty()) {
-            user = Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
+            return user = Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
         }
-        return user;
+        else throw new IllegalArgumentException("[ UserService ] : password 불일치");
     }
 
     private KakaoToken getKakaoToken(KakaoCodeRequest request) {
@@ -107,8 +113,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public User updateUser(String token, UpdateUserDTO.Request updateUserDTO){
-        Long userId=userIdFromToken(token);
+    public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
         Optional<User> updateUser=userRepository.findById(userId);
         if(updateUser.isPresent()){
             User user= updateUserEntity(updateUser.get(),updateUserDTO);
@@ -130,7 +135,7 @@ public class UserService {
 
     public User findUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("[ userService ]: 존재하지 않는 user 입니다.");
         });
     }
 
@@ -143,8 +148,11 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    public long userIdFromToken(String token){
-
+    public long getMyInfo(){
+        String token=SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials()
+                .toString();
         return jwtDeserializer.getUserId(token);
     }
 }

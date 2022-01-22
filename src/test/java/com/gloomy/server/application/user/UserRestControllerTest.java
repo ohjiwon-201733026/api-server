@@ -69,7 +69,7 @@ class UserRestControllerTest extends AbstractControllerTest {
     public void setUp(){
         authentication= SecurityContextHolder.getContext().getAuthentication();
         this.user= TestUserDTO.TestUser.makeTestUser();
-        user.changeId(1L);
+        user.changeId(100L);
         testImage=new TestImage();
         profileImage=testImage.makeImages(1).get(0);
         this.updateUserDTO= TestUserDTO.UpdateUserTestDTO.makeUpdateUserDtoRequest();
@@ -153,7 +153,7 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("GuRNQ9tc3Fa9QbZ6zw-D-HAAagDVPAE2GHCTiLyHEy0JwlErMY8DjoPuvAAfEvLekIhZ2wo9dJkAAAF-bip6uQ")
+                .code("0ts5zs7TNW9t65j6EF66Cw4HMT93EiahytE7l7Q08yCmSlusZmW-CTOh8wgih-DtQLA0wwo9cpgAAAF-fP5l1A")
                 .build();
 
         mockMvc.perform(post("/kakao/signUp")
