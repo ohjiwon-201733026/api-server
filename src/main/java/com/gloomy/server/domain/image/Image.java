@@ -1,14 +1,11 @@
 package com.gloomy.server.domain.image;
 
-import com.gloomy.server.domain.feed.*;
-import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.feed.Feed;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import reactor.util.annotation.Nullable;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Getter
@@ -26,20 +23,14 @@ public class Image {
     private ImageURL imageUrl;
 
     @Column(name = "status", nullable = false)
-    private IMAGE_STATUS status;
+    private ImageStatus status;
 
     private Image() {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Image(Feed feedId, ImageURL imageUrl, IMAGE_STATUS status) {
+    private Image(Feed feedId, ImageURL imageUrl, ImageStatus status) {
         this.feedId = feedId;
-        this.imageUrl = imageUrl;
-        this.status = status;
-    }
-
-    @Builder(builderClassName = "userImageBuilder", builderMethodName = "userImageBuilder")
-    private Image(User userId, ImageURL imageUrl, IMAGE_STATUS status) {
         this.imageUrl = imageUrl;
         this.status = status;
     }
@@ -48,12 +39,11 @@ public class Image {
         return Image.builder()
                 .feedId(feedId)
                 .imageUrl(new ImageURL(imageUrl))
-                .status(IMAGE_STATUS.ACTIVE)
+                .status(ImageStatus.ACTIVE)
                 .build();
     }
 
-
-    public void setStatus(IMAGE_STATUS status) {
+    public void setStatus(ImageStatus status) {
         this.status = status;
     }
 

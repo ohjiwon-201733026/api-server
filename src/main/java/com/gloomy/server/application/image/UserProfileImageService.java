@@ -1,14 +1,13 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
-import com.gloomy.server.domain.image.IMAGE_STATUS;
-import com.gloomy.server.domain.image.Image;
+import com.gloomy.server.domain.image.ImageStatus;
 import com.gloomy.server.domain.image.UserProfileImage;
 import com.gloomy.server.domain.user.User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import static com.gloomy.server.domain.image.IMAGE_STATUS.ACTIVE;
+import static com.gloomy.server.domain.image.ImageStatus.ACTIVE;
 
 @Service
 public class UserProfileImageService {
@@ -30,7 +29,7 @@ public class UserProfileImageService {
     public UserProfileImage uploadUserImage(User user, MultipartFile multipartFile) {
         validateUserAndImage(user,multipartFile);
         UserProfileImage foundImage=userProfileImageRepository.findAllByUserIdAndStatus(user, ACTIVE);
-        if(foundImage!=null) foundImage.setStatus(IMAGE_STATUS.INACTIVE);
+        if(foundImage!=null) foundImage.setStatus(ImageStatus.INACTIVE);
 
         String dirName = "user/"+String.valueOf(user.getId());
         String uploadImageUrl = s3Uploader.upload(dirName, multipartFile);

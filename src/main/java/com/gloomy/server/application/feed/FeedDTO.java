@@ -19,17 +19,25 @@ public class FeedDTO {
         private Long userId;
         private String password;
         @NotBlank
+        private String category;
+        @NotBlank
+        private String title;
+        @NotBlank
         private String content;
         private List<MultipartFile> images;
 
-        public Request(Long userId, String content, List<MultipartFile> images) {
+        public Request(Long userId, String category, String title, String content, List<MultipartFile> images) {
             this.userId = userId;
+            this.category = category;
+            this.title = title;
             this.content = content;
             this.images = images;
         }
 
-        public Request(String password, String content, List<MultipartFile> images) {
+        public Request(String password, String category, String title, String content, List<MultipartFile> images) {
             this.password = password;
+            this.category = category;
+            this.title = title;
             this.content = content;
             this.images = images;
         }
@@ -37,25 +45,31 @@ public class FeedDTO {
 
     @Getter
     public static class Response {
-        private Long id;
-        private String ip;
-        private Long userId;
-        private String password;
-        private String content;
-        private Integer likeCount;
-        private List<String> imageURLs;
-        private Integer commentCount;
+        private final Long id;
+        private final String ip;
+        private final Long userId;
+        private final String password;
+        private final String category;
+        private final String title;
+        private final String content;
+        private final List<String> imageURLs;
+        private final Integer likeCount;
+        private final Integer commentCount;
+        private final String status;
 
         @Builder
-        public Response(Long id, String ip, Long userId, String password, String content, Integer likeCount, List<String> imageURLs, Integer commentCount) {
+        public Response(Long id, String ip, Long userId, String password, String category, String title, String content, Integer likeCount, List<String> imageURLs, Integer commentCount, String status) {
             this.id = id;
             this.ip = ip;
             this.userId = userId;
             this.password = password;
+            this.category = category;
+            this.title = title;
             this.content = content;
-            this.likeCount = likeCount;
             this.imageURLs = imageURLs;
+            this.likeCount = likeCount;
             this.commentCount = commentCount;
+            this.status = status;
         }
 
         public static Response of(Feed feed, Images images, Integer commentCount) {
@@ -69,10 +83,13 @@ public class FeedDTO {
                         .ip(feed.getIp().getIp())
                         .userId(feed.getUserId().getId())
                         .password(null)
+                        .category(feed.getCategory().toString())
+                        .title(feed.getTitle().getTitle())
                         .content(feed.getContent().getContent())
-                        .likeCount(feed.getLikeCount().getLikeCount())
                         .imageURLs(imageURLs)
+                        .likeCount(feed.getLikeCount().getLikeCount())
                         .commentCount(commentCount)
+                        .status(feed.getStatus().toString())
                         .build();
             }
             return builder()
@@ -80,10 +97,13 @@ public class FeedDTO {
                     .ip(feed.getIp().getIp())
                     .userId(null)
                     .password(feed.getPassword().getPassword())
+                    .category(feed.getCategory().toString())
+                    .title(feed.getTitle().getTitle())
                     .content(feed.getContent().getContent())
                     .likeCount(feed.getLikeCount().getLikeCount())
                     .imageURLs(imageURLs)
                     .commentCount(commentCount)
+                    .status(feed.getStatus().toString())
                     .build();
         }
     }

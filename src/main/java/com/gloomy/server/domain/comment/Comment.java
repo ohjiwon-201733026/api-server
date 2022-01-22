@@ -1,7 +1,8 @@
 package com.gloomy.server.domain.comment;
 
-import com.gloomy.server.domain.feed.*;
-import com.gloomy.server.domain.image.IMAGE_STATUS;
+import com.gloomy.server.domain.feed.Content;
+import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;

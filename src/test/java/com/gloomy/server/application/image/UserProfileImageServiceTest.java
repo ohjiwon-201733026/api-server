@@ -1,11 +1,7 @@
 package com.gloomy.server.application.image;
 
-import com.gloomy.server.application.feed.FeedDTO;
-import com.gloomy.server.application.feed.FeedService;
-import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.image.s3.S3Uploader;
-import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.image.IMAGE_STATUS;
+import com.gloomy.server.domain.image.ImageStatus;
 import com.gloomy.server.domain.image.UserProfileImage;
 import com.gloomy.server.domain.user.*;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +66,7 @@ public class UserProfileImageServiceTest {
 
         UserProfileImage image1=userProfileImageService.findImageByUserId(testUser);
 
-        Assertions.assertEquals(image1.getStatus(), IMAGE_STATUS.ACTIVE);
+        Assertions.assertEquals(image1.getStatus(), ImageStatus.ACTIVE);
         Assertions.assertEquals(userProfileImageRepository.findAll().size(),1);
     }
 
