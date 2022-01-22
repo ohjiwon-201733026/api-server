@@ -297,7 +297,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").type(JsonFieldType.NUMBER).description("삭제한 피드 ID"),
+                                fieldWithPath("result").type(JsonFieldType.NULL).description("삭제한 피드 ID"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
