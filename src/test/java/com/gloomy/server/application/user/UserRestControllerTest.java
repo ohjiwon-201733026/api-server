@@ -155,7 +155,6 @@ class UserRestControllerTest extends AbstractControllerTest {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
                 .code("0ts5zs7TNW9t65j6EF66Cw4HMT93EiahytE7l7Q08yCmSlusZmW-CTOh8wgih-DtQLA0wwo9cpgAAAF-fP5l1A")
                 .build();
-
         mockMvc.perform(post("/kakao/signUp")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

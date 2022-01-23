@@ -62,8 +62,9 @@ public class UserRestController {
                         .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl()))));
     }
 
-    @PostMapping(value = "/kakao/signUp", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
+    @GetMapping(value = "/kakao/signUp")
+    public ResponseEntity<?> kakaoLogin(@Validated @RequestParam String code) {
+        KakaoCodeRequest request=new KakaoCodeRequest(code);
         return ok(new RestResponse<>(200,"user kakao login success",userService.kakaoLogin(request)
                 .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl()))));
     }
