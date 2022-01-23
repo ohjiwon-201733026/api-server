@@ -12,10 +12,6 @@
 [[create-nonuser-feed]]
 === 1.1 피드 등록 (비회원)
 
-CURL
-
-include::{snippets}/feed-rest-controller-test/create-nonuser-feed/curl-request.adoc[]
-
 요청 정보
 
 include::{snippets}/feed-rest-controller-test/create-nonuser-feed/http-request.adoc[]
@@ -27,7 +23,7 @@ include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-parts.
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/create-nonuser-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/response-body.adoc[]
 
 응답 형식
 
@@ -36,22 +32,19 @@ include::{snippets}/feed-rest-controller-test/create-nonuser-feed/response-field
 [[create-user-feed]]
 === 1.2 피드 등록 (회원)
 
-CURL
-
-include::{snippets}/feed-rest-controller-test/create-user-feed/curl-request.adoc[]
-
 요청 정보
 
 include::{snippets}/feed-rest-controller-test/create-user-feed/http-request.adoc[]
 
 요청 형식
 
+include::{snippets}/feed-rest-controller-test/create-user-feed/request-headers.adoc[]
 include::{snippets}/feed-rest-controller-test/create-user-feed/request-parameters.adoc[]
 include::{snippets}/feed-rest-controller-test/create-user-feed/request-parts.adoc[]
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/create-user-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/response-body.adoc[]
 
 응답 형식
 
@@ -59,10 +52,6 @@ include::{snippets}/feed-rest-controller-test/create-user-feed/response-fields.a
 
 [[get-all-user]]
 === 1.3 피드 전체 조회
-
-CURL
-
-include::{snippets}/feed-rest-controller-test/get-all-feeds/curl-request.adoc[]
 
 요청 정보
 
@@ -74,7 +63,7 @@ include::{snippets}/feed-rest-controller-test/get-all-feeds/request-parameters.a
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/get-all-feeds/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/get-all-feeds/response-body.adoc[]
 
 응답 형식
 
@@ -82,10 +71,6 @@ include::{snippets}/feed-rest-controller-test/get-all-feeds/response-fields.adoc
 
 [[get-user-feeds]]
 === 1.4 피드 조회 (회원 ID)
-
-CURL
-
-include::{snippets}/feed-rest-controller-test/get-user-feeds/curl-request.adoc[]
 
 요청 정보
 
@@ -98,7 +83,7 @@ include::{snippets}/feed-rest-controller-test/get-user-feeds/request-parameters.
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/get-user-feeds/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/get-user-feeds/response-body.adoc[]
 
 응답 형식
 
@@ -106,10 +91,6 @@ include::{snippets}/feed-rest-controller-test/get-user-feeds/response-fields.ado
 
 [[get-one-feed]]
 === 1.5 피드 조회 (피드 ID)
-
-CURL
-
-include::{snippets}/feed-rest-controller-test/get-one-feed/curl-request.adoc[]
 
 요청 정보
 
@@ -121,7 +102,7 @@ include::{snippets}/feed-rest-controller-test/get-one-feed/path-parameters.adoc[
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/get-one-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/get-one-feed/response-body.adoc[]
 
 응답 형식
 
@@ -129,10 +110,6 @@ include::{snippets}/feed-rest-controller-test/get-one-feed/response-fields.adoc[
 
 [[update-feed]]
 === 1.6 피드 수정
-
-CURL
-
-include::{snippets}/feed-rest-controller-test/update-feed/curl-request.adoc[]
 
 요청 정보
 
@@ -146,7 +123,7 @@ include::{snippets}/feed-rest-controller-test/update-feed/request-parts.adoc[]
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/update-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/update-feed/response-body.adoc[]
 
 응답 형식
 
@@ -155,10 +132,6 @@ include::{snippets}/feed-rest-controller-test/update-feed/response-fields.adoc[]
 
 [[delete-feed]]
 === 1.7 피드 삭제
-
-CURL
-
-include::{snippets}/feed-rest-controller-test/delete-feed/curl-request.adoc[]
 
 요청 정보
 
@@ -170,16 +143,12 @@ include::{snippets}/feed-rest-controller-test/delete-feed/path-parameters.adoc[]
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/delete-feed/http-response.adoc[]
+include::{snippets}/feed-rest-controller-test/delete-feed/response-body.adoc[]
 
 == 2. 댓글 API
 
 [[create-nonuser-comment]]
 === 2.1 댓글 등록 (비회원)
-
-CURL
-
-include::{snippets}/comment-rest-controller-test/create-non-user-comment/curl-request.adoc[]
 
 요청 정보
 
@@ -192,7 +161,7 @@ include::{snippets}/comment-rest-controller-test/create-non-user-comment/request
 
 응답 정보
 
-include::{snippets}/comment-rest-controller-test/create-non-user-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-test/create-non-user-comment/response-body.adoc[]
 
 응답 형식
 
@@ -201,10 +170,6 @@ include::{snippets}/comment-rest-controller-test/create-non-user-comment/respons
 [[create-user-comment]]
 === 2.2 댓글 등록 (회원)
 
-CURL
-
-include::{snippets}/comment-rest-controller-test/create-user-comment/curl-request.adoc[]
-
 요청 정보
 
 include::{snippets}/comment-rest-controller-test/create-user-comment/http-request.adoc[]
@@ -212,11 +177,12 @@ include::{snippets}/comment-rest-controller-test/create-user-comment/http-reques
 요청 형식
 
 include::{snippets}/comment-rest-controller-test/create-user-comment/request-body.adoc[]
+include::{snippets}/comment-rest-controller-test/create-user-comment/request-headers.adoc[]
 include::{snippets}/comment-rest-controller-test/create-user-comment/request-fields.adoc[]
 
 응답 정보
 
-include::{snippets}/comment-rest-controller-test/create-user-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-test/create-user-comment/response-body.adoc[]
 
 응답 형식
 
@@ -224,10 +190,6 @@ include::{snippets}/comment-rest-controller-test/create-user-comment/response-fi
 
 [[get-feed-all-comments]]
 === 2.3 피드 댓글 전체 조회
-
-CURL
-
-include::{snippets}/comment-rest-controller-test/get-feed-all-comments/curl-request.adoc[]
 
 요청 정보
 
@@ -239,7 +201,7 @@ include::{snippets}/comment-rest-controller-test/get-feed-all-comments/path-para
 
 응답 정보
 
-include::{snippets}/comment-rest-controller-test/get-feed-all-comments/http-response.adoc[]
+include::{snippets}/comment-rest-controller-test/get-feed-all-comments/response-body.adoc[]
 
 응답 형식
 
@@ -247,10 +209,6 @@ include::{snippets}/comment-rest-controller-test/get-feed-all-comments/response-
 
 [[get-comment]]
 === 2.4 댓글 상세 조회
-
-CURL
-
-include::{snippets}/comment-rest-controller-test/get-comment/curl-request.adoc[]
 
 요청 정보
 
@@ -262,7 +220,7 @@ include::{snippets}/comment-rest-controller-test/get-comment/path-parameters.ado
 
 응답 정보
 
-include::{snippets}/comment-rest-controller-test/get-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-test/get-comment/response-body.adoc[]
 
 응답 형식
 
@@ -270,10 +228,6 @@ include::{snippets}/comment-rest-controller-test/get-comment/response-fields.ado
 
 [[update-comment]]
 === 2.5 댓글 수정
-
-CURL
-
-include::{snippets}/comment-rest-controller-test/update-comment/curl-request.adoc[]
 
 요청 정보
 
@@ -286,7 +240,7 @@ include::{snippets}/comment-rest-controller-test/update-comment/path-parameters.
 
 응답 정보
 
-include::{snippets}/comment-rest-controller-test/update-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-test/update-comment/response-body.adoc[]
 
 응답 형식
 
@@ -295,10 +249,6 @@ include::{snippets}/comment-rest-controller-test/update-comment/response-fields.
 
 [[delete-comment]]
 === 2.6 댓글 삭제
-
-CURL
-
-include::{snippets}/comment-rest-controller-test/delete-comment/curl-request.adoc[]
 
 요청 정보
 
@@ -310,16 +260,12 @@ include::{snippets}/comment-rest-controller-test/delete-comment/path-parameters.
 
 응답 정보
 
-include::{snippets}/comment-rest-controller-test/delete-comment/http-response.adoc[]
+include::{snippets}/comment-rest-controller-test/delete-comment/response-body.adoc[]
 
 == 3. 대댓글 API
 
 [[create-nonuser-reply]]
 === 3.1 대댓글 등록 (비회원)
-
-CURL
-
-include::{snippets}/reply-rest-controller-test/create-non-user-reply/curl-request.adoc[]
 
 요청 정보
 
@@ -332,7 +278,7 @@ include::{snippets}/reply-rest-controller-test/create-non-user-reply/request-fie
 
 응답 정보
 
-include::{snippets}/reply-rest-controller-test/create-non-user-reply/http-response.adoc[]
+include::{snippets}/reply-rest-controller-test/create-non-user-reply/response-body.adoc[]
 
 응답 형식
 
@@ -341,10 +287,6 @@ include::{snippets}/reply-rest-controller-test/create-non-user-reply/response-fi
 [[create-user-reply]]
 === 3.2 대댓글 등록 (회원)
 
-CURL
-
-include::{snippets}/reply-rest-controller-test/create-user-reply/curl-request.adoc[]
-
 요청 정보
 
 include::{snippets}/reply-rest-controller-test/create-user-reply/http-request.adoc[]
@@ -352,11 +294,12 @@ include::{snippets}/reply-rest-controller-test/create-user-reply/http-request.ad
 요청 형식
 
 include::{snippets}/reply-rest-controller-test/create-user-reply/request-body.adoc[]
+include::{snippets}/reply-rest-controller-test/create-user-reply/request-headers.adoc[]
 include::{snippets}/reply-rest-controller-test/create-user-reply/request-fields.adoc[]
 
 응답 정보
 
-include::{snippets}/reply-rest-controller-test/create-user-reply/http-response.adoc[]
+include::{snippets}/reply-rest-controller-test/create-user-reply/response-body.adoc[]
 
 응답 형식
 
@@ -364,10 +307,6 @@ include::{snippets}/reply-rest-controller-test/create-user-reply/response-fields
 
 [[get-comment-all-replies]]
 === 3.3 댓글의 대댓글 전체 조회
-
-CURL
-
-include::{snippets}/reply-rest-controller-test/get-comment-all-replies/curl-request.adoc[]
 
 요청 정보
 
@@ -379,7 +318,7 @@ include::{snippets}/reply-rest-controller-test/get-comment-all-replies/path-para
 
 응답 정보
 
-include::{snippets}/reply-rest-controller-test/get-comment-all-replies/http-response.adoc[]
+include::{snippets}/reply-rest-controller-test/get-comment-all-replies/response-body.adoc[]
 
 응답 형식
 
@@ -387,10 +326,6 @@ include::{snippets}/reply-rest-controller-test/get-comment-all-replies/response-
 
 [[get-reply]]
 === 3.4 대댓글 상세 조회
-
-CURL
-
-include::{snippets}/reply-rest-controller-test/get-reply/curl-request.adoc[]
 
 요청 정보
 
@@ -402,7 +337,7 @@ include::{snippets}/reply-rest-controller-test/get-reply/path-parameters.adoc[]
 
 응답 정보
 
-include::{snippets}/reply-rest-controller-test/get-reply/http-response.adoc[]
+include::{snippets}/reply-rest-controller-test/get-reply/response-body.adoc[]
 
 응답 형식
 
@@ -410,10 +345,6 @@ include::{snippets}/reply-rest-controller-test/get-reply/response-fields.adoc[]
 
 [[update-reply]]
 === 3.5 대댓글 수정
-
-CURL
-
-include::{snippets}/reply-rest-controller-test/update-reply/curl-request.adoc[]
 
 요청 정보
 
@@ -426,7 +357,7 @@ include::{snippets}/reply-rest-controller-test/update-reply/path-parameters.adoc
 
 응답 정보
 
-include::{snippets}/reply-rest-controller-test/update-reply/http-response.adoc[]
+include::{snippets}/reply-rest-controller-test/update-reply/response-body.adoc[]
 
 응답 형식
 
@@ -435,10 +366,6 @@ include::{snippets}/reply-rest-controller-test/update-reply/response-fields.adoc
 
 [[delete-reply]]
 === 3.6 대댓글 삭제
-
-CURL
-
-include::{snippets}/reply-rest-controller-test/delete-reply/curl-request.adoc[]
 
 요청 정보
 
@@ -450,7 +377,7 @@ include::{snippets}/reply-rest-controller-test/delete-reply/path-parameters.adoc
 
 응답 정보
 
-include::{snippets}/reply-rest-controller-test/delete-reply/http-response.adoc[]
+include::{snippets}/reply-rest-controller-test/delete-reply/response-body.adoc[]
 
 
 == 4. 유저 API
