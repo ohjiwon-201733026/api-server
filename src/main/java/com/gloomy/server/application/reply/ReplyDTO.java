@@ -19,13 +19,11 @@ public class ReplyDTO {
         private String content;
         @NotNull
         private Long commentId;
-        private Long userId;
         private String password;
 
-        public Request(String content, Long commentId, Long userId) {
+        public Request(String content, Long commentId) {
             this.content = content;
             this.commentId = commentId;
-            this.userId = userId;
         }
 
         public Request(String content, Long commentId, String password) {

@@ -2,6 +2,7 @@ package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.core.response.RequestContext;
 import com.gloomy.server.domain.reply.Reply;
+import com.gloomy.server.domain.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/reply")
 public class ReplyRestController {
+    private final UserService userService;
     private final ReplyService replyService;
     private final RequestContext requestContext;
 
-    public ReplyRestController(ReplyService replyService, RequestContext requestContext) {
+    public ReplyRestController(UserService userService, ReplyService replyService, RequestContext requestContext) {
+        this.userService = userService;
         this.replyService = replyService;
         this.requestContext = requestContext;
     }
@@ -26,7 +29,8 @@ public class ReplyRestController {
     @PostMapping(value = "")
     public ReplyDTO.Response createReply(@Validated @RequestBody ReplyDTO.Request replyDTO) {
         requestContext.setRequestBody(replyDTO);
-        Reply createdReply = replyService.createReply(replyDTO);
+        Long userId = userService.getMyInfo();
+        Reply createdReply = replyService.createReply(userId, replyDTO);
         return makeReplyDTOResponse(createdReply);
     }
 

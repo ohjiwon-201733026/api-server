@@ -18,13 +18,11 @@ public class CommentDTO {
         private String content;
         @NotNull
         private Long feedId;
-        private Long userId;
         private String password;
 
-        public Request(String content, Long feedId, Long userId) {
+        public Request(String content, Long feedId) {
             this.content = content;
             this.feedId = feedId;
-            this.userId = userId;
         }
 
         public Request(String content, Long feedId, String password) {
