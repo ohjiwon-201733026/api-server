@@ -7,7 +7,6 @@ import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,6 @@ public class FeedDTO {
     @Setter
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Request {
-        private Long userId;
         private String password;
         @NotBlank
         private String category;
@@ -26,8 +24,7 @@ public class FeedDTO {
         private String content;
         private List<MultipartFile> images;
 
-        public Request(Long userId, String category, String title, String content, List<MultipartFile> images) {
-            this.userId = userId;
+        public Request(String category, String title, String content, List<MultipartFile> images) {
             this.category = category;
             this.title = title;
             this.content = content;

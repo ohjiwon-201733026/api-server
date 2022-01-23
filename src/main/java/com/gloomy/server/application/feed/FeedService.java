@@ -1,10 +1,7 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
-import com.gloomy.server.domain.feed.Content;
-import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.feed.FeedStatus;
-import com.gloomy.server.domain.feed.Password;
+import com.gloomy.server.domain.feed.*;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +24,13 @@ public class FeedService {
     }
 
     @Transactional
-    public Feed createFeed(FeedDTO.Request feedDTO) throws IllegalArgumentException {
-        validateFeedDTO(feedDTO);
-        Feed createdFeed = null;
-        User userId = null;
-        if (feedDTO.getUserId() != null) {
-            userId = userService.findUser(feedDTO.getUserId());
+    public Feed createFeed(Long userId, FeedDTO.Request feedDTO) throws IllegalArgumentException {
+        User user = null;
+        validateFeedDTO(userId, feedDTO);
+        if (userId != null) {
+            user = userService.findUser(userId);
         }
-        createdFeed = feedRepository.save(Feed.of(userId, feedDTO));
+        Feed createdFeed = feedRepository.save(Feed.of(user, feedDTO));
 
         if (feedDTO.getImages() != null) {
             imageService.uploadMany(createdFeed, feedDTO.getImages());
@@ -42,22 +38,18 @@ public class FeedService {
         return createdFeed;
     }
 
-    private void validateFeedDTO(FeedDTO.Request feedDTO) throws IllegalArgumentException {
-        if ((feedDTO.getUserId() == null) == (feedDTO.getPassword() == null)
-                || feedDTO.getCategory().length() <= 0
-                || feedDTO.getTitle().length() <= 0
-                || feedDTO.getContent().length() <= 0) {
+    private void validateFeedDTO(Long userId, FeedDTO.Request feedDTO) throws IllegalArgumentException {
+        try {
+            if ((userId == null) == (feedDTO.getPassword() == null)
+                    || feedDTO.getTitle().length() <= 0
+                    || feedDTO.getContent().length() <= 0) {
+                throw new IllegalArgumentException();
+            }
+            Category.from(feedDTO.getCategory());
+        } catch (Exception e) {
             throw new IllegalArgumentException("[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
         }
-        if (feedDTO.getUserId() != null) {
-            try {
-                userService.findUser(feedDTO.getUserId());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
-            }
-            return;
-        }
-        if (feedDTO.getPassword().length() <= 0) {
+        if ((userId == null) && feedDTO.getPassword().length() <= 0) {
             throw new IllegalArgumentException("[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
         }
     }

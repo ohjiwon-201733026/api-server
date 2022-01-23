@@ -45,7 +45,7 @@ class CommentServiceTest {
         User testUser = new TestUserDTO().makeTestUser();
         userService.createUser(testUser);
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
-        Feed testFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+        Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testUser.getId(), testFeed.getId());
     }
 
@@ -61,7 +61,7 @@ class CommentServiceTest {
     void 댓글_생성_비회원_성공() {
         CommentDTO.Request nonUserCommentDTO = testCommentDTO.makeNonUserCommentDTO();
 
-        Comment createdComment = commentService.createComment(nonUserCommentDTO);
+        Comment createdComment = commentService.createComment(null, nonUserCommentDTO);
         Comment foundComment = commentService.findComment(createdComment.getId());
         assertEquals(foundComment, createdComment);
     }
@@ -75,16 +75,16 @@ class CommentServiceTest {
         CommentDTO.Request nonUserCommentDTOWithoutPassword =
                 new CommentDTO.Request(testCommentDTO.getContent(), testCommentDTO.getFeedId(), (String) null);
 
-        checkCreatedCommentFail(nonUserCommentDTOWithoutContent);
-        checkCreatedCommentFail(nonUserCommentDTOWithoutFeedId);
-        checkCreatedCommentFail(nonUserCommentDTOWithoutPassword);
+        checkCreatedCommentFail(null, nonUserCommentDTOWithoutContent);
+        checkCreatedCommentFail(null, nonUserCommentDTOWithoutFeedId);
+        checkCreatedCommentFail(null, nonUserCommentDTOWithoutPassword);
     }
 
     @Test
     void 댓글_생성_회원_성공() {
         CommentDTO.Request userCommentDTO = testCommentDTO.makeUserCommentDTO();
 
-        Comment createdComment = commentService.createComment(userCommentDTO);
+        Comment createdComment = commentService.createComment(testCommentDTO.getUserId(), userCommentDTO);
         Comment foundComment = commentService.findComment(createdComment.getId());
         assertEquals(foundComment, createdComment);
     }
@@ -92,20 +92,17 @@ class CommentServiceTest {
     @Test
     void 댓글_생성_회원_실패() {
         CommentDTO.Request userCommentDTOWithoutContent =
-                new CommentDTO.Request(null, testCommentDTO.getFeedId(), testCommentDTO.getUserId());
+                new CommentDTO.Request(null, testCommentDTO.getFeedId());
         CommentDTO.Request userCommentDTOWithoutFeedId =
-                new CommentDTO.Request(testCommentDTO.getContent(), null, testCommentDTO.getUserId());
-        CommentDTO.Request userCommentDTOWithoutUserId =
-                new CommentDTO.Request(testCommentDTO.getContent(), testCommentDTO.getFeedId(), (Long) null);
+                new CommentDTO.Request(testCommentDTO.getContent(), null);
 
-        checkCreatedCommentFail(userCommentDTOWithoutContent);
-        checkCreatedCommentFail(userCommentDTOWithoutFeedId);
-        checkCreatedCommentFail(userCommentDTOWithoutUserId);
+        checkCreatedCommentFail(testCommentDTO.getUserId(), userCommentDTOWithoutContent);
+        checkCreatedCommentFail(testCommentDTO.getUserId(), userCommentDTOWithoutFeedId);
     }
 
     @Test
     void 댓글_조회_비회원_성공() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
         Comment foundComment = commentService.findComment(createdComment.getId());
 
@@ -114,7 +111,7 @@ class CommentServiceTest {
 
     @Test
     void 댓글_조회_비회원_실패() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
         commentService.deleteAll();
 
@@ -123,7 +120,7 @@ class CommentServiceTest {
 
     @Test
     void 댓글_조회_회원_성공() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeUserCommentDTO());
+        Comment createdComment = commentService.createComment(testCommentDTO.getUserId(), testCommentDTO.makeUserCommentDTO());
 
         Comment foundComment = commentService.findComment(createdComment.getId());
 
@@ -132,7 +129,7 @@ class CommentServiceTest {
 
     @Test
     void 댓글_조회_회원_실패() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeUserCommentDTO());
+        Comment createdComment = commentService.createComment(testCommentDTO.getUserId(), testCommentDTO.makeUserCommentDTO());
 
         commentService.deleteAll();
 
@@ -170,8 +167,8 @@ class CommentServiceTest {
 
     @Test
     void 피드_활성_댓글_전체_조회_성공() {
-        Comment activeComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
-        Comment inactiveComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment activeComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
+        Comment inactiveComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
         commentService.deleteComment(inactiveComment.getId());
         Page<Comment> feedAllActiveComments = commentService.getFeedAllActiveComments(
@@ -180,7 +177,7 @@ class CommentServiceTest {
         assertEquals(feedAllActiveComments.getContent().size(), 1);
         assertEquals(feedAllActiveComments.getContent().get(0), activeComment);
     }
-    
+
     @Test
     void 피드_활성_댓글_전체_조회_실패() {
         Pageable pageable = PageRequest.of(0, 10);
@@ -195,7 +192,7 @@ class CommentServiceTest {
 
     @Test
     void 댓글_수정_성공() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
         String updateContent = "새 댓글";
         UpdateCommentDTO.Request updateCommentDTO = new UpdateCommentDTO.Request();
         updateCommentDTO.setContent(updateContent);
@@ -208,14 +205,14 @@ class CommentServiceTest {
 
     @Test
     void 댓글_수정_실패() {
-        Comment deletedComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment deletedComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
         String updateContent = "새 댓글";
         UpdateCommentDTO.Request updateCommentDTO = new UpdateCommentDTO.Request();
         updateCommentDTO.setContent(updateContent);
         UpdateCommentDTO.Request updateCommentDTOWithoutContent = new UpdateCommentDTO.Request();
 
         commentService.deleteAll();
-        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
         checkUpdatedCommentFail(createdComment.getId(), updateCommentDTOWithoutContent,
                 "[CommentService] 댓글 수정 요청 메시지가 잘못되었습니다.");
@@ -229,14 +226,14 @@ class CommentServiceTest {
 
     @Test
     void 댓글_삭제_성공() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
         Comment deletedComment = commentService.deleteComment(createdComment.getId());
         assertEquals(deletedComment.getStatus(), COMMENT_STATUS.INACTIVE);
     }
 
     @Test
     void 댓글_삭제_실패() {
-        Comment createdComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
         commentService.deleteAll();
 
@@ -247,13 +244,13 @@ class CommentServiceTest {
 
     private void createComments(int commentSize) {
         for (int num = 0; num < commentSize; num++) {
-            commentService.createComment(testCommentDTO.makeUserCommentDTO());
+            commentService.createComment(testCommentDTO.getUserId(), testCommentDTO.makeUserCommentDTO());
         }
     }
 
-    private void checkCreatedCommentFail(CommentDTO.Request commentDTO) {
+    private void checkCreatedCommentFail(Long userId, CommentDTO.Request commentDTO) {
         assertThrows(IllegalArgumentException.class, () -> {
-            commentService.createComment(commentDTO);
+            commentService.createComment(userId, commentDTO);
         }, "[CommentService] 비회원 댓글 등록 요청 메시지가 잘못되었습니다.");
     }
 

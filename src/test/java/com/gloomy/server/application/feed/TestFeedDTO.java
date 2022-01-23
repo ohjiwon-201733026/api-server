@@ -36,21 +36,21 @@ public class TestFeedDTO {
     }
 
     public FeedDTO.Request makeUserFeedDTO() {
-        return new FeedDTO.Request(userId, category, title, content, images);
+        return new FeedDTO.Request(category, title, content, images);
     }
 
     public FeedDTO.Request makeNonUserFeedDTO() {
         return new FeedDTO.Request(password, category, title, content, images);
     }
 
-    public static MultiValueMap<String, String> convert(FeedDTO.Request feedDTO) {
+    public static MultiValueMap<String, String> convert(Long userId, FeedDTO.Request feedDTO) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             params.add("category", feedDTO.getCategory());
             params.add("title", feedDTO.getTitle());
             params.add("content", feedDTO.getContent());
-            if (feedDTO.getUserId() != null) {
-                params.add("userId", feedDTO.getUserId().toString());
+            if (userId != null) {
+                params.add("userId", userId.toString());
                 return params;
             }
             params.add("password", feedDTO.getPassword());

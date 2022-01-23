@@ -18,9 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -48,10 +51,10 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
         TestUserDTO testUserDTO = new TestUserDTO();
         User testUser = userService.createUser(testUserDTO.makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
-        Feed testFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+        Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         TestCommentDTO testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
-        Comment testComment = commentService.createComment(testCommentDTO.makeNonUserCommentDTO());
-        testReplyDTO = new TestReplyDTO(testComment);
+        Comment testComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
+        testReplyDTO = new TestReplyDTO(testCommentDTO.getUserId(), testComment.getId());
     }
 
     @AfterEach
@@ -71,9 +74,9 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/reply")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -98,18 +101,19 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     @DisplayName("대댓글_생성_회원")
     @Test
     void createUserReply() throws Exception {
-        User replyUser = userService.createUser(new TestUserDTO().makeTestUser());
-        ReplyDTO.Request request = testReplyDTO.makeUserReplyDTO(replyUser);
+        ReplyDTO.Request request = testReplyDTO.makeUserReplyDTO();
 
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/reply")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestFields(
                                 fieldWithPath("content").description("대댓글 내용"),
                                 fieldWithPath("commentId").description("댓글 ID"),
@@ -133,8 +137,8 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     void getCommentAllReplies() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
 
-        replyService.createReply(request);
-        replyService.createReply(request);
+        replyService.createReply(null, request);
+        replyService.createReply(null, request);
 
         this.mockMvc.perform(get("/reply/comment/{commentId}", request.getCommentId()))
                 .andDo(print())
@@ -173,7 +177,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     void getReply() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
 
-        Reply createdReply = replyService.createReply(request);
+        Reply createdReply = replyService.createReply(null, request);
 
         this.mockMvc.perform(get("/reply/{replyId}", createdReply.getId()))
                 .andDo(print())
@@ -202,13 +206,13 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
         UpdateReplyDTO.Request updateRequest = new UpdateReplyDTO.Request();
         updateRequest.setContent(updateContent);
 
-        Reply createdReply = replyService.createReply(request);
+        Reply createdReply = replyService.createReply(null, request);
         String body = objectMapper.writeValueAsString(updateRequest);
 
         this.mockMvc.perform(patch("/reply/{replyId}", createdReply.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -232,7 +236,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     void deleteReply() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
 
-        Reply createdReply = replyService.createReply(request);
+        Reply createdReply = replyService.createReply(null, request);
 
         this.mockMvc.perform(delete("/reply/{replyId}", createdReply.getId()))
                 .andDo(print())

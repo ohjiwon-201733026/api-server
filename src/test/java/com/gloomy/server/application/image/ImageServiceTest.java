@@ -45,7 +45,7 @@ class ImageServiceTest {
         User testUser = new TestUserDTO().makeTestUser();
         userService.createUser(testUser);
         FeedDTO.Request testFeedDTO = new TestFeedDTO(testUser, 0).makeUserFeedDTO();
-        testFeed = feedService.createFeed(testFeedDTO);
+        testFeed = feedService.createFeed(testUser.getId(), testFeedDTO);
         testImage = new TestImage();
     }
 
