@@ -7,8 +7,8 @@ import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.reply.REPLY_STATUS;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -259,7 +259,7 @@ public class ReplyServiceTest {
         Reply createdNonUserReply = replyService.createReply(null, nonUserReplyDTO);
         Reply deletedNonUserReply = replyService.deleteReply(createdNonUserReply.getId());
 
-        assertEquals(deletedNonUserReply.getStatus(), REPLY_STATUS.INACTIVE);
+        assertEquals(deletedNonUserReply.getStatus(), Status.INACTIVE);
     }
 
     @Test
@@ -279,7 +279,7 @@ public class ReplyServiceTest {
         Reply createdUserReply = replyService.createReply(testReplyDTO.getUserId(), userReplyDTO);
         Reply deletedUserReply = replyService.deleteReply(createdUserReply.getId());
 
-        assertEquals(deletedUserReply.getStatus(), REPLY_STATUS.INACTIVE);
+        assertEquals(deletedUserReply.getStatus(), Status.INACTIVE);
     }
 
     @Test

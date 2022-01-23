@@ -1,9 +1,12 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
-import com.gloomy.server.domain.image.ImageStatus;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.image.UserProfileImage;
-import com.gloomy.server.domain.user.*;
+import com.gloomy.server.domain.user.Password;
+import com.gloomy.server.domain.user.Sex;
+import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -37,52 +40,52 @@ public class UserProfileImageServiceTest {
     S3Uploader s3Uploader;
     private User testUser;
     private TestImage testImage;
-    private static String defaultImageURL="https://gl00my-bucket.s3.ap-northeast-2.amazonaws.com/user/default/bc1e908a-e345-4941-8445-0a9bf0849a49s3_tmp.jpg";
+    private static String defaultImageURL = "https://gl00my-bucket.s3.ap-northeast-2.amazonaws.com/user/default/bc1e908a-e345-4941-8445-0a9bf0849a49s3_tmp.jpg";
 
     @BeforeEach
     void beforeEach() {
         this.testUser = User.of("test@email.com", "testName", new Password("test")
-                , Sex.MALE, 2020, 01, 01, JoinStatus.JOIN);
+                , Sex.MALE, 2020, 01, 01, Status.ACTIVE);
         userService.createUser(testUser);
         testImage = new TestImage();
     }
 
     @AfterEach
-    void after(){
+    void after() {
         userProfileImageService.deleteAll(testUser);
     }
 
     @Test
-    public void 유저_디폴트_이미지_조회(){
+    public void 유저_디폴트_이미지_조회() {
         testUser.changeId(10000L);
         UserProfileImage image = userProfileImageService.findImageByUserId(testUser);
-        Assertions.assertEquals(image.getImageUrl().getImageUrl(),defaultImageURL);
+        Assertions.assertEquals(image.getImageUrl().getImageUrl(), defaultImageURL);
     }
 
     @Test
-    public void 유저_이미지_업로드_성공(){
-        ArrayList<MultipartFile> image=testImage.makeImages(1);
-        userProfileImageService.uploadUserImage(testUser,image.get(0));
+    public void 유저_이미지_업로드_성공() {
+        ArrayList<MultipartFile> image = testImage.makeImages(1);
+        userProfileImageService.uploadUserImage(testUser, image.get(0));
 
-        UserProfileImage image1=userProfileImageService.findImageByUserId(testUser);
+        UserProfileImage image1 = userProfileImageService.findImageByUserId(testUser);
 
-        Assertions.assertEquals(image1.getStatus(), ImageStatus.ACTIVE);
-        Assertions.assertEquals(userProfileImageRepository.findAll().size(),1);
+        Assertions.assertEquals(image1.getStatus(), Status.ACTIVE);
+        Assertions.assertEquals(userProfileImageRepository.findAll().size(), 1);
     }
 
     @Test
-    public void 유저_이미지_전체_삭제(){
+    public void 유저_이미지_전체_삭제() {
 
         userProfileImageService.deleteAll(testUser);
 
-        List<UserProfileImage> imageList=userProfileImageRepository.findAll();
+        List<UserProfileImage> imageList = userProfileImageRepository.findAll();
 
-        Assertions.assertEquals(imageList.size(),0);
+        Assertions.assertEquals(imageList.size(), 0);
     }
 
     @Test
-    public void test(){
-        System.out.println(s3Uploader.upload("user/default",testImage.makeImages(1).get(0)));
+    public void test() {
+        System.out.println(s3Uploader.upload("user/default", testImage.makeImages(1).get(0)));
     }
 
 

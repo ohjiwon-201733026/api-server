@@ -2,8 +2,8 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.feed.FeedStatus;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -249,7 +249,7 @@ class FeedServiceTest {
         Feed createdUserFeed = feedService.createFeed(testFeedDTO.getUserId(), userFeedDTO);
         Feed deletedUserFeed = feedService.deleteFeed(createdUserFeed.getId());
 
-        assertEquals(deletedUserFeed.getStatus(), FeedStatus.INACTIVE);
+        assertEquals(deletedUserFeed.getStatus(), Status.INACTIVE);
     }
 
     @Test
@@ -259,7 +259,7 @@ class FeedServiceTest {
         Feed createdNonUserFeed = feedService.createFeed(null, nonUserFeedDTO);
         Feed deletedNonUserFeed = feedService.deleteFeed(createdNonUserFeed.getId());
 
-        assertEquals(deletedNonUserFeed.getStatus(), FeedStatus.INACTIVE);
+        assertEquals(deletedNonUserFeed.getStatus(), Status.INACTIVE);
     }
 
     @Test
