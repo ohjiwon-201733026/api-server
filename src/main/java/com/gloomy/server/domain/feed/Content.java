@@ -13,6 +13,7 @@ public class Content {
 
     private Content() {
     }
+
     public Content(String content) {
         this.content = content;
     }

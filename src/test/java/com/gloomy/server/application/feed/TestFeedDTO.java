@@ -16,12 +16,16 @@ public class TestFeedDTO {
     private final User user;
     private final Long userId;
     private final String password;
+    private final String category;
+    private final String title;
     private final String content;
     private ArrayList<MultipartFile> images;
 
     public TestFeedDTO(User testUser, int imageNum) {
         this.user = testUser;
         this.userId = testUser.getId();
+        this.category = "ALL";
+        this.title = "글 제목";
         this.password = "12345";
         this.content = "글 작성 샘플입니다.";
         this.images = new TestImage().makeImages(imageNum);
@@ -32,16 +36,18 @@ public class TestFeedDTO {
     }
 
     public FeedDTO.Request makeUserFeedDTO() {
-        return new FeedDTO.Request(userId, content, images);
+        return new FeedDTO.Request(userId, category, title, content, images);
     }
 
     public FeedDTO.Request makeNonUserFeedDTO() {
-        return new FeedDTO.Request(password, content, images);
+        return new FeedDTO.Request(password, category, title, content, images);
     }
 
     public static MultiValueMap<String, String> convert(FeedDTO.Request feedDTO) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("category", feedDTO.getCategory());
+            params.add("title", feedDTO.getTitle());
             params.add("content", feedDTO.getContent());
             if (feedDTO.getUserId() != null) {
                 params.add("userId", feedDTO.getUserId().toString());
@@ -59,6 +65,12 @@ public class TestFeedDTO {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
             if (feedDTO.getPassword() != null) {
                 params.add("password", feedDTO.getPassword());
+            }
+            if (feedDTO.getCategory() != null) {
+                params.add("category", feedDTO.getCategory());
+            }
+            if (feedDTO.getTitle() != null) {
+                params.add("title", feedDTO.getTitle());
             }
             if (feedDTO.getContent() != null) {
                 params.add("content", feedDTO.getContent());

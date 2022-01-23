@@ -1,5 +1,6 @@
 package com.gloomy.server.domain.feed;
 
+import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,8 +25,12 @@ public class Feed {
     @Embedded
     private Password password;
 
-    @Column(name = "status", nullable = false)
-    private FEED_STATUS status;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    @Embedded
+    private Title title;
 
     @Embedded
     private Content content;
@@ -33,42 +38,51 @@ public class Feed {
     @Embedded
     private LikeCount likeCount;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private FeedStatus status;
+
     Feed() {
     }
 
     @Builder
-    private Feed(Ip ip, User userId, Password password, FEED_STATUS status, Content content, LikeCount likeCount) {
+    private Feed(Ip ip, User userId, Password password, Category category, Title title, FeedStatus status, Content content, LikeCount likeCount) {
         this.ip = ip;
         this.userId = userId;
         this.password = password;
-        this.status = status;
+        this.category = category;
+        this.title = title;
         this.content = content;
         this.likeCount = likeCount;
+        this.status = status;
     }
 
-    public static Feed of(User userId, String content) {
-        return builder()
-                .ip(new Ip("111.111.111.111"))
-                .userId(userId)
-                .password(null)
-                .status(FEED_STATUS.ACTIVE)
-                .content(new Content(content))
-                .likeCount(new LikeCount(0))
-                .build();
-    }
-
-    public static Feed of(String password, String content) {
+    public static Feed of(User userId, FeedDTO.Request feedDTO) {
+        if (userId != null) {
+            return builder()
+                    .ip(new Ip("111.111.111.111"))
+                    .userId(userId)
+                    .password(null)
+                    .category(Category.valueOf(feedDTO.getCategory()))
+                    .title(new Title(feedDTO.getTitle()))
+                    .content(new Content(feedDTO.getContent()))
+                    .likeCount(new LikeCount(0))
+                    .status(FeedStatus.ACTIVE)
+                    .build();
+        }
         return builder()
                 .ip(new Ip("111.111.111.111"))
                 .userId(null)
-                .password(new Password(password))
-                .status(FEED_STATUS.ACTIVE)
-                .content(new Content(content))
+                .password(new Password(feedDTO.getPassword()))
+                .category(Category.valueOf(feedDTO.getCategory()))
+                .title(new Title(feedDTO.getTitle()))
+                .content(new Content(feedDTO.getContent()))
                 .likeCount(new LikeCount(0))
+                .status(FeedStatus.ACTIVE)
                 .build();
     }
 
-    public void setStatus(FEED_STATUS status) {
+    public void setStatus(FeedStatus status) {
         this.status = status;
     }
 
@@ -86,8 +100,10 @@ public class Feed {
             Feed targetFeed = (Feed) o;
             boolean result = Objects.equals(id, targetFeed.id)
                     && Objects.equals(ip.getIp(), targetFeed.ip.getIp())
-                    && status == targetFeed.status
-                    && Objects.equals(content.getContent(), targetFeed.content.getContent());
+                    && category == targetFeed.category
+                    && Objects.equals(title.getTitle(), targetFeed.title.getTitle())
+                    && Objects.equals(content.getContent(), targetFeed.content.getContent())
+                    && status == targetFeed.status;
             if (userId != null) {
                 result &= Objects.equals(userId.getId(), targetFeed.userId.getId());
                 return result;
@@ -96,5 +112,20 @@ public class Feed {
             return result;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "Feed{" +
+                "id=" + id +
+                ", ip=" + ip +
+                ", userId=" + userId +
+                ", password=" + password +
+                ", category=" + category +
+                ", title=" + title +
+                ", content=" + content +
+                ", likeCount=" + likeCount +
+                ", status=" + status +
+                '}';
     }
 }
