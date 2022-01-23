@@ -25,7 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -111,22 +112,22 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     public void userComment() throws Exception {
         User saveUser=userService.createUser(user);
 
-        FeedDTO.Request feedDto1=new FeedDTO.Request(saveUser.getId(), "ALL", "test Title 1", "test content 1", new TestImage().makeImages(1));
+        FeedDTO.Request feedDto1=new FeedDTO.Request("ALL", "test Title 1", "test content 1", new TestImage().makeImages(1));
 
-        Feed feed1=feedService.createFeed(feedDto1);
+        Feed feed1=feedService.createFeed(saveUser.getId(), feedDto1);
 
-        CommentDTO.Request comment1 = new CommentDTO.Request("test comment 1",feed1.getId(),saveUser.getId());
-        CommentDTO.Request comment2 = new CommentDTO.Request("test comment 2",feed1.getId(),saveUser.getId());
+        CommentDTO.Request comment1 = new CommentDTO.Request("test comment 1",feed1.getId());
+        CommentDTO.Request comment2 = new CommentDTO.Request("test comment 2",feed1.getId());
 
-        commentService.createComment(comment1);
-        commentService.createComment(comment2);
+        commentService.createComment(saveUser.getId(), comment1);
+        commentService.createComment(saveUser.getId(), comment2);
 
         String token=jwtSerializer.jwtFromUser(saveUser);
+        System.out.println(token);
 
 
         this.mockMvc.perform(get("/myPage/comment")
-                .header("Authorization","Token "+token)
-                .with(authentication(authentication))
+                .header("Authorization","Bearer "+token)
                 .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -136,14 +137,13 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
                                 parameterWithName("page").description("페이지 넘버 (필수)")
                         ),
                         responseFields(
-                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
-                                fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
-                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("해당 피드 ID"),
-                                fieldWithPath("result.content[].userId").type(JsonFieldType.NUMBER).description("회원 ID"),
-                                fieldWithPath("result.content[].password").type(JsonFieldType.STRING).description("비밀번호").optional(),
+                                fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.content[].userId").description("회원 ID"),
+                                fieldWithPath("result.content[].password").description("비밀번호"),
 
                                 fieldWithPath("result.pageable").type(JsonFieldType.STRING).description("pageable 정보"),
                                 fieldWithPath("result.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
@@ -156,7 +156,8 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.sort.unsorted").type(JsonFieldType.BOOLEAN).description("비정렬 여부"),
                                 fieldWithPath("result.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
                                 fieldWithPath("result.number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
-                                fieldWithPath("result.empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부")
+                                fieldWithPath("result.empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
     }

@@ -32,7 +32,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,6 +159,7 @@ class UserRestControllerTest extends AbstractControllerTest {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
                 .code("i8FgaOjSVVzPuVPCLbYIWak76cANX7Hgpo1GTRgLFz6QZF17zRXvCHDOLtWUXyY60KZs9go9dNsAAAF-hxOsXw")
                 .build();
+
         mockMvc.perform(get("/kakao/signUp")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -177,6 +182,8 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 )
                         )
                 );
+
+
     }
 
 
@@ -237,7 +244,7 @@ class UserRestControllerTest extends AbstractControllerTest {
         String token=jwtSerializer.jwtFromUser(saveUser);
 
         this.mockMvc.perform(get("/user/detail")
-                .header("Authorization","Token "+token)
+                .header("Authorization","Bearer "+token)
                 .with(authentication(authentication))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

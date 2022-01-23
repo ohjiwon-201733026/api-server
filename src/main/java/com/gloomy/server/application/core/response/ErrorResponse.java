@@ -1,10 +1,7 @@
 package com.gloomy.server.application.core.response;
 
 import com.gloomy.server.application.core.util.LocalDateTimeUtil;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +9,7 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class ErrorResponse<T> {
     private int code;
     private String message;

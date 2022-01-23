@@ -23,26 +23,20 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) {
-//            throws AuthenticationException {
-           JWTAuthentication jwtAuth = null;
-           try {
-               jwtAuth = of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
-                       .map(JWTAuthenticationFilter.JWT::getPrincipal)
-                       .map(Object::toString)
-                       .map(token -> new JWTAuthentication(token, jwtDeserializer.jwtPayloadFromJWT(token)))
-                       .orElseThrow(IllegalStateException::new);
-           }
-           catch (IllegalStateException e){
-               System.out.println("error"+e);
-           }
-           finally {
-               return jwtAuth;
-           }
-
+    public Authentication authenticate(Authentication authentication)
+            throws AuthenticationException {
+        System.out.println("JWTAuthenticationProvider.authenticate");
+        try {
+            return of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
+                    .map(JWTAuthenticationFilter.JWT::getPrincipal)
+                    .map(Object::toString)
+                    .map(token -> new JWTAuthentication(token, jwtDeserializer.jwtPayloadFromJWT(token)))
+                    .orElseThrow(IllegalArgumentException::new);
+        }catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
-    @Override
     public boolean supports(Class<?> authentication) {
         return JWTAuthenticationFilter.JWT.class.isAssignableFrom(authentication);
     }

@@ -1,5 +1,9 @@
 package com.gloomy.server.application.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gloomy.server.application.core.response.ErrorResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,8 +27,29 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
             String token = s.substring("Bearer ".length());
             SecurityContextHolder.getContext().setAuthentication(new JWT(token));
         }
+        // 중간에 필터 넣기
+        try {
             filterChain.doFilter(request, response);
+        }catch (IllegalArgumentException e){
+            setErrorResponse(HttpStatus.FORBIDDEN,response,e,request);
+        }
 
+    }
+
+    public void setErrorResponse(HttpStatus status, HttpServletResponse response
+            ,Throwable ex,HttpServletRequest request){
+
+        response.setStatus(status.value());
+        response.setContentType("application/json");
+        ErrorResponse<?> errorResponse=new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(),null);
+        errorResponse.setMessage(ex.getMessage());
+        try{
+            ObjectMapper objectMapper=new ObjectMapper();
+            String json = objectMapper.writeValueAsString(errorResponse);
+            response.getWriter().write(json);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @SuppressWarnings("java:S2160")

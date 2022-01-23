@@ -79,7 +79,6 @@ public class UserService {
     }
 
     private KakaoToken getKakaoToken(KakaoCodeRequest request) {
-        System.out.println(request);
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kauth.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
         URI uri = uriBuilderFactory.uriString("/oauth/token").build();
@@ -112,7 +111,6 @@ public class UserService {
                 .blockOptional().orElseThrow();
 
         JSONObject obj = new JSONObject(response.getBody());
-        System.out.println(obj.toString());
         return KakaoUser.from(obj);
     }
 
