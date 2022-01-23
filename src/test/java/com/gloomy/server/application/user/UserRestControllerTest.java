@@ -153,7 +153,7 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("0ts5zs7TNW9t65j6EF66Cw4HMT93EiahytE7l7Q08yCmSlusZmW-CTOh8wgih-DtQLA0wwo9cpgAAAF-fP5l1A")
+                .code("_AOFut2E_r_54Q8rcQO2vP6vOGYTueXIDUSMw9qnC7RphqM82TPnhN6dnXuXHUP7Br4npAopcJ4AAAF-gjczUw")
                 .build();
 
         mockMvc.perform(post("/kakao/signUp")

@@ -13,12 +13,12 @@
     />
 </a>
 <script type="text/javascript">
-    Kakao.init('343faed407d9718984e4cd32202042ac');
+    Kakao.init('4b3443c9093cc1dca7e83623ec64fc39');
     console.log(Kakao.isInitialized());
 
     function loginWithKakao() {
         Kakao.Auth.authorize({
-            redirectUri: 'http://localhost:3030/'
+            redirectUri: 'http://localhost:8080/kakao/signUp'
         });
     }
 </script>
