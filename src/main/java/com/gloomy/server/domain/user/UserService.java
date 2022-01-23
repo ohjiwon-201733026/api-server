@@ -71,7 +71,7 @@ public class UserService {
         if(user.isEmpty()) {
             return user = Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
         }
-        else throw new IllegalArgumentException("[ UserService ] : password 불일치");
+        else throw new IllegalArgumentException("[ UserService ] : 이미 가입된 회원입니다");
     }
 
     private KakaoToken getKakaoToken(KakaoCodeRequest request) {
@@ -84,8 +84,8 @@ public class UserService {
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-                        .with("redirect_uri", "http://localhost:3030/")
+                        .with("client_id", "6f503c85b5159190a85b7884ca7dd389")
+                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
@@ -93,6 +93,7 @@ public class UserService {
     }
 
     private KakaoUser getKakaoUser(String accessToken) {
+        System.out.println(accessToken);
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kapi.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
@@ -106,6 +107,7 @@ public class UserService {
                                         .blockOptional().orElseThrow();
 
         JSONObject obj = new JSONObject(response.getBody());
+        System.out.println(obj.toString());
         return KakaoUser.from(obj);
     }
 
@@ -149,10 +151,10 @@ public class UserService {
     }
 
     public long getMyInfo(){
-        String token=SecurityContextHolder.getContext()
+         Object token=SecurityContextHolder.getContext()
                 .getAuthentication()
-                .getCredentials()
-                .toString();
-        return jwtDeserializer.getUserId(token);
+                .getCredentials();
+        if(token==null) throw new IllegalArgumentException("[ UserService ] token이 없는 사용자");
+        return jwtDeserializer.getUserId(token.toString());
     }
 }
