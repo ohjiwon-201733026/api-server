@@ -27,24 +27,24 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    public Comment createComment(CommentDTO.Request commentDTO) throws IllegalArgumentException {
-        validateCommentDTO(commentDTO);
-        return commentRepository.save(makeComment(commentDTO));
+    public Comment createComment(Long userId, CommentDTO.Request commentDTO) throws IllegalArgumentException {
+        validateCommentDTO(userId, commentDTO);
+        return commentRepository.save(makeComment(userId, commentDTO));
     }
 
-    private Comment makeComment(CommentDTO.Request commentDTO) {
+    private Comment makeComment(Long userId, CommentDTO.Request commentDTO) {
         Feed feedId = feedService.findOneFeed(commentDTO.getFeedId());
-        if (commentDTO.getUserId() != null) {
-            User userId = userService.findUser(commentDTO.getUserId());
-            return Comment.of(new Content(commentDTO.getContent()), feedId, userId);
+        if (userId != null) {
+            User user = userService.findUser(userId);
+            return Comment.of(new Content(commentDTO.getContent()), feedId, user);
         }
         return Comment.of(new Content(commentDTO.getContent()), feedId, new Password(commentDTO.getPassword()));
     }
 
-    private void validateCommentDTO(CommentDTO.Request commentDTO) throws IllegalArgumentException {
+    private void validateCommentDTO(Long userId, CommentDTO.Request commentDTO) throws IllegalArgumentException {
         if ((commentDTO.getContent() == null || commentDTO.getFeedId() == null)
-                || (commentDTO.getUserId() == null && commentDTO.getPassword() == null)
-                || (commentDTO.getUserId() != null && commentDTO.getPassword() != null)) {
+                || (userId == null && commentDTO.getPassword() == null)
+                || (userId != null && commentDTO.getPassword() != null)) {
             throw new IllegalArgumentException("[CommentService] 회원 댓글 등록 요청 메시지가 잘못되었습니다.");
         }
     }

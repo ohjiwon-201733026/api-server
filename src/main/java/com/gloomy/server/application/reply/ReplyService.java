@@ -29,27 +29,27 @@ public class ReplyService {
         this.replyRepository = replyRepository;
     }
 
-    public Reply createReply(ReplyDTO.Request replyDTO) {
-        validateReplyDTO(replyDTO);
-        return replyRepository.save(makeReply(replyDTO));
+    public Reply createReply(Long userId, ReplyDTO.Request replyDTO) {
+        validateReplyDTO(userId, replyDTO);
+        return replyRepository.save(makeReply(userId, replyDTO));
     }
 
-    private Reply makeReply(ReplyDTO.Request replyDTO) {
+    private Reply makeReply(Long userId, ReplyDTO.Request replyDTO) {
         Comment foundComment = commentService.findComment(replyDTO.getCommentId());
-        if (replyDTO.getUserId() != null) {
-            User foundUser = userService.findUser(replyDTO.getUserId());
+        if (userId != null) {
+            User foundUser = userService.findUser(userId);
             return replyRepository.save(Reply.of(replyDTO.getContent(), foundComment, foundUser));
         }
         return replyRepository.save(Reply.of(replyDTO.getContent(), foundComment, replyDTO.getPassword()));
     }
 
-    private void validateReplyDTO(ReplyDTO.Request replyDTO) {
-        if ((replyDTO.getUserId() == null) == (replyDTO.getPassword() == null)
+    private void validateReplyDTO(Long userId, ReplyDTO.Request replyDTO) {
+        if ((userId == null) == (replyDTO.getPassword() == null)
             || !validateCommonElements(replyDTO)) {
             throw new IllegalArgumentException("[ReplyService] 대댓글 등록 요청 메시지가 잘못되었습니다.");
         }
-        if (replyDTO.getUserId() != null) {
-            validateUserReplyDTO(replyDTO);
+        if (userId != null) {
+            validateUser(userId);
             return;
         }
         validateNonUserReplyDTO(replyDTO);
@@ -60,8 +60,8 @@ public class ReplyService {
                 && validateId(replyDTO.getCommentId());
     }
 
-    private void validateUserReplyDTO(ReplyDTO.Request replyDTO) {
-        if (replyDTO.getUserId() <= 0L) {
+    private void validateUser(Long userId) {
+        if (userId <= 0L) {
             throw new IllegalArgumentException("[ReplyService] 회원 대댓글 등록 요청 메시지가 잘못되었습니다.");
         }
     }

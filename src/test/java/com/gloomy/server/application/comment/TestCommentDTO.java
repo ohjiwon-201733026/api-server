@@ -19,7 +19,7 @@ public class TestCommentDTO {
     }
 
     public CommentDTO.Request makeUserCommentDTO() {
-        return new CommentDTO.Request(content, feedId, userId);
+        return new CommentDTO.Request(content, feedId);
     }
 
     public CommentDTO.Request makeNonUserCommentDTO() {

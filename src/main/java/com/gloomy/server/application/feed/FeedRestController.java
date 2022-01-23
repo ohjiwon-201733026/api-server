@@ -6,6 +6,7 @@ import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,12 +23,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/feed")
 public class FeedRestController {
+    private final UserService userService;
     private final FeedService feedService;
     private final ImageService imageService;
     private final CommentService commentService;
     private final RequestContext requestContext;
 
-    public FeedRestController(FeedService feedService, ImageService imageService, CommentService commentService, RequestContext requestContext) {
+    public FeedRestController(UserService userService, FeedService feedService, ImageService imageService, CommentService commentService, RequestContext requestContext) {
+        this.userService = userService;
         this.feedService = feedService;
         this.imageService = imageService;
         this.commentService = commentService;
@@ -37,7 +40,8 @@ public class FeedRestController {
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public FeedDTO.Response createFeed(@Validated @ModelAttribute FeedDTO.Request feedDTO) {
         requestContext.setRequestBody(feedDTO);
-        Feed createFeed = feedService.createFeed(feedDTO);
+        Long userId = userService.getMyInfo();
+        Feed createFeed = feedService.createFeed(userId, feedDTO);
         return makeFeedDTOResponse(createFeed);
     }
 

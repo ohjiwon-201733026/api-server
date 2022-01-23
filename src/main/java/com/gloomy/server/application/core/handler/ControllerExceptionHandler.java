@@ -24,6 +24,13 @@ public class ControllerExceptionHandler {
         this.requestContext = requestContext;
     }
 
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(RuntimeException.class)
+    public ErrorResponse<?> handlerRuntimeException(RuntimeException e) {
+        e.printStackTrace();
+        return new ErrorResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), requestContext.getRequestBody());
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse<?> handlerIllegalArgumentException(IllegalArgumentException e) {

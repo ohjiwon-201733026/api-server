@@ -2,6 +2,7 @@ package com.gloomy.server.application.comment;
 
 import com.gloomy.server.application.core.response.RequestContext;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.user.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,10 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/comment")
 public class CommentRestController {
+    private final UserService userService;
     private final CommentService commentService;
     private final RequestContext requestContext;
 
-    public CommentRestController(CommentService commentService, RequestContext requestContext) {
+    public CommentRestController(UserService userService, CommentService commentService, RequestContext requestContext) {
+        this.userService = userService;
         this.commentService = commentService;
         this.requestContext = requestContext;
     }
@@ -26,7 +29,8 @@ public class CommentRestController {
     @PostMapping(value = "")
     public CommentDTO.Response createComment(@Validated @RequestBody CommentDTO.Request commentDTO) {
         requestContext.setRequestBody(commentDTO);
-        Comment createdComment = commentService.createComment(commentDTO);
+        Long userId = userService.getMyInfo();
+        Comment createdComment = commentService.createComment(userId, commentDTO);
         return makeCommentDTOResponse(createdComment);
     }
 
