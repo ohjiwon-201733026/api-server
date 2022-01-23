@@ -93,21 +93,19 @@ public class UserService {
     }
 
     private KakaoUser getKakaoUser(String accessToken) {
-        System.out.println(accessToken);
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kapi.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
         URI uri = uriBuilderFactory.uriString("v2/user/me").build();
 
         ResponseEntity<String> response = webClient.post()
-                                        .uri(uri)
-                                        .header("Authorization", "Bearer " + accessToken)
-                                        .retrieve()
-                                        .toEntity(String.class)
-                                        .blockOptional().orElseThrow();
+                .uri(uri)
+                .header("Authorization", "Bearer " + accessToken)
+                .retrieve()
+                .toEntity(String.class)
+                .blockOptional().orElseThrow();
 
         JSONObject obj = new JSONObject(response.getBody());
-        System.out.println(obj.toString());
         return KakaoUser.from(obj);
     }
 
@@ -150,11 +148,11 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    public long getMyInfo(){
-         Object token=SecurityContextHolder.getContext()
+    public Long getMyInfo(){
+        Object token=SecurityContextHolder.getContext()
                 .getAuthentication()
                 .getCredentials();
-        if(token==null) throw new IllegalArgumentException("[ UserService ] token이 없는 사용자");
+        if(token.equals("")) return null;
         return jwtDeserializer.getUserId(token.toString());
     }
 }

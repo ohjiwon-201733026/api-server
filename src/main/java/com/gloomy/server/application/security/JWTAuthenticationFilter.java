@@ -1,6 +1,7 @@
 package com.gloomy.server.application.security;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -17,10 +18,14 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        ofNullable(request.getHeader(AUTHORIZATION))
-                .map(authHeader -> authHeader.substring("Token ".length()))
-                .map(JWT::new)
-                .ifPresent(getContext()::setAuthentication);
+        String s=request.getHeader((AUTHORIZATION));
+        if(s==null){
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+        else{
+            String token=s.substring("Bearer ".length());
+            SecurityContextHolder.getContext().setAuthentication(new JWT(token));
+        }
         filterChain.doFilter(request, response);
     }
 

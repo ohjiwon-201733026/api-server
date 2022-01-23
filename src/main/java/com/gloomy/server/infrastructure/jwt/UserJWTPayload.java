@@ -3,17 +3,21 @@ package com.gloomy.server.infrastructure.jwt;
 import com.gloomy.server.domain.jwt.JWTPayload;
 import com.gloomy.server.domain.user.User;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.time.Instant.now;
 
+@Setter
+@NoArgsConstructor
 public class UserJWTPayload implements JWTPayload {
 
-    private final long sub;
-    private final String name;
-    private final long iat;
+    private long sub;
+    private String name;
+    private long iat;
 
     static UserJWTPayload of(User user, long epochSecondExpired) {
         return new UserJWTPayload(user.getId(), valueOf(user.getEmail()), epochSecondExpired);

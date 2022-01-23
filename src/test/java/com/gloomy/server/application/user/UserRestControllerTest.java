@@ -153,9 +153,9 @@ class UserRestControllerTest extends AbstractControllerTest {
     @Test
     void kakaoLogin() throws Exception {
         KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("0ts5zs7TNW9t65j6EF66Cw4HMT93EiahytE7l7Q08yCmSlusZmW-CTOh8wgih-DtQLA0wwo9cpgAAAF-fP5l1A")
+                .code("Bgmfv-1LvTjJtgl9MssdZ--wGAX4jPajbjtBgeQaTB1uMVtNqU6wCllyr3EPKLr8TmuWvwo9cusAAAF-hsjxpA")
                 .build();
-        mockMvc.perform(post("/kakao/signUp")
+        mockMvc.perform(get("/kakao/signUp")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
@@ -202,7 +202,7 @@ class UserRestControllerTest extends AbstractControllerTest {
         this.mockMvc.perform(fileUpload("/user/update")
 //                .file(firstUpdateImageFile)
                 .params(params)
-                .header("Authorization","Token "+token)
+                .header("Authorization","Bearer "+token)
 //                )
                 )
                 .andDo(print())

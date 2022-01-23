@@ -1,34 +1,17 @@
 package com.gloomy.server.application.user;
 
-import com.gloomy.server.application.core.response.ErrorResponse;
-import com.gloomy.server.application.core.response.RestResponse;
-import com.gloomy.server.application.feed.UpdateFeedDTO;
 import com.gloomy.server.application.image.UserProfileImageService;
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.gloomy.server.application.user.UserDTO.*;
-import static org.springframework.http.ResponseEntity.*;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 public class UserRestController {
@@ -49,30 +32,28 @@ public class UserRestController {
      * @return
      */
     @PostMapping(value = "/user" ,produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> addUser(@Validated @RequestBody PostRequest request) {
+    public Response addUser(@Validated @RequestBody PostRequest request) {
         final User userSaved = userService.signUp(request);
-        return ok(new RestResponse<>(200,"user add success"
-                ,Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved),userProfileImageService.findImageByUserId(userSaved).getImageUrl().getImageUrl())));
+        return Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved),userProfileImageService.findImageByUserId(userSaved).getImageUrl().getImageUrl());
     }
 
     @PostMapping(value = "/user/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> login(@Validated @RequestBody LoginRequest request) {
-        return ok(new RestResponse<>(200,"user login success",
-                userService.login(request)
-                        .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl()))));
+    public Response login(@Validated @RequestBody LoginRequest request) {
+        User user=userService.login(request).get();
+                return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
     }
 
     @GetMapping(value = "/kakao/signUp")
-    public ResponseEntity<?> kakaoLogin(@Validated @RequestParam String code) {
+    public Response kakaoLogin(@Validated @RequestParam String code) {
         KakaoCodeRequest request=new KakaoCodeRequest(code);
-        return ok(new RestResponse<>(200,"user kakao login success",userService.kakaoLogin(request)
-                .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl()))));
+        User user=userService.kakaoLogin(request).get();
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
     }
 
     @GetMapping(value = "/user")
-    public ResponseEntity<Response> getUser(@AuthenticationPrincipal UserJWTPayload jwtPayload) {
-        return of(userService.findById(jwtPayload.getUserId())
-                .map(user -> Response.fromUserAndToken(user, getCurrentCredential(),userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl())));
+    public Response getUser(@AuthenticationPrincipal UserJWTPayload jwtPayload) {
+        User user=userService.findById(jwtPayload.getUserId()).get();
+        return Response.fromUserAndToken(user, getCurrentCredential(),userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
     }
 
     private static String getCurrentCredential() {
@@ -83,10 +64,10 @@ public class UserRestController {
     }
 
     @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
+    public UpdateUserDTO.Response updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
             Long userId=userService.getMyInfo();
             User updateUser = userService.updateUser(userId,updateUserDTO);
-            return ok(new RestResponse<>(200,"user update 성공",makeUpdateUserDTO(updateUser)));
+            return makeUpdateUserDTO(updateUser);
     }
 
 
@@ -101,10 +82,10 @@ public class UserRestController {
     }
 
     @GetMapping(value ="/user/detail")
-    public ResponseEntity<?> userDetail(){
+    public UpdateUserDTO.Response userDetail(){
         Long userId=userService.getMyInfo();
-            User findUser = userService.findUser(userId);
-            return ok(new RestResponse<>(200,"user detail 조회 성공",makeUpdateUserDTO(findUser)));
+        User findUser = userService.findUser(userId);
+        return makeUpdateUserDTO(findUser);
     }
 
 
