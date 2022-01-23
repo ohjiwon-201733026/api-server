@@ -1,8 +1,6 @@
 package com.gloomy.server.domain.image;
 
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,28 +23,27 @@ public class UserProfileImage {
     private ImageURL imageUrl;
 
     @Column(name = "status", nullable = false)
-    private IMAGE_STATUS status;
+    private ImageStatus status;
 
     private UserProfileImage() {
     }
 
     @Builder(builderClassName = "userImageBuilder", builderMethodName = "userImageBuilder")
-    private UserProfileImage(User userId, ImageURL imageUrl, IMAGE_STATUS status) {
+    private UserProfileImage(User userId, ImageURL imageUrl, ImageStatus status) {
         this.userId = userId;
         this.imageUrl = imageUrl;
         this.status = status;
     }
 
-
     public static UserProfileImage of(User userId, String imageUrl) {
         return userImageBuilder()
                 .userId(userId)
                 .imageUrl(new ImageURL(imageUrl))
-                .status(IMAGE_STATUS.ACTIVE)
+                .status(ImageStatus.ACTIVE)
                 .build();
     }
 
-    public void setStatus(IMAGE_STATUS status) {
+    public void setStatus(ImageStatus status) {
         this.status = status;
     }
 

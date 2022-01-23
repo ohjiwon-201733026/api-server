@@ -64,6 +64,8 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestParameters(
                                 parameterWithName("password").description("비밀번호"),
+                                parameterWithName("category").description("카테고리"),
+                                parameterWithName("title").description("게시글 제목"),
                                 parameterWithName("content").description("게시글 내용")),
                         requestParts(
                                 partWithName("images").description("이미지 파일 리스트").optional()),
@@ -74,10 +76,13 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").type(JsonFieldType.NULL).description("회원 ID (없음)"),
                                 fieldWithPath("result.password").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("게시글 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
                                 fieldWithPath("result.imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트"),
                                 fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("게시글 활성여부"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
@@ -99,6 +104,8 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestParameters(
                                 parameterWithName("userId").description("회원 ID"),
+                                parameterWithName("category").description("카테고리"),
+                                parameterWithName("title").description("게시글 제목"),
                                 parameterWithName("content").description("게시글 내용")),
                         requestParts(
                                 partWithName("images").description("이미지 파일 리스트").optional()),
@@ -109,10 +116,13 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("회원 ID"),
                                 fieldWithPath("result.password").type(JsonFieldType.NULL).description("비밀번호"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("게시글 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
                                 fieldWithPath("result.imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트"),
                                 fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("게시글 활성여부"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
@@ -142,10 +152,13 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.content[].userId").description("회원 ID"),
                                 fieldWithPath("result.content[].password").description("비밀번호"),
+                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("result.content[].title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("게시글 내용"),
                                 fieldWithPath("result.content[].likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
                                 fieldWithPath("result.content[].imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트"),
                                 fieldWithPath("result.content[].commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                fieldWithPath("result.content[].status").type(JsonFieldType.STRING).description("게시글 활성여부"),
 
                                 fieldWithPath("result.pageable").type(JsonFieldType.STRING).description("pageable 정보"),
                                 fieldWithPath("result.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
@@ -189,10 +202,13 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.content[].userId").type(JsonFieldType.NUMBER).description("회원 ID"),
                                 fieldWithPath("result.content[].password").type(JsonFieldType.NULL).description("비밀번호"),
+                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("result.content[].title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("게시글 내용"),
                                 fieldWithPath("result.content[].likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
                                 fieldWithPath("result.content[].imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트"),
                                 fieldWithPath("result.content[].commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                fieldWithPath("result.content[].status").type(JsonFieldType.STRING).description("게시글 활성여부"),
 
                                 fieldWithPath("result.pageable").type(JsonFieldType.STRING).description("pageable 정보"),
                                 fieldWithPath("result.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
@@ -231,10 +247,13 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").description("회원 ID"),
                                 fieldWithPath("result.password").description("비밀번호"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("게시글 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
                                 fieldWithPath("result.imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트"),
                                 fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("게시글 활성여부"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
@@ -263,6 +282,8 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 parameterWithName("feedId").description("수정할 피드 ID")),
                         requestParameters(
                                 parameterWithName("password").description("수정할 비회원 비밀번호(선택사항)").optional(),
+                                parameterWithName("category").description("수정할 카테고리(선택사항)").optional(),
+                                parameterWithName("title").description("수정할 게시글 제목(선택사항)").optional(),
                                 parameterWithName("content").description("수정할 게시글 내용(선택사항)").optional()),
                         requestParts(
                                 partWithName("images").description("수정할 이미지 파일 리스트(선택사항)").optional()),
@@ -273,10 +294,13 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.userId").description("회원 ID"),
                                 fieldWithPath("result.password").description("비밀번호"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("게시글 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("좋아요 수"),
                                 fieldWithPath("result.imageURLs").type(JsonFieldType.ARRAY).description("이미지 리스트"),
                                 fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("댓글 수"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("게시글 활성여부"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));

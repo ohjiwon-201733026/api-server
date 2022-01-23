@@ -1,14 +1,7 @@
 package com.gloomy.server.application.user;
 
-import com.gloomy.server.application.comment.CommentDTO;
-import com.gloomy.server.application.comment.CommentService;
-import com.gloomy.server.application.feed.FeedDTO;
-import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
-import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.application.image.UserProfileImageService;
-import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +9,9 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

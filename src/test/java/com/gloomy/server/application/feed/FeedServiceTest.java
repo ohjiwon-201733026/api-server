@@ -2,9 +2,10 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
-import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.user.*;
+import com.gloomy.server.domain.feed.FeedStatus;
+import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +58,7 @@ class FeedServiceTest {
     @Test
     void 피드_생성_회원_성공() {
         FeedDTO.Request userFeedDTO = new FeedDTO.Request(
-                testFeedDTO.getUserId(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getUserId(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         Feed createdFeed = feedService.createFeed(userFeedDTO);
 
@@ -69,7 +70,7 @@ class FeedServiceTest {
         userService.deleteAll();
 
         FeedDTO.Request userFeedDTOWithInvalidUserId = new FeedDTO.Request(
-                testFeedDTO.getUserId(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getUserId(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         checkCreatedFeedFail(userFeedDTOWithInvalidUserId, "[FeedService] 회원 피드 등록 요청 메시지가 잘못되었습니다.");
     }
@@ -77,7 +78,7 @@ class FeedServiceTest {
     @Test
     void 피드_생성_비회원_성공() {
         FeedDTO.Request nonUserFeedDTO = new FeedDTO.Request(
-                testFeedDTO.getPassword(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getPassword(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         Feed createdFeed = feedService.createFeed(nonUserFeedDTO);
 
@@ -87,7 +88,7 @@ class FeedServiceTest {
     @Test
     void 피드_생성_비회원_실패() {
         FeedDTO.Request nonUserFeedDTOWithNoContent = new FeedDTO.Request(
-                "", testFeedDTO.getContent(), testFeedDTO.getImages());
+                "", testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         checkCreatedFeedFail(nonUserFeedDTOWithNoContent, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
     }
@@ -95,9 +96,9 @@ class FeedServiceTest {
     @Test
     void 피드_생성_공통_실패() {
         FeedDTO.Request userFeedDTOWithNoUserId = new FeedDTO.Request(
-                (Long) null, testFeedDTO.getContent(), testFeedDTO.getImages());
+                (Long) null, testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
         FeedDTO.Request nonUserFeedDTOWithNoPassword = new FeedDTO.Request(
-                (String) null, testFeedDTO.getContent(), testFeedDTO.getImages());
+                (String) null, testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
 
         checkCreatedFeedFail(userFeedDTOWithNoUserId, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
         checkCreatedFeedFail(nonUserFeedDTOWithNoPassword, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
@@ -190,7 +191,7 @@ class FeedServiceTest {
         checkFoundAllActiveFeedsFail(null, "[FeedService] pageable이 유효하지 않습니다.");
     }
 
-   @Test
+    @Test
     void 피드_수정_공통_성공() {
         Feed createdNonUserFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
         String updateContent = "새 글";
@@ -234,7 +235,7 @@ class FeedServiceTest {
         Feed createdUserFeed = feedService.createFeed(userFeedDTO);
         Feed deletedUserFeed = feedService.deleteFeed(createdUserFeed.getId());
 
-        assertEquals(deletedUserFeed.getStatus(), FEED_STATUS.INACTIVE);
+        assertEquals(deletedUserFeed.getStatus(), FeedStatus.INACTIVE);
     }
 
     @Test
@@ -244,7 +245,7 @@ class FeedServiceTest {
         Feed createdNonUserFeed = feedService.createFeed(nonUserFeedDTO);
         Feed deletedNonUserFeed = feedService.deleteFeed(createdNonUserFeed.getId());
 
-        assertEquals(deletedNonUserFeed.getStatus(), FEED_STATUS.INACTIVE);
+        assertEquals(deletedNonUserFeed.getStatus(), FeedStatus.INACTIVE);
     }
 
     @Test

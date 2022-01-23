@@ -11,6 +11,8 @@ public class UpdateFeedDTO {
     @NoArgsConstructor
     public static class Request {
         private String password;
+        private String category;
+        private String title;
         private String content;
         private List<MultipartFile> images;
     }

@@ -2,8 +2,8 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.feed.Content;
-import com.gloomy.server.domain.feed.FEED_STATUS;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.feed.FeedStatus;
 import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -29,7 +29,13 @@ public class FeedService {
     @Transactional
     public Feed createFeed(FeedDTO.Request feedDTO) throws IllegalArgumentException {
         validateFeedDTO(feedDTO);
-        Feed createdFeed = feedRepository.save(makeFeed(feedDTO));
+        Feed createdFeed = null;
+        User userId = null;
+        if (feedDTO.getUserId() != null) {
+            userId = userService.findUser(feedDTO.getUserId());
+        }
+        createdFeed = feedRepository.save(Feed.of(userId, feedDTO));
+
         if (feedDTO.getImages() != null) {
             imageService.uploadMany(createdFeed, feedDTO.getImages());
         }
@@ -38,7 +44,9 @@ public class FeedService {
 
     private void validateFeedDTO(FeedDTO.Request feedDTO) throws IllegalArgumentException {
         if ((feedDTO.getUserId() == null) == (feedDTO.getPassword() == null)
-            || feedDTO.getContent().length() <= 0) {
+                || feedDTO.getCategory().length() <= 0
+                || feedDTO.getTitle().length() <= 0
+                || feedDTO.getContent().length() <= 0) {
             throw new IllegalArgumentException("[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
         }
         if (feedDTO.getUserId() != null) {
@@ -54,14 +62,6 @@ public class FeedService {
         }
     }
 
-    private Feed makeFeed(FeedDTO.Request feedDTO) {
-        if (feedDTO.getUserId() != null) {
-            User findUser = userService.findUser(feedDTO.getUserId());
-            return Feed.of(findUser, feedDTO.getContent());
-        }
-        return Feed.of(feedDTO.getPassword(), feedDTO.getContent());
-    }
-
     public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
@@ -73,7 +73,7 @@ public class FeedService {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
-        return feedRepository.findAllByStatus(pageable, FEED_STATUS.ACTIVE);
+        return feedRepository.findAllByStatus(pageable, FeedStatus.ACTIVE);
     }
 
     public Page<Feed> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
@@ -129,7 +129,7 @@ public class FeedService {
     @Transactional
     public Feed deleteFeed(Long feedId) {
         Feed foundFeed = findOneFeed(feedId);
-        foundFeed.setStatus(FEED_STATUS.INACTIVE);
+        foundFeed.setStatus(FeedStatus.INACTIVE);
         return feedRepository.save(foundFeed);
     }
 
