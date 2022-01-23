@@ -11,7 +11,7 @@ public class Content {
     @Column(name = "content", nullable = false)
     private String content;
 
-    private Content() {
+    protected Content() {
     }
 
     public Content(String content) {

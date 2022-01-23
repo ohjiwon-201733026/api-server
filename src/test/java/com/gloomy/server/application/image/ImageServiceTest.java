@@ -4,9 +4,9 @@ import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.Image;
-import com.gloomy.server.domain.image.ImageStatus;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -138,7 +138,7 @@ class ImageServiceTest {
 
     private void checkDeletedImageSuccess(Images deletedImages) {
         for (Image deletedImage : deletedImages.getImages()) {
-            assertEquals(deletedImage.getStatus(), ImageStatus.INACTIVE);
+            assertEquals(deletedImage.getStatus(), Status.INACTIVE);
         }
     }
 

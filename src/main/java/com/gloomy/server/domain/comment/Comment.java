@@ -1,5 +1,6 @@
 package com.gloomy.server.domain.comment;
 
+import com.gloomy.server.domain.common.*;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;
@@ -9,15 +10,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @Entity
-public class Comment {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Comment extends BaseEntity {
     @Embedded
     private Content content;
 
@@ -32,60 +30,64 @@ public class Comment {
     @Embedded
     private Password password;
 
-    @Column(name = "status", nullable = false)
-    private COMMENT_STATUS status;
-
-    Comment() {
+    protected Comment() {
     }
 
     @Builder(builderClassName = "userCommentBuilder", builderMethodName = "userCommentBuilder", access = AccessLevel.PRIVATE)
-    private Comment(Content content, Feed feedId, User userId, COMMENT_STATUS status) {
+    private Comment(Content content, Feed feedId, User userId, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.content = content;
         this.feedId = feedId;
-        this.userId=userId;
+        this.userId = userId;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     @Builder(builderClassName = "nonUserCommentBuilder", builderMethodName = "nonUserCommentBuilder", access = AccessLevel.PRIVATE)
-    private Comment(Content content, Feed feedId, Password password, COMMENT_STATUS status) {
+    private Comment(Content content, Feed feedId, Password password, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.content = content;
         this.feedId = feedId;
         this.password = password;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     public static Comment of(Content content, Feed feedId, User userId) {
+        LocalDateTime now = LocalDateTime.now();
         return Comment.userCommentBuilder()
                 .content(content)
                 .feedId(feedId)
                 .userId(userId)
-                .status(COMMENT_STATUS.ACTIVE)
+                .status(Status.ACTIVE)
+                .createdAt(new CreatedAt(now))
+                .updatedAt(new UpdatedAt(now))
+                .deletedAt(new DeletedAt(LocalDateTime.MIN))
                 .build();
     }
 
     public static Comment of(Content content, Feed feedId, Password password) {
+        LocalDateTime now = LocalDateTime.now();
         return Comment.nonUserCommentBuilder()
                 .content(content)
                 .feedId(feedId)
                 .password(password)
-                .status(COMMENT_STATUS.ACTIVE)
+                .status(Status.ACTIVE)
+                .createdAt(new CreatedAt(now))
+                .updatedAt(new UpdatedAt(now))
+                .deletedAt(new DeletedAt(LocalDateTime.MIN))
                 .build();
     }
-
-    /**
-     * User - Comment 연관관계
-     */
-//    public void changeUser(User user){
-//        this.userId=user;
-//        this.userId.getComments().add(this);
-//    }
 
     public void setContent(Content content) {
         this.content = content;
     }
 
-    public void setStatus(COMMENT_STATUS status) {
-        this.status = status;
+    public void delete() {
+        this.status = Status.INACTIVE;
+        this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
     @Override

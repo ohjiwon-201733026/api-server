@@ -8,6 +8,7 @@ import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -38,16 +39,18 @@ class CommentRestControllerTest extends AbstractControllerTest {
     @Autowired
     CommentService commentService;
     @Autowired
+    private JWTSerializer jwtSerializer;
+    @Autowired
     ObjectMapper objectMapper;
     TestCommentDTO testCommentDTO;
 
     @BeforeEach
     void beforeEach() {
-        User tmpUser = new TestUserDTO().makeTestUser();
-        User testUser = userService.createUser(tmpUser);
+        User testUser = userService.createUser(new TestUserDTO().makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
+        testCommentDTO.setToken(jwtSerializer.jwtFromUser(testUser));
     }
 
     @AfterEach
@@ -74,17 +77,21 @@ class CommentRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestFields(
                                 fieldWithPath("content").description("댓글 내용"),
-                                fieldWithPath("feedId").description("피드 ID"),
-                                fieldWithPath("userId").description("회원 ID").optional(),
-                                fieldWithPath("password").description("비밀번호").optional()),
+                                fieldWithPath("feedId").description("댓글의 피드 ID"),
+                                fieldWithPath("password").description("비밀번호")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.userId").type(JsonFieldType.NULL).description("회원 ID"),
-                                fieldWithPath("result.password").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NULL).description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.password").type(JsonFieldType.STRING).description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("댓글 상태(ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("댓글 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("댓글 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("댓글 삭제시간"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
@@ -98,6 +105,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/comment")
+                        .header("Authorization", "Bearer " + testCommentDTO.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -108,17 +116,21 @@ class CommentRestControllerTest extends AbstractControllerTest {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestFields(
                                 fieldWithPath("content").description("댓글 내용"),
-                                fieldWithPath("feedId").description("피드 ID"),
-                                fieldWithPath("userId").description("회원 ID").optional(),
-                                fieldWithPath("password").description("비밀번호").optional()),
+                                fieldWithPath("feedId").description("댓글의 피드 ID"),
+                                fieldWithPath("password").description("비밀번호(NULL)")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("회원 ID"),
-                                fieldWithPath("result.password").type(JsonFieldType.NULL).description("비밀번호"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.password").type(JsonFieldType.NULL).description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("댓글 상태(ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("댓글 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("댓글 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("댓글 삭제시간"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
@@ -141,11 +153,16 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result.content[]").description("응답 데이터"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.content[].userId").description("회원 ID"),
-                                fieldWithPath("result.content[].password").description("비밀번호"),
+                                fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
+                                fieldWithPath("result.content[].userId").description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.content[].password").description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.content[].status").type(JsonFieldType.STRING).description("댓글 상태(ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.content[].createdAt").type(JsonFieldType.STRING).description("댓글 생성시간"),
+                                fieldWithPath("result.content[].updatedAt").type(JsonFieldType.STRING).description("댓글 수정시간"),
+                                fieldWithPath("result.content[].deletedAt").type(JsonFieldType.STRING).description("댓글 삭제시간"),
 
                                 fieldWithPath("result.pageable").type(JsonFieldType.STRING).description("pageable 정보"),
                                 fieldWithPath("result.totalPages").type(JsonFieldType.NUMBER).description("전체 페이지 수"),
@@ -180,11 +197,16 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.userId").description("회원 ID"),
-                                fieldWithPath("result.password").description("비밀번호"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
+                                fieldWithPath("result.userId").description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.password").description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("댓글 상태(ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("댓글 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("댓글 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("댓글 삭제시간"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
@@ -213,11 +235,16 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
-                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
-                                fieldWithPath("result.userId").description("회원 ID"),
-                                fieldWithPath("result.password").description("비밀번호"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
+                                fieldWithPath("result.userId").description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.password").description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("댓글 상태(ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("댓글 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("댓글 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("댓글 삭제시간"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));

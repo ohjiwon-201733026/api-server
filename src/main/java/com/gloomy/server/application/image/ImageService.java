@@ -1,9 +1,9 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.Image;
-import com.gloomy.server.domain.image.ImageStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +65,7 @@ public class ImageService {
         if (feedId == null) {
             throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
         }
-        return new Images(imageRepository.findAllByFeedIdAndStatus(feedId, ImageStatus.ACTIVE));
+        return new Images(imageRepository.findAllByFeedIdAndStatus(feedId, Status.ACTIVE));
     }
 
     public Images updateImages(Feed feedId, List<MultipartFile> images) {
@@ -80,7 +80,7 @@ public class ImageService {
         }
         List<Image> foundImages = imageRepository.findAllByFeedId(feedId);
         for (Image foundImage : foundImages) {
-            foundImage.setStatus(ImageStatus.INACTIVE);
+            foundImage.delete();
         }
         return new Images(imageRepository.saveAll(foundImages));
     }

@@ -1,6 +1,7 @@
 package com.gloomy.server.domain.user;
 
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
 import lombok.ToString;
 import org.springframework.security.core.parameters.P;
@@ -47,7 +48,7 @@ public class User {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
-    private JoinStatus joinStatus;
+    private Status joinStatus;
 
 //    @OneToMany(mappedBy = "userId")
 //    private List<Feed> feeds=new ArrayList<>();
@@ -68,7 +69,7 @@ public class User {
         this.password = password;
     }
 
-    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth,JoinStatus joinStatus){
+    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth,Status joinStatus){
         this.email = email;
         this.profile = profile;
         this.role=Role.USER;
@@ -79,8 +80,8 @@ public class User {
     }
 
     public static User of(String email, String name, Password password,
-                          Sex sex, int year,int month,int day,JoinStatus joinStatus){
-        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day),joinStatus);
+                          Sex sex, int year,int month,int day,Status status){
+        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day),status);
     }
 
     public static User of(String email, String name, Password password) {

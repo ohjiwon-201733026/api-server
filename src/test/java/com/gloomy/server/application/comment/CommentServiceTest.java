@@ -4,8 +4,8 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
-import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -228,7 +228,7 @@ class CommentServiceTest {
     void 댓글_삭제_성공() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
         Comment deletedComment = commentService.deleteComment(createdComment.getId());
-        assertEquals(deletedComment.getStatus(), COMMENT_STATUS.INACTIVE);
+        assertEquals(deletedComment.getStatus(), Status.INACTIVE);
     }
 
     @Test

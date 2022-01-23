@@ -1,8 +1,8 @@
 package com.gloomy.server.domain.reply;
 
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.*;
 import com.gloomy.server.domain.feed.Content;
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import lombok.AccessLevel;
@@ -10,15 +10,12 @@ import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @Entity
-public class Reply {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Reply extends BaseEntity {
     @Embedded
     private Content content;
 
@@ -33,43 +30,54 @@ public class Reply {
     @Embedded
     private Password password;
 
-    @Column(name = "status", nullable = false)
-    private REPLY_STATUS status;
-
-    Reply() {
+    protected Reply() {
     }
 
     @Builder(builderClassName = "userReplyBuilder", builderMethodName = "userReplyBuilder", access = AccessLevel.PRIVATE)
-    private Reply(Content content, Comment commentId, User userId, REPLY_STATUS status) {
+    private Reply(Content content, Comment commentId, User userId, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.content = content;
         this.commentId = commentId;
         this.userId = userId;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     @Builder(builderClassName = "nonUserReplyBuilder", builderMethodName = "nonUserReplyBuilder", access = AccessLevel.PRIVATE)
-    private Reply(Content content, Comment commentId, Password password, REPLY_STATUS status) {
+    private Reply(Content content, Comment commentId, Password password, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.content = content;
         this.commentId = commentId;
         this.password = password;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     public static Reply of(String content, Comment commentId, User userId) {
+        LocalDateTime now = LocalDateTime.now();
         return Reply.userReplyBuilder()
                 .content(new Content(content))
                 .commentId(commentId)
                 .userId(userId)
-                .status(REPLY_STATUS.ACTIVE)
+                .status(Status.ACTIVE)
+                .createdAt(new CreatedAt(now))
+                .updatedAt(new UpdatedAt(now))
+                .deletedAt(new DeletedAt(LocalDateTime.MIN))
                 .build();
     }
 
     public static Reply of(String content, Comment commentId, String password) {
+        LocalDateTime now = LocalDateTime.now();
         return Reply.nonUserReplyBuilder()
                 .content(new Content(content))
                 .commentId(commentId)
                 .password(new Password(password))
-                .status(REPLY_STATUS.ACTIVE)
+                .status(Status.ACTIVE)
+                .createdAt(new CreatedAt(now))
+                .updatedAt(new UpdatedAt(now))
+                .deletedAt(new DeletedAt(LocalDateTime.MIN))
                 .build();
     }
 
@@ -77,8 +85,9 @@ public class Reply {
         this.content = content;
     }
 
-    public void setStatus(REPLY_STATUS status) {
-        this.status = status;
+    public void delete() {
+        this.status = Status.INACTIVE;
+        this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
     @Override

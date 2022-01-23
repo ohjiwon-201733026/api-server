@@ -11,7 +11,7 @@ public class LikeCount {
     @Column(name = "like_count", nullable = false)
     private Integer likeCount;
 
-    private LikeCount() {
+    protected LikeCount() {
     }
 
     public LikeCount(Integer likeCount) {

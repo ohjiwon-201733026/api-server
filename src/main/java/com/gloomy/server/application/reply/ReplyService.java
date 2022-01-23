@@ -3,8 +3,8 @@ package com.gloomy.server.application.reply;
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Content;
-import com.gloomy.server.domain.reply.REPLY_STATUS;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -45,7 +45,7 @@ public class ReplyService {
 
     private void validateReplyDTO(Long userId, ReplyDTO.Request replyDTO) {
         if ((userId == null) == (replyDTO.getPassword() == null)
-            || !validateCommonElements(replyDTO)) {
+                || !validateCommonElements(replyDTO)) {
             throw new IllegalArgumentException("[ReplyService] 대댓글 등록 요청 메시지가 잘못되었습니다.");
         }
         if (userId != null) {
@@ -105,8 +105,7 @@ public class ReplyService {
             throw new IllegalArgumentException("[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
         }
         Comment foundComment = commentService.findComment(commentId);
-        return replyRepository.findAllByCommentIdAndStatus(pageable,
-                foundComment, REPLY_STATUS.ACTIVE);
+        return replyRepository.findAllByCommentIdAndStatus(pageable, foundComment, Status.ACTIVE);
     }
 
     public boolean validateId(Long id) {
@@ -134,7 +133,7 @@ public class ReplyService {
 
     public Reply deleteReply(Long replyId) {
         Reply foundReply = findReply(replyId);
-        foundReply.setStatus(REPLY_STATUS.INACTIVE);
+        foundReply.delete();
         return replyRepository.save(foundReply);
     }
 
