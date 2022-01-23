@@ -69,7 +69,7 @@ public class UserService {
 
         Optional<User> user = userRepository.findFirstByEmail(kakaoUser.getEmail());
         if(user.isEmpty()) {
-            return user = Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
+            return Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
         }
         else throw new IllegalArgumentException("[ UserService ] : 이미 가입된 회원입니다");
     }
@@ -84,7 +84,7 @@ public class UserService {
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
-                        .with("client_id", "6f503c85b5159190a85b7884ca7dd389")
+                        .with("client_id", "76867f47209a454ed88ccf1080c4238c")
                         .with("redirect_uri", "http://localhost:8080/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()

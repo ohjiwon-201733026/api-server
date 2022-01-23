@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()
                 .antMatchers(POST, "/user", "/user/login").permitAll()
-                .antMatchers( "/kakao/signUp").permitAll()
+                .antMatchers(  "/kakao/signUp").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 .antMatchers("/feed/**").permitAll()
                 .antMatchers("/comment/**").permitAll()
