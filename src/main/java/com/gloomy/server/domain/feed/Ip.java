@@ -11,7 +11,7 @@ public class Ip {
     @Column(name = "ip", nullable = false)
     private String ip;
 
-    private Ip() {
+    protected Ip() {
     }
 
     public Ip(String ip) {

@@ -1,50 +1,53 @@
 package com.gloomy.server.domain.image;
 
+import com.gloomy.server.domain.common.*;
 import com.gloomy.server.domain.feed.Feed;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @Entity
-public class Image {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Image extends BaseEntity {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "feed_id")
     private Feed feedId;
 
-
     @Embedded
     private ImageURL imageUrl;
 
-    @Column(name = "status", nullable = false)
-    private ImageStatus status;
-
-    private Image() {
+    protected Image() {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private Image(Feed feedId, ImageURL imageUrl, ImageStatus status) {
+    private Image(Feed feedId, ImageURL imageUrl, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.feedId = feedId;
         this.imageUrl = imageUrl;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     public static Image of(Feed feedId, String imageUrl) {
+        LocalDateTime now = LocalDateTime.now();
         return Image.builder()
                 .feedId(feedId)
                 .imageUrl(new ImageURL(imageUrl))
-                .status(ImageStatus.ACTIVE)
+                .status(Status.ACTIVE)
+                .createdAt(new CreatedAt(now))
+                .updatedAt(new UpdatedAt(now))
+                .deletedAt(new DeletedAt(LocalDateTime.MIN))
                 .build();
     }
 
-    public void setStatus(ImageStatus status) {
-        this.status = status;
+    public void delete() {
+        this.status = Status.INACTIVE;
+        this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
     @Override

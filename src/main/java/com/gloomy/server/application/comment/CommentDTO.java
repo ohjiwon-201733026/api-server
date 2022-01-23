@@ -34,19 +34,27 @@ public class CommentDTO {
 
     @Getter
     public static class Response {
-        private Long id;
-        private String content;
-        private Long feedId;
-        private Long userId;
-        private String password;
+        private final Long id;
+        private final String content;
+        private final Long feedId;
+        private final Long userId;
+        private final String password;
+        private final String status;
+        private final String createdAt;
+        private final String updatedAt;
+        private final String deletedAt;
 
         @Builder
-        public Response(Long id, String content, Long feedId, Long userId, String password) {
+        public Response(Long id, String content, Long feedId, Long userId, String password, String status, String createdAt, String updatedAt, String deletedAt) {
             this.id = id;
             this.content = content;
             this.feedId = feedId;
             this.userId = userId;
             this.password = password;
+            this.status = status;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+            this.deletedAt = deletedAt;
         }
 
         public static CommentDTO.Response of(Comment comment) {
@@ -57,6 +65,10 @@ public class CommentDTO {
                         .feedId(comment.getFeedId().getId())
                         .userId(comment.getUserId().getId())
                         .password(null)
+                        .status(comment.getStatus().toString())
+                        .createdAt(comment.getCreatedAt().getCreatedAt().toString())
+                        .updatedAt(comment.getUpdatedAt().getUpdatedAt().toString())
+                        .deletedAt(comment.getDeletedAt().getDeletedAt().toString())
                         .build();
             }
             return builder()
@@ -65,6 +77,10 @@ public class CommentDTO {
                     .feedId(comment.getFeedId().getId())
                     .userId(null)
                     .password(comment.getPassword().getPassword())
+                    .status(comment.getStatus().toString())
+                    .createdAt(comment.getCreatedAt().getCreatedAt().toString())
+                    .updatedAt(comment.getUpdatedAt().getUpdatedAt().toString())
+                    .deletedAt(comment.getDeletedAt().getDeletedAt().toString())
                     .build();
         }
     }

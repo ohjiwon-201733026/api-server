@@ -1,20 +1,18 @@
 package com.gloomy.server.domain.feed;
 
 import com.gloomy.server.application.feed.FeedDTO;
+import com.gloomy.server.domain.common.*;
 import com.gloomy.server.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
 @Entity
-public class Feed {
-
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Feed extends BaseEntity {
     @Embedded
     private Ip ip;
 
@@ -38,15 +36,11 @@ public class Feed {
     @Embedded
     private LikeCount likeCount;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private FeedStatus status;
-
-    Feed() {
+    protected Feed() {
     }
 
     @Builder
-    private Feed(Ip ip, User userId, Password password, Category category, Title title, FeedStatus status, Content content, LikeCount likeCount) {
+    private Feed(Ip ip, User userId, Password password, Category category, Title title, Status status, Content content, LikeCount likeCount, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.ip = ip;
         this.userId = userId;
         this.password = password;
@@ -55,9 +49,13 @@ public class Feed {
         this.content = content;
         this.likeCount = likeCount;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
     }
 
     public static Feed of(User userId, FeedDTO.Request feedDTO) {
+        LocalDateTime now = LocalDateTime.now();
         if (userId != null) {
             return builder()
                     .ip(new Ip("111.111.111.111"))
@@ -67,7 +65,10 @@ public class Feed {
                     .title(new Title(feedDTO.getTitle()))
                     .content(new Content(feedDTO.getContent()))
                     .likeCount(new LikeCount(0))
-                    .status(FeedStatus.ACTIVE)
+                    .status(Status.ACTIVE)
+                    .createdAt(new CreatedAt(now))
+                    .updatedAt(new UpdatedAt(now))
+                    .deletedAt(new DeletedAt(LocalDateTime.MIN))
                     .build();
         }
         return builder()
@@ -78,12 +79,16 @@ public class Feed {
                 .title(new Title(feedDTO.getTitle()))
                 .content(new Content(feedDTO.getContent()))
                 .likeCount(new LikeCount(0))
-                .status(FeedStatus.ACTIVE)
+                .status(Status.ACTIVE)
+                .createdAt(new CreatedAt(now))
+                .updatedAt(new UpdatedAt(now))
+                .deletedAt(new DeletedAt(LocalDateTime.MIN))
                 .build();
     }
 
-    public void setStatus(FeedStatus status) {
-        this.status = status;
+    public void delete() {
+        this.status = Status.INACTIVE;
+        this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
     public void setPassword(Password password) {
@@ -112,20 +117,5 @@ public class Feed {
             return result;
         }
         return false;
-    }
-
-    @Override
-    public String toString() {
-        return "Feed{" +
-                "id=" + id +
-                ", ip=" + ip +
-                ", userId=" + userId +
-                ", password=" + password +
-                ", category=" + category +
-                ", title=" + title +
-                ", content=" + content +
-                ", likeCount=" + likeCount +
-                ", status=" + status +
-                '}';
     }
 }

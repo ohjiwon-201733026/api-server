@@ -11,7 +11,7 @@ public class Password {
     @Column(name = "password")
     private String password;
 
-    private Password() {
+    protected Password() {
     }
 
     public Password(String password) {

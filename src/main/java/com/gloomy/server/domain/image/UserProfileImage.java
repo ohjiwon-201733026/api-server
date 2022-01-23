@@ -1,5 +1,6 @@
 package com.gloomy.server.domain.image;
 
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,13 +24,13 @@ public class UserProfileImage {
     private ImageURL imageUrl;
 
     @Column(name = "status", nullable = false)
-    private ImageStatus status;
+    private Status status;
 
     private UserProfileImage() {
     }
 
     @Builder(builderClassName = "userImageBuilder", builderMethodName = "userImageBuilder")
-    private UserProfileImage(User userId, ImageURL imageUrl, ImageStatus status) {
+    private UserProfileImage(User userId, ImageURL imageUrl, Status status) {
         this.userId = userId;
         this.imageUrl = imageUrl;
         this.status = status;
@@ -39,11 +40,11 @@ public class UserProfileImage {
         return userImageBuilder()
                 .userId(userId)
                 .imageUrl(new ImageURL(imageUrl))
-                .status(ImageStatus.ACTIVE)
+                .status(Status.ACTIVE)
                 .build();
     }
 
-    public void setStatus(ImageStatus status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

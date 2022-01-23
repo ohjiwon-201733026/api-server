@@ -11,7 +11,7 @@ public class Title {
     @Column(name = "title", nullable = false)
     private String title;
 
-    private Title() {
+    protected Title() {
     }
 
     public Title(String title) {

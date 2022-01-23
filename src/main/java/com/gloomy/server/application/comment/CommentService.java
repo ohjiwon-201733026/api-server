@@ -1,8 +1,8 @@
 package com.gloomy.server.application.comment;
 
 import com.gloomy.server.application.feed.FeedService;
-import com.gloomy.server.domain.comment.COMMENT_STATUS;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;
@@ -76,7 +76,7 @@ public class CommentService {
 
     public Comment deleteComment(Long commentId) {
         Comment foundComment = findComment(commentId);
-        foundComment.setStatus(COMMENT_STATUS.INACTIVE);
+        foundComment.delete();
         return commentRepository.save(foundComment);
     }
 
@@ -103,19 +103,18 @@ public class CommentService {
             throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
         }
         Feed foundFeed = feedService.findOneFeed(feedId);
-        return commentRepository.findAllByFeedIdAndStatus(pageable,
-                foundFeed, COMMENT_STATUS.ACTIVE);
+        return commentRepository.findAllByFeedIdAndStatus(pageable, foundFeed, Status.ACTIVE);
     }
 
-    public Page<Comment> getCommentByIdAndActive(Pageable pageable,Long userId){
+    public Page<Comment> getCommentByIdAndActive(Pageable pageable, Long userId) {
         if (pageable == null) {
             throw new IllegalArgumentException("[CommentService] Pageable이 유효하지 않습니다.");
         }
         if (userId == null || userId <= 0L) {
             throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
         }
-        User findUser=userService.findUser(userId);
-        return commentRepository.findAllByUserIdAndStatus(pageable,findUser,COMMENT_STATUS.ACTIVE);
+        User findUser = userService.findUser(userId);
+        return commentRepository.findAllByUserIdAndStatus(pageable, findUser, Status.ACTIVE);
     }
 
     public List<Comment> findAllComments(Long feedId) {

@@ -1,6 +1,7 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.*;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -64,7 +65,7 @@ public class FeedService {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
-        return feedRepository.findAllByStatus(pageable, FeedStatus.ACTIVE);
+        return feedRepository.findAllByStatus(pageable, Status.ACTIVE);
     }
 
     public Page<Feed> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
@@ -120,7 +121,7 @@ public class FeedService {
     @Transactional
     public Feed deleteFeed(Long feedId) {
         Feed foundFeed = findOneFeed(feedId);
-        foundFeed.setStatus(FeedStatus.INACTIVE);
+        foundFeed.delete();
         return feedRepository.save(foundFeed);
     }
 

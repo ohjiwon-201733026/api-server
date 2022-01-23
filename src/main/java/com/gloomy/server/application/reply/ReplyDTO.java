@@ -35,19 +35,27 @@ public class ReplyDTO {
 
     @Getter
     public static class Response {
-        private Long id;
-        private String content;
-        private Long commentId;
-        private Long userId;
-        private String password;
+        private final Long id;
+        private final String content;
+        private final Long commentId;
+        private final Long userId;
+        private final String password;
+        private final String status;
+        private final String createdAt;
+        private final String updatedAt;
+        private final String deletedAt;
 
         @Builder
-        public Response(Long id, String content, Long commentId, Long userId, String password) {
+        public Response(Long id, String content, Long commentId, Long userId, String password, String status, String createdAt, String updatedAt, String deletedAt) {
             this.id = id;
             this.content = content;
             this.commentId = commentId;
             this.userId = userId;
             this.password = password;
+            this.status = status;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+            this.deletedAt = deletedAt;
         }
 
         public static ReplyDTO.Response of(Reply reply) {
@@ -58,6 +66,10 @@ public class ReplyDTO {
                         .commentId(reply.getCommentId().getId())
                         .userId(reply.getUserId().getId())
                         .password(null)
+                        .status(reply.getStatus().toString())
+                        .createdAt(reply.getCreatedAt().getCreatedAt().toString())
+                        .updatedAt(reply.getUpdatedAt().getUpdatedAt().toString())
+                        .deletedAt(reply.getDeletedAt().getDeletedAt().toString())
                         .build();
             }
             return builder()
@@ -66,6 +78,10 @@ public class ReplyDTO {
                     .commentId(reply.getCommentId().getId())
                     .userId(null)
                     .password(reply.getPassword().getPassword())
+                    .status(reply.getStatus().toString())
+                    .createdAt(reply.getCreatedAt().getCreatedAt().toString())
+                    .updatedAt(reply.getUpdatedAt().getUpdatedAt().toString())
+                    .deletedAt(reply.getDeletedAt().getDeletedAt().toString())
                     .build();
         }
     }

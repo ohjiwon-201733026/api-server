@@ -53,9 +53,12 @@ public class FeedDTO {
         private final Integer likeCount;
         private final Integer commentCount;
         private final String status;
+        private final String createdAt;
+        private final String updatedAt;
+        private final String deletedAt;
 
         @Builder
-        public Response(Long id, String ip, Long userId, String password, String category, String title, String content, Integer likeCount, List<String> imageURLs, Integer commentCount, String status) {
+        public Response(Long id, String ip, Long userId, String password, String category, String title, String content, Integer likeCount, List<String> imageURLs, Integer commentCount, String status, String createdAt, String updatedAt, String deletedAt) {
             this.id = id;
             this.ip = ip;
             this.userId = userId;
@@ -67,6 +70,9 @@ public class FeedDTO {
             this.likeCount = likeCount;
             this.commentCount = commentCount;
             this.status = status;
+            this.createdAt = createdAt;
+            this.updatedAt = updatedAt;
+            this.deletedAt = deletedAt;
         }
 
         public static Response of(Feed feed, Images images, Integer commentCount) {
@@ -87,6 +93,9 @@ public class FeedDTO {
                         .likeCount(feed.getLikeCount().getLikeCount())
                         .commentCount(commentCount)
                         .status(feed.getStatus().toString())
+                        .createdAt(feed.getCreatedAt().getCreatedAt().toString())
+                        .updatedAt(feed.getUpdatedAt().getUpdatedAt().toString())
+                        .deletedAt(feed.getDeletedAt().getDeletedAt().toString())
                         .build();
             }
             return builder()
@@ -101,6 +110,9 @@ public class FeedDTO {
                     .imageURLs(imageURLs)
                     .commentCount(commentCount)
                     .status(feed.getStatus().toString())
+                    .createdAt(feed.getCreatedAt().getCreatedAt().toString())
+                    .updatedAt(feed.getUpdatedAt().getUpdatedAt().toString())
+                    .deletedAt(feed.getDeletedAt().getDeletedAt().toString())
                     .build();
         }
     }
