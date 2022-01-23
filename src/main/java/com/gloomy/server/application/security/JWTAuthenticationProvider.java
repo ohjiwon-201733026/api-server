@@ -9,6 +9,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Optional;
+
 import static java.util.Collections.singleton;
 import static java.util.Optional.of;
 
@@ -21,12 +23,23 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        return of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
-                .map(JWTAuthenticationFilter.JWT::getPrincipal)
-                .map(Object::toString)
-                .map(token -> new JWTAuthentication(token, jwtDeserializer.jwtPayloadFromJWT(token)))
-                .orElseThrow(IllegalStateException::new);
+    public Authentication authenticate(Authentication authentication) {
+//            throws AuthenticationException {
+           JWTAuthentication jwtAuth = null;
+           try {
+               jwtAuth = of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
+                       .map(JWTAuthenticationFilter.JWT::getPrincipal)
+                       .map(Object::toString)
+                       .map(token -> new JWTAuthentication(token, jwtDeserializer.jwtPayloadFromJWT(token)))
+                       .orElseThrow(IllegalStateException::new);
+           }
+           catch (IllegalStateException e){
+               System.out.println("error"+e);
+           }
+           finally {
+               return jwtAuth;
+           }
+
     }
 
     @Override

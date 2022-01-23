@@ -19,7 +19,10 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -64,6 +67,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> kakaoLogin(KakaoCodeRequest request) {
+        System.out.println("UserService.kakaoLogin");
         KakaoToken kakaoToken = getKakaoToken(request);
         KakaoUser kakaoUser =  getKakaoUser(kakaoToken.getAccess_token());
 
@@ -75,11 +79,10 @@ public class UserService {
     }
 
     private KakaoToken getKakaoToken(KakaoCodeRequest request) {
+        System.out.println(request);
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kauth.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-
         URI uri = uriBuilderFactory.uriString("/oauth/token").build();
-
         return webClient.post()
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -90,9 +93,12 @@ public class UserService {
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
                 .blockOptional().orElseThrow();
+
     }
 
     private KakaoUser getKakaoUser(String accessToken) {
+        System.out.println("UserService.getKakaoUser");
+        System.out.println(accessToken);
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kapi.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
@@ -106,6 +112,7 @@ public class UserService {
                 .blockOptional().orElseThrow();
 
         JSONObject obj = new JSONObject(response.getBody());
+        System.out.println(obj.toString());
         return KakaoUser.from(obj);
     }
 

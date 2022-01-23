@@ -6,6 +6,7 @@ import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
@@ -48,6 +49,8 @@ public class UserRestController {
         KakaoCodeRequest request=new KakaoCodeRequest(code);
         User user=userService.kakaoLogin(request).get();
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
+//        return of(userService.kakaoLogin(request)
+//                .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
 
     @GetMapping(value = "/user")

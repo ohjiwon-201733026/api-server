@@ -31,7 +31,6 @@ public class FeedService {
             user = userService.findUser(userId);
         }
         Feed createdFeed = feedRepository.save(Feed.of(user, feedDTO));
-
         if (feedDTO.getImages() != null) {
             imageService.uploadMany(createdFeed, feedDTO.getImages());
         }
