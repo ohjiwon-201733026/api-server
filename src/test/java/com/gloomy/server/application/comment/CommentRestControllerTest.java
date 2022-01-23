@@ -8,6 +8,7 @@ import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -38,16 +39,18 @@ class CommentRestControllerTest extends AbstractControllerTest {
     @Autowired
     CommentService commentService;
     @Autowired
+    private JWTSerializer jwtSerializer;
+    @Autowired
     ObjectMapper objectMapper;
     TestCommentDTO testCommentDTO;
 
     @BeforeEach
     void beforeEach() {
-        User tmpUser = new TestUserDTO().makeTestUser();
-        User testUser = userService.createUser(tmpUser);
+        User testUser = userService.createUser(new TestUserDTO().makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
+        testCommentDTO.setToken(jwtSerializer.jwtFromUser(testUser));
     }
 
     @AfterEach
@@ -75,8 +78,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         requestFields(
                                 fieldWithPath("content").description("댓글 내용"),
                                 fieldWithPath("feedId").description("피드 ID"),
-                                fieldWithPath("userId").description("회원 ID").optional(),
-                                fieldWithPath("password").description("비밀번호").optional()),
+                                fieldWithPath("password").description("비밀번호")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -98,6 +100,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/comment")
+                        .header("Authorization", "Bearer " + testCommentDTO.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -109,8 +112,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         requestFields(
                                 fieldWithPath("content").description("댓글 내용"),
                                 fieldWithPath("feedId").description("피드 ID"),
-                                fieldWithPath("userId").description("회원 ID").optional(),
-                                fieldWithPath("password").description("비밀번호").optional()),
+                                fieldWithPath("password").description("비밀번호")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),

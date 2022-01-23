@@ -20,6 +20,7 @@ public class TestFeedDTO {
     private final String title;
     private final String content;
     private ArrayList<MultipartFile> images;
+    private String token;
 
     public TestFeedDTO(User testUser, int imageNum) {
         this.user = testUser;
@@ -29,6 +30,10 @@ public class TestFeedDTO {
         this.password = "12345";
         this.content = "글 작성 샘플입니다.";
         this.images = new TestImage().makeImages(imageNum);
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public void setImages(int imageNum) {
@@ -43,17 +48,15 @@ public class TestFeedDTO {
         return new FeedDTO.Request(password, category, title, content, images);
     }
 
-    public static MultiValueMap<String, String> convert(Long userId, FeedDTO.Request feedDTO) {
+    public MultiValueMap<String, String> convert(Boolean isUser) {
         try {
             MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("category", feedDTO.getCategory());
-            params.add("title", feedDTO.getTitle());
-            params.add("content", feedDTO.getContent());
-            if (userId != null) {
-                params.add("userId", userId.toString());
-                return params;
+            params.add("category", category);
+            params.add("title", title);
+            params.add("content", content);
+            if (!isUser) {
+                params.add("password", password);
             }
-            params.add("password", feedDTO.getPassword());
             return params;
         } catch (Exception e) {
             throw new IllegalArgumentException("[TestFeedDTO] 변환 중 오류가 발생했습니다.");

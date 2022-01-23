@@ -10,6 +10,7 @@ import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -43,6 +44,8 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     @Autowired
     private ReplyService replyService;
     @Autowired
+    private JWTSerializer jwtSerializer;
+    @Autowired
     ObjectMapper objectMapper;
     TestReplyDTO testReplyDTO;
 
@@ -55,6 +58,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
         TestCommentDTO testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
         Comment testComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
         testReplyDTO = new TestReplyDTO(testCommentDTO.getUserId(), testComment.getId());
+        testReplyDTO.setToken(jwtSerializer.jwtFromUser(testUser));
     }
 
     @AfterEach
@@ -83,7 +87,6 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
                         requestFields(
                                 fieldWithPath("content").description("대댓글 내용"),
                                 fieldWithPath("commentId").description("댓글 ID"),
-                                fieldWithPath("userId").description("회원 ID").optional(),
                                 fieldWithPath("password").description("비밀번호").optional()),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
@@ -106,6 +109,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/reply")
+                        .header("Authorization", "Bearer " + testReplyDTO.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(body))
@@ -117,7 +121,6 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
                         requestFields(
                                 fieldWithPath("content").description("대댓글 내용"),
                                 fieldWithPath("commentId").description("댓글 ID"),
-                                fieldWithPath("userId").description("회원 ID").optional(),
                                 fieldWithPath("password").description("비밀번호").optional()),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),

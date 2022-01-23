@@ -4,6 +4,7 @@ import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -34,6 +35,8 @@ class FeedRestControllerTest extends AbstractControllerTest {
     private ImageService imageService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private JWTSerializer jwtSerializer;
     private User testUser;
     TestFeedDTO testFeedDTO;
 
@@ -42,6 +45,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
         User tmpUser = new TestUserDTO().makeTestUser();
         testUser = userService.createUser(tmpUser);
         testFeedDTO = new TestFeedDTO(testUser, 1);
+        testFeedDTO.setToken(jwtSerializer.jwtFromUser(testUser));
     }
 
     @AfterEach
@@ -54,13 +58,11 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("피드_생성_비회원")
     @Test
     void createNonuserFeed() throws Exception {
-        FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
-
-        MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
-        MultiValueMap<String, String> params = TestFeedDTO.convert(null, request);
+        MockMultipartFile firstImageFile = TestImage.convert(testFeedDTO.getImages(), 0);
+        MultiValueMap<String, String> params = testFeedDTO.convert(false);
 
         this.mockMvc.perform(fileUpload("/feed")
-//                .file(firstImageFile)
+//                      .file(firstImageFile)
                         .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -94,13 +96,12 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("피드_생성_회원")
     @Test
     void createUserFeed() throws Exception {
-        FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
-
-        MockMultipartFile firstImageFile = TestImage.convert(request.getImages(), 0);
-        MultiValueMap<String, String> params = TestFeedDTO.convert(testFeedDTO.getUserId(), request);
+        MockMultipartFile firstImageFile = TestImage.convert(testFeedDTO.getImages(), 0);
+        MultiValueMap<String, String> params = testFeedDTO.convert(true);
 
         this.mockMvc.perform(fileUpload("/feed")
-//                .file(firstImageFile)
+                        .header("Authorization", "Bearer " + testFeedDTO.getToken())
+//                      .file(firstImageFile)
                         .params(params))
                 .andDo(print())
                 .andExpect(status().isOk())
