@@ -15,9 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -43,7 +46,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
         User tmpUser = new TestUserDTO().makeTestUser();
         User testUser = userService.createUser(tmpUser);
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
-        Feed testFeed = feedService.createFeed(testFeedDTO.makeNonUserFeedDTO());
+        Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
     }
 
@@ -63,9 +66,9 @@ class CommentRestControllerTest extends AbstractControllerTest {
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/comment")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -95,12 +98,14 @@ class CommentRestControllerTest extends AbstractControllerTest {
         String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(post("/comment")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestFields(
                                 fieldWithPath("content").description("댓글 내용"),
                                 fieldWithPath("feedId").description("피드 ID"),
@@ -124,8 +129,8 @@ class CommentRestControllerTest extends AbstractControllerTest {
     void getFeedAllComments() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
 
-        commentService.createComment(request);
-        commentService.createComment(request);
+        commentService.createComment(null, request);
+        commentService.createComment(null, request);
 
         this.mockMvc.perform(get("/comment/feed/{feedId}", request.getFeedId()))
                 .andDo(print())
@@ -164,7 +169,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     void getComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
 
-        Comment createdComment = commentService.createComment(request);
+        Comment createdComment = commentService.createComment(null, request);
 
         this.mockMvc.perform(get("/comment/{commentId}", createdComment.getId()))
                 .andDo(print())
@@ -193,13 +198,13 @@ class CommentRestControllerTest extends AbstractControllerTest {
         UpdateCommentDTO.Request updateRequest = new UpdateCommentDTO.Request();
         updateRequest.setContent(updateContent);
 
-        Comment createdComment = commentService.createComment(request);
+        Comment createdComment = commentService.createComment(null, request);
         String body = objectMapper.writeValueAsString(updateRequest);
 
         this.mockMvc.perform(patch("/comment/{commentId}", createdComment.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .content(body))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -223,7 +228,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     void deleteComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
 
-        Comment createdComment = commentService.createComment(request);
+        Comment createdComment = commentService.createComment(null, request);
 
         this.mockMvc.perform(delete("/comment/{commentId}", createdComment.getId()))
                 .andDo(print())
