@@ -82,7 +82,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -121,7 +121,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -153,8 +153,8 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.content[]").description("응답 데이터 페이지"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                                fieldWithPath("result.content[]").type(JsonFieldType.ARRAY).description("응답 데이터 페이지"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -198,7 +198,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -238,7 +238,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
