@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -29,6 +30,7 @@ public class ReplyService {
         this.replyRepository = replyRepository;
     }
 
+    @Transactional
     public Reply createReply(Long userId, ReplyDTO.Request replyDTO) {
         validateReplyDTO(userId, replyDTO);
         return replyRepository.save(makeReply(userId, replyDTO));
@@ -112,6 +114,7 @@ public class ReplyService {
         return id != null && id > 0L;
     }
 
+    @Transactional
     public Reply updateReply(Long replyId, UpdateReplyDTO.Request updateReplyDTO) {
         validateUpdateReplyRequest(replyId, updateReplyDTO);
         Reply foundReply = findReply(replyId);
@@ -131,12 +134,14 @@ public class ReplyService {
         }
     }
 
+    @Transactional
     public Reply deleteReply(Long replyId) {
         Reply foundReply = findReply(replyId);
         foundReply.delete();
         return replyRepository.save(foundReply);
     }
 
+    @Transactional
     public void deleteAll() {
         replyRepository.deleteAll();
     }

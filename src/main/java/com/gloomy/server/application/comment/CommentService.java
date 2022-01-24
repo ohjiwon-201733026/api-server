@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
+    @Transactional
     public Comment createComment(Long userId, CommentDTO.Request commentDTO) throws IllegalArgumentException {
         validateCommentDTO(userId, commentDTO);
         return commentRepository.save(makeComment(userId, commentDTO));
@@ -58,6 +60,7 @@ public class CommentService {
         });
     }
 
+    @Transactional
     public Comment updateComment(Long commentId, UpdateCommentDTO.Request updateCommentDTO) {
         validateUpdateCommentRequest(commentId, updateCommentDTO);
         Comment foundComment = findComment(commentId);
@@ -74,12 +77,14 @@ public class CommentService {
         }
     }
 
+    @Transactional
     public Comment deleteComment(Long commentId) {
         Comment foundComment = findComment(commentId);
         foundComment.delete();
         return commentRepository.save(foundComment);
     }
 
+    @Transactional
     public void deleteAll() {
         commentRepository.deleteAll();
     }
