@@ -3,6 +3,7 @@ package com.gloomy.server.application.feed;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.*;
+import com.gloomy.server.domain.feed.Category;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
