@@ -9,12 +9,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.gloomy.server.application.user.UserDTO.*;
 
 @RestController
+@Transactional
 public class UserRestController {
 
     private final UserService userService;
@@ -35,20 +37,21 @@ public class UserRestController {
     @PostMapping(value = "/user" ,produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response addUser(@Validated @RequestBody PostRequest request) {
         final User userSaved = userService.signUp(request);
-        return Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved),userProfileImageService.findImageByUserId(userSaved).getImageUrl().getImageUrl());
+        return Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved));
     }
 
     @PostMapping(value = "/user/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response login(@Validated @RequestBody LoginRequest request) {
         User user=userService.login(request).get();
-                return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
     }
 
     @GetMapping(value = "/kakao/signUp")
     public Response kakaoLogin(@Validated @RequestParam String code) {
+        System.out.println(code);
         KakaoCodeRequest request=new KakaoCodeRequest(code);
         User user=userService.kakaoLogin(request).get();
-        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
 //        return of(userService.kakaoLogin(request)
 //                .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
@@ -56,7 +59,7 @@ public class UserRestController {
     @GetMapping(value = "/user")
     public Response getUser(@AuthenticationPrincipal UserJWTPayload jwtPayload) {
         User user=userService.findById(jwtPayload.getUserId()).get();
-        return Response.fromUserAndToken(user, getCurrentCredential(),userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl());
+        return Response.fromUserAndToken(user, getCurrentCredential());
     }
 
     private static String getCurrentCredential() {
@@ -68,9 +71,9 @@ public class UserRestController {
 
     @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public UpdateUserDTO.Response updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
-            Long userId=userService.getMyInfo();
-            User updateUser = userService.updateUser(userId,updateUserDTO);
-            return makeUpdateUserDTO(updateUser);
+        Long userId=userService.getMyInfo();
+        User updateUser = userService.updateUser(userId,updateUserDTO);
+        return makeUpdateUserDTO(updateUser);
     }
 
 
@@ -78,7 +81,7 @@ public class UserRestController {
         return UpdateUserDTO.Response.builder()
                 .email(user.getEmail())
                 .sex(user.getSex())
-                .imageUrl(userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl())
+//                .imageUrl(userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl())
                 .dateOfBirth(user.getDateOfBirth()==null?"":user.getDateOfBirth().toString())
                 .build();
 
@@ -89,6 +92,12 @@ public class UserRestController {
         Long userId=userService.getMyInfo();
         User findUser = userService.findUser(userId);
         return makeUpdateUserDTO(findUser);
+    }
+
+    @GetMapping(value = "/user/inactive")
+    public void inactiveUser(){
+        Long userId=userService.getMyInfo();
+        userService.inactiveUser(userId);
     }
 
 

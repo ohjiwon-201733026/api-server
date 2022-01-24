@@ -1,6 +1,7 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
+import com.gloomy.server.application.user.TestUserDTO;
 import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.image.UserProfileImage;
 import com.gloomy.server.domain.user.Password;
@@ -44,8 +45,7 @@ public class UserProfileImageServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        this.testUser = User.of("test@email.com", "testName", new Password("test")
-                , Sex.MALE, 2020, 01, 01, Status.ACTIVE);
+        this.testUser = TestUserDTO.TestUser.makeTestUser();
         userService.createUser(testUser);
         testImage = new TestImage();
     }

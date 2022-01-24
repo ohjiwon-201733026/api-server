@@ -1,7 +1,7 @@
 package com.gloomy.server.application.user;
 
 import com.gloomy.server.application.image.TestImage;
-import com.gloomy.server.domain.user.JoinStatus;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.user.Password;
 import com.gloomy.server.domain.user.Sex;
 import com.gloomy.server.domain.user.User;
@@ -14,10 +14,10 @@ import java.time.LocalDate;
 
 public class TestUserDTO {
 
-    static class TestUser{
-        static User makeTestUser(){
+    public static class TestUser{
+        public static User makeTestUser(){
             return User.of("test@email.com","testName",new Password("test")
-                    , Sex.MALE,2020,01,01, JoinStatus.JOIN);
+                    , Sex.MALE,2020,01,01);
         }
     }
 

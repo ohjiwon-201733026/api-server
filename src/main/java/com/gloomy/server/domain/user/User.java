@@ -32,10 +32,6 @@ public class User {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private Role role;
-
     @Embedded
     private Profile profile;
 
@@ -50,14 +46,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status joinStatus;
 
-//    @OneToMany(mappedBy = "userId")
-//    private List<Feed> feeds=new ArrayList<>();
-//
-//    @OneToMany(mappedBy = "userId")
-//    private List<Comment> comments=new ArrayList<>();
-
-//    @Embedded
-//    private Token token;
 
     protected User() {
     }
@@ -65,23 +53,22 @@ public class User {
     private User(String email, Profile profile,Password password) {
         this.email = email;
         this.profile = profile;
-        this.role=Role.USER;
         this.password = password;
+        this.joinStatus=Status.ACTIVE;
     }
 
-    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth,Status joinStatus){
+    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth){
         this.email = email;
         this.profile = profile;
-        this.role=Role.USER;
         this.password = password;
         this.sex=sex;
         this.dateOfBirth=dateOfBirth;
-        this.joinStatus=joinStatus;
+        this.joinStatus=Status.ACTIVE;
     }
 
     public static User of(String email, String name, Password password,
-                          Sex sex, int year,int month,int day,Status status){
-        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day),status);
+                          Sex sex, int year,int month,int day){
+        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day));
     }
 
     public static User of(String email, String name, Password password) {
@@ -96,6 +83,10 @@ public class User {
         return password.matchesPassword(rawPassword, passwordEncoder);
     }
 
+    public void inactiveUser(){
+        changeJoinStatus(Status.INACTIVE);
+    }
+
     /**
      * change*
      */
@@ -104,27 +95,8 @@ public class User {
     }
     public void changeEmail(String email){this.email=email;}
     public void changeSex(Sex sex){this.sex=sex;}
-//    public void changeImage(String image){
-//        System.out.println(">>>>>>>>>>"+this.profile);
-//        System.out.println(">>>>>>>>>>"+this.profile.getImage());
-//        this.profile.getImage().changeImage(image);}
     public void changeDateOfBirth(LocalDate dateOfBirth){this.dateOfBirth=dateOfBirth;}
-
-    /**
-     * 비즈니스 로직
-     */
-//    public void removeFeed(Long feedId){
-//        List<Feed> feeds=this.getFeeds();
-//
-//        for(Iterator<Feed> itr=feeds.iterator();itr.hasNext();){
-//            Feed feed=itr.next();
-//            if(feed.getId()==feedId) {
-//                itr.remove();
-//            }
-//        }
-//
-//
-//    }
+    public void changeJoinStatus(Status status){this.joinStatus=status;}
 
     /**
      * getter

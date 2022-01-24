@@ -14,34 +14,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-
-import java.net.URI;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.gloomy.server.application.user.UserDTO.*;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.fileUpload;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -54,6 +48,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(properties = {
+        "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
+})
+@Transactional
 class UserRestControllerTest extends AbstractControllerTest {
 
     @Autowired
@@ -110,8 +109,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
                                 fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
                                 fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional(),
-                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크")
+                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
                         )
                 ))
                 .andReturn();
@@ -121,11 +119,18 @@ class UserRestControllerTest extends AbstractControllerTest {
     @DisplayName("일반 로그인")
     @Test
     void login() throws Exception {
+        PostRequest postRequest = PostRequest.builder()
+                .email("test1@gmail.com")
+                .userName("test1")
+                .password("test1234")
+                .build();
 
         LoginRequest loginRequest = LoginRequest.builder()
-                .email("test2@gamil.com")
-                .password("test234")
+                .email("test1@gmail.com")
+                .password("test1234")
                 .build();
+
+        userService.signUp(postRequest);
 
         mockMvc.perform(post("/user/login")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -145,25 +150,26 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
                                 fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
                                 fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional(),
-                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크").optional()
+                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
+//                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크").optional()
                         )
                         )
                 );
     }
 
+    /*
     @Order(3)
     @DisplayName("카카오 로그인")
     @Test
     void kakaoLogin() throws Exception {
-        KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
-                .code("i8FgaOjSVVzPuVPCLbYIWak76cANX7Hgpo1GTRgLFz6QZF17zRXvCHDOLtWUXyY60KZs9go9dNsAAAF-hxOsXw")
-                .build();
-
+//        KakaoCodeRequest kakaoCodeRequest = KakaoCodeRequest.builder()
+//                .code("cBWnEj1Ak9D__ZEthDVehV1_dfFfbgmKf46iFOPhfBkjxjh4pk5vpsUXLADO_yv1cXM5Two9cpgAAAF-i8KLAA")
+//                .build();
+        String code="alXSrLik4OWw7sKW-01c8I5rmZpYwtOduQ57HF3u8DqJgQJP8jFNspiIDasXXjigDt8NpQorDNMAAAF-i9qr4g";
         mockMvc.perform(get("/kakao/signUp")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(kakaoCodeRequest)))
+                .param("code",code))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -177,14 +183,15 @@ class UserRestControllerTest extends AbstractControllerTest {
                                         fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
                                         fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
                                         fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                        fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional(),
-                                        fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크")
+                                        fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
+//                                        fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크")
                                 )
                         )
                 );
-
-
     }
+     */
+
+
 
 
 //    @Test
@@ -195,7 +202,7 @@ class UserRestControllerTest extends AbstractControllerTest {
 //        System.out.println(jwtPayload);
 //    }
 
-
+/*
     @Test
     @WithMockUser
     public void updateUser() throws Exception {
@@ -204,8 +211,6 @@ class UserRestControllerTest extends AbstractControllerTest {
         String token=jwtSerializer.jwtFromUser(saveUser);
         MultiValueMap<String, String> params=
                 TestUserDTO.UpdateUserTestDTO.generateParamMap(updateUserDTO);
-
-
         this.mockMvc.perform(fileUpload("/user/update")
 //                .file(firstUpdateImageFile)
                 .params(params)
@@ -232,17 +237,13 @@ class UserRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
-
-
     }
-
     @DisplayName("User Detail")
     @Test
     @WithMockUser
     public void userDetail() throws Exception {
         User saveUser=userService.createUser(user);
         String token=jwtSerializer.jwtFromUser(saveUser);
-
         this.mockMvc.perform(get("/user/detail")
                 .header("Authorization","Bearer "+token)
                 .with(authentication(authentication))
@@ -261,6 +262,33 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                         )
                 ).andReturn();
+    }
+ */
+
+    @DisplayName("회원 탈퇴")
+    @Test
+    public void inactiveUser() throws Exception {
+        User saveUser=userService.createUser(user);
+        String token=jwtSerializer.jwtFromUser(saveUser);
+
+        this.mockMvc.perform(get("/user/inactive")
+                .header("Authorization","Bearer "+token)
+                .with(authentication(authentication))
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰 ( 필수 )")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
+                                fieldWithPath("result").type(JsonFieldType.STRING).description("결과").optional()
+                        )
+                        )
+                ).andReturn();
+
     }
 
 

@@ -32,8 +32,8 @@ public class MyPageRestController {
     @GetMapping(value ="/comment")
     public Page<CommentDTO.Response> findUserComments(@PageableDefault(size=10)Pageable pageable){
         Long userId=userService.getMyInfo();
-            Page<Comment> comments=commentService.getCommentByIdAndActive(pageable,userId);
-            return makeCommentPage(comments);
+        Page<Comment> comments=commentService.getCommentByIdAndActive(pageable,userId);
+        return makeCommentPage(comments);
     }
 
     private Page<CommentDTO.Response> makeCommentPage(Page<Comment> comments){

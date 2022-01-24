@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.application.security.JWTAuthenticationProvider;
 import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
@@ -42,7 +43,7 @@ public class UserService {
     @Transactional
     public User signUp(PostRequest postRequest) {
         final Password encodedPassword = Password.of(postRequest.getPassword(), passwordEncoder);
-        if(userRepository.findFirstByEmail(postRequest.getEmail()).isPresent())
+        if(userRepository.findFirstByEmailAndJoinStatus(postRequest.getEmail(),Status.ACTIVE).isPresent())
             throw new IllegalArgumentException("[ userService ] 이미 존재하는 사용자 입니다.");
         User user = User.of(postRequest.getEmail(),
                 postRequest.getUserName(),
@@ -52,7 +53,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> login(LoginRequest request) {
-        Optional<User> findUser=userRepository.findFirstByEmail(request.getEmail());
+        Optional<User> findUser=userRepository.findFirstByEmailAndJoinStatus(request.getEmail(), Status.ACTIVE);
         if(findUser.isEmpty()) throw  new IllegalArgumentException("[ UserService ] : 존재하지 않는 user 입니다.");
         else{
             if(findUser.get().matchesPassword(request.getPassword(), passwordEncoder)) return findUser;
@@ -62,16 +63,15 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Optional<User> findById(long id) {
-        return userRepository.findById(id);
+        return userRepository.findByIdAndJoinStatus(id,Status.ACTIVE);
     }
 
     @Transactional(readOnly = true)
     public Optional<User> kakaoLogin(KakaoCodeRequest request) {
-        System.out.println("UserService.kakaoLogin");
         KakaoToken kakaoToken = getKakaoToken(request);
         KakaoUser kakaoUser =  getKakaoUser(kakaoToken.getAccess_token());
 
-        Optional<User> user = userRepository.findFirstByEmail(kakaoUser.getEmail());
+        Optional<User> user = userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
         if(user.isEmpty()) {
             return Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
         }
@@ -82,6 +82,7 @@ public class UserService {
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kauth.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
         URI uri = uriBuilderFactory.uriString("/oauth/token").build();
+
         return webClient.post()
                 .uri(uri)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -96,8 +97,6 @@ public class UserService {
     }
 
     private KakaoUser getKakaoUser(String accessToken) {
-        System.out.println("UserService.getKakaoUser");
-        System.out.println(accessToken);
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kapi.kakao.com");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
@@ -119,7 +118,7 @@ public class UserService {
     }
 
     public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
-        Optional<User> updateUser=userRepository.findById(userId);
+        Optional<User> updateUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
         if(updateUser.isPresent()){
             User user= updateUserEntity(updateUser.get(),updateUserDTO);
             return userRepository.save(user);
@@ -131,26 +130,36 @@ public class UserService {
 
         if(updateUserDTO.getEmail()!=null) user.changeEmail(updateUserDTO.getEmail());
         if(updateUserDTO.getSex()!=null) user.changeSex(updateUserDTO.getSex());
-        if(updateUserDTO.getImage()!=null) {
-            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
-        }
+//        if(updateUserDTO.getImage()!=null) {
+//            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
+//        }
         if(updateUserDTO.getDateOfBirth()!=null) user.changeDateOfBirth(LocalDate.parse(updateUserDTO.getDateOfBirth()));
         return user;
     }
 
     public User findUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(() -> {
+        return userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE).orElseThrow(() -> {
             throw new IllegalArgumentException("[ userService ]: 존재하지 않는 user 입니다.");
         });
     }
 
     public void deleteUser(Long userId) {
-        if(userRepository.findById(userId).isEmpty()) throw new IllegalArgumentException();
+        if(userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE).isEmpty()) throw new IllegalArgumentException();
         else userRepository.delete(findUser(userId));
     }
 
     public void deleteAll() {
         userRepository.deleteAll();
+    }
+
+    public void inactiveUser(Long userId){
+        Optional<User> findUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
+        if(findUser.isPresent()){
+            User user=findUser.get();
+            user.inactiveUser();
+            userRepository.save(user);
+        }
+        else throw new IllegalArgumentException("[ UserService ] 존재하지 않는 사용자");
     }
 
     public Long getMyInfo(){
@@ -160,4 +169,5 @@ public class UserService {
         if(token.equals("")) return null;
         return jwtDeserializer.getUserId(token.toString());
     }
+
 }
