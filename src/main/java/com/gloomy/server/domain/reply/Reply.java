@@ -56,28 +56,26 @@ public class Reply extends BaseEntity {
     }
 
     public static Reply of(String content, Comment commentId, User userId) {
-        LocalDateTime now = LocalDateTime.now();
         return Reply.userReplyBuilder()
                 .content(new Content(content))
                 .commentId(commentId)
                 .userId(userId)
                 .status(Status.ACTIVE)
-                .createdAt(new CreatedAt(now))
-                .updatedAt(new UpdatedAt(now))
-                .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
                 .build();
     }
 
     public static Reply of(String content, Comment commentId, String password) {
-        LocalDateTime now = LocalDateTime.now();
         return Reply.nonUserReplyBuilder()
                 .content(new Content(content))
                 .commentId(commentId)
                 .password(new Password(password))
                 .status(Status.ACTIVE)
-                .createdAt(new CreatedAt(now))
-                .updatedAt(new UpdatedAt(now))
-                .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
                 .build();
     }
 

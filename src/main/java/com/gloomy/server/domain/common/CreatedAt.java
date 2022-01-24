@@ -14,7 +14,8 @@ public class CreatedAt {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    protected CreatedAt() {
+    public CreatedAt() {
+        createdAt = LocalDateTime.now();
     }
 
     public CreatedAt(LocalDateTime createdAt) {

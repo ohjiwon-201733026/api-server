@@ -56,28 +56,26 @@ public class Comment extends BaseEntity {
     }
 
     public static Comment of(Content content, Feed feedId, User userId) {
-        LocalDateTime now = LocalDateTime.now();
         return Comment.userCommentBuilder()
                 .content(content)
                 .feedId(feedId)
                 .userId(userId)
                 .status(Status.ACTIVE)
-                .createdAt(new CreatedAt(now))
-                .updatedAt(new UpdatedAt(now))
-                .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
                 .build();
     }
 
     public static Comment of(Content content, Feed feedId, Password password) {
-        LocalDateTime now = LocalDateTime.now();
         return Comment.nonUserCommentBuilder()
                 .content(content)
                 .feedId(feedId)
                 .password(password)
                 .status(Status.ACTIVE)
-                .createdAt(new CreatedAt(now))
-                .updatedAt(new UpdatedAt(now))
-                .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
                 .build();
     }
 
