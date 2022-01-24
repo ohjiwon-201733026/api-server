@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
-        "spring.config.location=classpath:application.yml,classpath:aws.yml"
+        "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
 })
 public class ReplyServiceTest {
     @Autowired

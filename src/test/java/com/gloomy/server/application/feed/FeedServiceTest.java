@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
-        "spring.config.location=classpath:application.yml,classpath:aws.yml"
+        "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
 })
 class FeedServiceTest {
     @Autowired
