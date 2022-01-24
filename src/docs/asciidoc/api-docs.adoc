@@ -145,6 +145,21 @@ include::{snippets}/feed-rest-controller-test/delete-feed/path-parameters.adoc[]
 
 include::{snippets}/feed-rest-controller-test/delete-feed/response-body.adoc[]
 
+[[get-feed-categories]]
+=== 1.7 카테고리 리스트 조회
+
+요청 정보
+
+include::{snippets}/feed-rest-controller-test/get-feed-categories/http-request.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-rest-controller-test/get-feed-categories/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-rest-controller-test/get-feed-categories/response-fields.adoc[]
+
 == 2. 댓글 API
 
 [[create-nonuser-comment]]
