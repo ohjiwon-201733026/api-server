@@ -1,6 +1,5 @@
 package com.gloomy.server.config;
 
-import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -16,13 +15,6 @@ public class TestConfig {
     @Bean
     public ApplicationRunner applicationRunner() {
         return args -> {
-            UserDTO.PostRequest postRequest = UserDTO.PostRequest.builder()
-                    .email("test2@gamil.com")
-                    .userName("test2")
-                    .password("test234")
-                    .build();
-
-            userService.signUp(postRequest);
         };
     }
 }

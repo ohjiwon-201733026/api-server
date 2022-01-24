@@ -15,10 +15,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -29,6 +32,10 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(properties = {
+        "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
+})
 class CommentRestControllerTest extends AbstractControllerTest {
     @Autowired
     UserService userService;
@@ -82,7 +89,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -121,7 +128,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -153,8 +160,8 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.content[]").description("응답 데이터 페이지"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                                fieldWithPath("result.content[]").type(JsonFieldType.ARRAY).description("응답 데이터 페이지"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.content[].feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -198,7 +205,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),
@@ -238,7 +245,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
                                 fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("댓글 ID"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("댓글 내용"),
                                 fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("댓글의 피드 ID"),

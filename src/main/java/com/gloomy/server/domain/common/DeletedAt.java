@@ -15,6 +15,7 @@ public class DeletedAt {
     private LocalDateTime deletedAt;
 
     public DeletedAt() {
+        deletedAt = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
     }
 
     public DeletedAt(LocalDateTime deletedAt) {

@@ -16,7 +16,8 @@ public class UpdatedAt {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    protected UpdatedAt() {
+    public UpdatedAt() {
+        updatedAt = LocalDateTime.now();
     }
 
     public UpdatedAt(LocalDateTime updatedAt) {

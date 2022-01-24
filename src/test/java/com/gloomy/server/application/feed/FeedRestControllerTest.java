@@ -3,6 +3,8 @@ package com.gloomy.server.application.feed;
 import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.TestImage;
+import com.gloomy.server.domain.feed.Category;
+import com.gloomy.server.domain.feed.CategoryValue;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
@@ -11,12 +13,17 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.MultiValueMap;
+
+import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -27,6 +34,10 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(properties = {
+        "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
+})
 class FeedRestControllerTest extends AbstractControllerTest {
 
     @Autowired
@@ -160,7 +171,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.content[]").description("응답 데이터 페이지"),
+                                fieldWithPath("result.content[]").type(JsonFieldType.ARRAY).description("응답 데이터 페이지"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
                                 fieldWithPath("result.content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.content[].userId").description("(회원일 경우) 회원 ID"),
@@ -215,7 +226,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result").description("응답 데이터"),
-                                fieldWithPath("result.content[]").description("응답 데이터 페이지"),
+                                fieldWithPath("result.content[]").type(JsonFieldType.ARRAY).description("응답 데이터 페이지"),
                                 fieldWithPath("result.content[].id").type(JsonFieldType.NUMBER).description("피드 ID"),
                                 fieldWithPath("result.content[].ip").type(JsonFieldType.STRING).description("작성자 IP"),
                                 fieldWithPath("result.content[].userId").type(JsonFieldType.NUMBER).description("(회원일 경우) 회원 ID"),
@@ -351,6 +362,27 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
                                 fieldWithPath("result").type(JsonFieldType.NULL).description("삭제한 피드 ID"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )
+                ));
+    }
+
+    @DisplayName("카테고리 리스트 조회")
+    @Test
+    void getFeedCategories() throws Exception {
+        List<CategoryValue> allCategories = Category.getAllCategories();
+
+        this.mockMvc.perform(get("/feed/category")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result[]").type(JsonFieldType.ARRAY).description("카테고리 리스트"),
+                                fieldWithPath("result[].code").type(JsonFieldType.STRING).description("카테고리 코드"),
+                                fieldWithPath("result[].title").type(JsonFieldType.STRING).description("카테고리 제목"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));

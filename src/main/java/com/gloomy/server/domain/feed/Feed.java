@@ -55,7 +55,6 @@ public class Feed extends BaseEntity {
     }
 
     public static Feed of(User userId, FeedDTO.Request feedDTO) {
-        LocalDateTime now = LocalDateTime.now();
         if (userId != null) {
             return builder()
                     .ip(new Ip("111.111.111.111"))
@@ -66,9 +65,9 @@ public class Feed extends BaseEntity {
                     .content(new Content(feedDTO.getContent()))
                     .likeCount(new LikeCount(0))
                     .status(Status.ACTIVE)
-                    .createdAt(new CreatedAt(now))
-                    .updatedAt(new UpdatedAt(now))
-                    .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                    .createdAt(new CreatedAt())
+                    .updatedAt(new UpdatedAt())
+                    .deletedAt(new DeletedAt())
                     .build();
         }
         return builder()
@@ -80,9 +79,9 @@ public class Feed extends BaseEntity {
                 .content(new Content(feedDTO.getContent()))
                 .likeCount(new LikeCount(0))
                 .status(Status.ACTIVE)
-                .createdAt(new CreatedAt(now))
-                .updatedAt(new UpdatedAt(now))
-                .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
                 .build();
     }
 

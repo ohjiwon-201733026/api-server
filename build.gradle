@@ -51,6 +51,7 @@ dependencies {
     implementation group: 'org.springframework.restdocs', name: 'spring-restdocs-asciidoctor'
     testImplementation group: 'org.springframework.restdocs', name: 'spring-restdocs-mockmvc'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
 }
 
 test {

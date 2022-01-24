@@ -39,9 +39,9 @@ public class Image extends BaseEntity {
                 .feedId(feedId)
                 .imageUrl(new ImageURL(imageUrl))
                 .status(Status.ACTIVE)
-                .createdAt(new CreatedAt(now))
-                .updatedAt(new UpdatedAt(now))
-                .deletedAt(new DeletedAt(LocalDateTime.MIN))
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
                 .build();
     }
 
