@@ -47,9 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/reply/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
                 .antMatchers("/user/**").permitAll()
-//                .hasRole(Role.USER.name())
                 .antMatchers("/myPage/**").permitAll()
-//                .hasRole(Role.USER.name())
                 .anyRequest().authenticated();
 
         http.formLogin().disable();

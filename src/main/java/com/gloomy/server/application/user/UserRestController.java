@@ -47,13 +47,10 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/kakao/signUp")
-    public Response kakaoLogin(@Validated @RequestParam String code) {
-        System.out.println(code);
-        KakaoCodeRequest request=new KakaoCodeRequest(code);
+    public Response kakaoLogin(@RequestParam String code, @RequestParam String redirect_uri) {
+        KakaoCodeRequest request=new KakaoCodeRequest(code,redirect_uri);
         User user=userService.kakaoLogin(request).get();
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
-//        return of(userService.kakaoLogin(request)
-//                .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
     }
 
     @GetMapping(value = "/user")
