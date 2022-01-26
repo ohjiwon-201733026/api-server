@@ -6,14 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/report")
 @RequiredArgsConstructor
 public class ReportController {
 
     private final UserService userService;
     private final ReportService reportService;
 
-    @GetMapping("")
+    @GetMapping("/report")
     public void reportFeed(@RequestParam Long feedId, @RequestParam String reportCategory){
         Long userId=userService.getMyInfo();
         reportService.saveReport(feedId,userId,reportCategory);

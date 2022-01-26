@@ -88,7 +88,7 @@ public class UserService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
+                        .with("redirect_uri", request.getRedirect_uri()+"/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
