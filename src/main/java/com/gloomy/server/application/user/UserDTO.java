@@ -85,6 +85,7 @@ public class UserDTO {
     public static class KakaoCodeRequest {
         @NotBlank(message = "코드값을 입력하세요.")
         String code;
+        String redirect_uri;
     }
 
 

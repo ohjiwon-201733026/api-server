@@ -1,7 +1,6 @@
 package com.gloomy.server.application.security;
 
 import com.gloomy.server.domain.jwt.JWTDeserializer;
-import com.gloomy.server.domain.user.Role;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,9 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/reply/**").permitAll()
                 .antMatchers("/docs/**").permitAll()
                 .antMatchers("/user/**").permitAll()
-//                .hasRole(Role.USER.name())
                 .antMatchers("/myPage/**").permitAll()
-//                .hasRole(Role.USER.name())
                 .anyRequest().authenticated();
 
         http.formLogin().disable();
