@@ -1,7 +1,7 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.Image;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,7 +1,7 @@
 package com.gloomy.server.application.comment;
 
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import org.springframework.data.domain.Page;

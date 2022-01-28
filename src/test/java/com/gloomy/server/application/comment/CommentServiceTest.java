@@ -5,7 +5,7 @@ import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;

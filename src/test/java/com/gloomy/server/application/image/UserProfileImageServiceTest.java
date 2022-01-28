@@ -1,7 +1,7 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.image.s3.S3Uploader;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.image.UserProfileImage;
 import com.gloomy.server.domain.user.Password;
 import com.gloomy.server.domain.user.Sex;
