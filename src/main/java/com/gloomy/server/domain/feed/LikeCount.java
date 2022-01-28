@@ -17,4 +17,8 @@ public class LikeCount {
     public LikeCount(Integer likeCount) {
         this.likeCount = likeCount;
     }
+
+    public void addCount() {
+        ++likeCount;
+    }
 }

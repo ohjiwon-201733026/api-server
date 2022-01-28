@@ -57,8 +57,7 @@ class FeedServiceTest {
 
     @Test
     void 피드_생성_회원_성공() {
-        FeedDTO.Request userFeedDTO = new FeedDTO.Request(
-                testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+        FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
 
         Feed createdFeed = feedService.createFeed(testFeedDTO.getUserId(), userFeedDTO);
 
@@ -76,8 +75,7 @@ class FeedServiceTest {
 
     @Test
     void 피드_생성_비회원_성공() {
-        FeedDTO.Request nonUserFeedDTO = new FeedDTO.Request(
-                testFeedDTO.getPassword(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
 
         Feed createdFeed = feedService.createFeed(null, nonUserFeedDTO);
 
@@ -188,21 +186,55 @@ class FeedServiceTest {
     }
 
     @Test
-    void 활성_피드_전체_조회_성공() {
+    void 활성_피드_전체_조회_활성여부_성공() {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
         Feed activeFeed = feedService.createFeed(null, nonUserFeedDTO);
         Feed inactiveFeed = feedService.createFeed(null, nonUserFeedDTO);
 
         feedService.deleteFeed(inactiveFeed.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10));
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null);
 
         assertEquals(foundActiveFeeds.getContent().size(), 1);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeed);
     }
 
     @Test
-    void 활성_피드_전체_조회_실패() {
-        checkFoundAllActiveFeedsFail(null, "[FeedService] pageable이 유효하지 않습니다.");
+    void 활성_피드_전체_조회_최신순_성공() {
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+        Feed activeFeedFirst = feedService.createFeed(null, nonUserFeedDTO);
+        Feed activeFeedSecond = feedService.createFeed(null, nonUserFeedDTO);
+
+        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null);
+        Page<Feed> foundActiveFeedsWithSort = feedService.findAllActiveFeeds(PageRequest.of(0, 10), "DATE");
+
+        assertEquals(foundActiveFeedsWithNull.getContent().size(), 2);
+        assertEquals(foundActiveFeedsWithNull.getContent().get(0), activeFeedSecond);
+        assertEquals(foundActiveFeedsWithNull.getContent().get(1), activeFeedFirst);
+
+        assertEquals(foundActiveFeedsWithSort.getContent().size(), 2);
+        assertEquals(foundActiveFeedsWithSort.getContent().get(0), activeFeedSecond);
+        assertEquals(foundActiveFeedsWithSort.getContent().get(1), activeFeedFirst);
+    }
+
+    @Test
+    void 활성_피드_전체_조회_일때_인기순_성공() {
+        FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
+        Feed activeFeedFirst = feedService.createFeed(null, nonUserFeedDTO);
+        Feed activeFeedSecond = feedService.createFeed(null, nonUserFeedDTO);
+
+        feedService.addLikeCount(activeFeedFirst.getId());
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), "LIKE");
+
+        assertEquals(foundActiveFeeds.getContent().size(), 2);
+        assertEquals(foundActiveFeeds.getContent().get(0), activeFeedFirst);
+        assertEquals(foundActiveFeeds.getContent().get(1), activeFeedSecond);
+    }
+
+    @Test
+    void 활성_피드_전체_조회_공통_실패() {
+        checkFoundAllActiveFeedsFail(null, null, "[FeedService] pageable이 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(null, "", "[FeedService] sort가 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(null, "INVALID", "[FeedService] sort가 유효하지 않습니다.");
     }
 
     @Test
@@ -342,9 +374,9 @@ class FeedServiceTest {
                 errorMessage);
     }
 
-    private void checkFoundAllActiveFeedsFail(Pageable pageable, String errorMessage) {
+    private void checkFoundAllActiveFeedsFail(Pageable pageable, String sort, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
-            feedService.findAllActiveFeeds(pageable);
+            feedService.findAllActiveFeeds(pageable, sort);
         }, errorMessage);
     }
 
