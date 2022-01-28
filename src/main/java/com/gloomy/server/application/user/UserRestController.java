@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.gloomy.server.application.user.UserDTO.*;
 
 @RestController
@@ -47,9 +49,11 @@ public class UserRestController {
     }
 
     @GetMapping(value = "/kakao/signUp")
-    public Response kakaoLogin(@RequestParam String code, @RequestParam String redirect_uri) {
-        KakaoCodeRequest request=new KakaoCodeRequest(code,redirect_uri);
-        User user=userService.kakaoLogin(request).get();
+    public Response kakaoLogin(HttpServletRequest request) {
+        String code=request.getParameter("code");
+        String redirect_uri=request.getRequestURL().toString();
+        KakaoCodeRequest request1=new KakaoCodeRequest(code,redirect_uri);
+        User user=userService.kakaoLogin(request1).get();
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
     }
 
@@ -96,6 +100,4 @@ public class UserRestController {
         Long userId=userService.getMyInfo();
         userService.inactiveUser(userId);
     }
-
-
 }
