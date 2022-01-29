@@ -1,4 +1,4 @@
-package com.gloomy.server.application.feed;
+package com.gloomy.server.application.feed.category;
 
 import com.gloomy.server.domain.common.EnumMapper;
 import com.gloomy.server.domain.common.EnumValue;
@@ -14,7 +14,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping(value = "/feed/category", produces = MediaType.APPLICATION_JSON_VALUE)
-public class CategoryController {
+public class CategoryRestController {
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<EnumValue> getAllCategory() {
         return EnumMapper.toEnumValues(Category.class);
