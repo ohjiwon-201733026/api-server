@@ -1,4 +1,4 @@
-package com.gloomy.server.domain.common;
+package com.gloomy.server.domain.common.entity;
 
 import lombok.Getter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 public abstract class BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
     @Column(name = "status", nullable = false)

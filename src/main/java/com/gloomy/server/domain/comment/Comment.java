@@ -1,6 +1,6 @@
 package com.gloomy.server.domain.comment;
 
-import com.gloomy.server.domain.common.*;
+import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;

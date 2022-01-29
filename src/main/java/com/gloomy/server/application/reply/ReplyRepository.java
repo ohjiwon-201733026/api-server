@@ -1,7 +1,7 @@
 package com.gloomy.server.application.reply;
 
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.reply.Reply;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

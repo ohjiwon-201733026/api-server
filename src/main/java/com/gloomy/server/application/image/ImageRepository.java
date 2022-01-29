@@ -1,6 +1,6 @@
 package com.gloomy.server.application.image;
 
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +14,3 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     List<Image> findAllByFeedIdAndStatus(Feed feedId, Status status);
 }
-

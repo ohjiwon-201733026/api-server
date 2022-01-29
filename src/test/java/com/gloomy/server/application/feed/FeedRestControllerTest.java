@@ -3,8 +3,6 @@ package com.gloomy.server.application.feed;
 import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.TestImage;
-import com.gloomy.server.domain.feed.Category;
-import com.gloomy.server.domain.feed.CategoryValue;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
@@ -22,8 +20,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.MultiValueMap;
-
-import java.util.List;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -370,8 +366,6 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("카테고리 리스트 조회")
     @Test
     void getFeedCategories() throws Exception {
-        List<CategoryValue> allCategories = Category.getAllCategories();
-
         this.mockMvc.perform(get("/feed/category")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())

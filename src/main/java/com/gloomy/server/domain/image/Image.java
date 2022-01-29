@@ -1,6 +1,6 @@
 package com.gloomy.server.domain.image;
 
-import com.gloomy.server.domain.common.*;
+import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.feed.Feed;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,6 +1,6 @@
 package com.gloomy.server.domain.image;
 
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;

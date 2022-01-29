@@ -1,7 +1,7 @@
 package com.gloomy.server.domain.feed;
 
 import com.gloomy.server.application.feed.FeedDTO;
-import com.gloomy.server.domain.common.*;
+import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class Feed extends BaseEntity {
     @Embedded
     private Ip ip;
 
-    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User userId;
 
@@ -96,6 +96,10 @@ public class Feed extends BaseEntity {
 
     public void setContent(Content content) {
         this.content = content;
+    }
+
+    public void addLikeCount() {
+        this.likeCount.addCount();
     }
 
     @Override

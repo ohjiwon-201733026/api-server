@@ -1,13 +1,8 @@
 package com.gloomy.server.domain.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.image.UserProfileImageService;
-import com.gloomy.server.application.security.JWTAuthenticationProvider;
-import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
-import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
-import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -20,12 +15,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static com.gloomy.server.application.user.UserDTO.*;
@@ -43,7 +34,7 @@ public class UserService {
     @Transactional
     public User signUp(PostRequest postRequest) {
         final Password encodedPassword = Password.of(postRequest.getPassword(), passwordEncoder);
-        if(userRepository.findFirstByEmailAndJoinStatus(postRequest.getEmail(),Status.ACTIVE).isPresent())
+        if(userRepository.findFirstByEmailAndJoinStatus(postRequest.getEmail(), Status.ACTIVE).isPresent())
             throw new IllegalArgumentException("[ userService ] 이미 존재하는 사용자 입니다.");
         User user = User.of(postRequest.getEmail(),
                 postRequest.getUserName(),

@@ -2,7 +2,7 @@ package com.gloomy.server.application.comment;
 
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;

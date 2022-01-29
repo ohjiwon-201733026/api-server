@@ -3,7 +3,7 @@ package com.gloomy.server.application.reply;
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
@@ -19,13 +19,11 @@ import java.util.List;
 @Service
 public class ReplyService {
     private final UserService userService;
-    private final FeedService feedService;
     private final CommentService commentService;
     private final ReplyRepository replyRepository;
 
-    public ReplyService(UserService userService, FeedService feedService, CommentService commentService, ReplyRepository replyRepository) {
+    public ReplyService(UserService userService, CommentService commentService, ReplyRepository replyRepository) {
         this.userService = userService;
-        this.feedService = feedService;
         this.commentService = commentService;
         this.replyRepository = replyRepository;
     }

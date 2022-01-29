@@ -1,14 +1,11 @@
 package com.gloomy.server.application.user;
 
 import com.gloomy.server.application.image.TestImage;
-import com.gloomy.server.domain.common.Status;
 import com.gloomy.server.domain.user.Password;
 import com.gloomy.server.domain.user.Sex;
 import com.gloomy.server.domain.user.User;
-import org.junit.jupiter.api.Test;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 
