@@ -62,9 +62,9 @@ public class User {
         this.joinStatus=Status.ACTIVE;
     }
 
-    public static User of(String email, String name, Password password,
+    public static User of(String email, String nickName, Password password,
                           Sex sex, int year,int month,int day){
-        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day));
+        return new User(email, Profile.from(nickName),password,sex,LocalDate.of(year,month,day));
     }
 
     public static User of(String email, String name, Password password) {
@@ -117,7 +117,7 @@ public class User {
     }
 
     public String getName() {
-        return getProfile().getUserName();
+        return getProfile().getName();
     }
 
     public Password getPassword() {

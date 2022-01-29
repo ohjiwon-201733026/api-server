@@ -64,9 +64,9 @@ public class UserService {
 
         Optional<User> user = userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
         if(user.isEmpty()) {
-            return Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
+            user= Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
         }
-        else throw new IllegalArgumentException("[ UserService ] : 이미 가입된 회원입니다");
+        return user;
     }
 
     private KakaoToken getKakaoToken(KakaoCodeRequest request) {
@@ -79,7 +79,7 @@ public class UserService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
+                        .with("redirect_uri", request.getRedirect_uri())
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
@@ -121,9 +121,6 @@ public class UserService {
 
         if(updateUserDTO.getEmail()!=null) user.changeEmail(updateUserDTO.getEmail());
         if(updateUserDTO.getSex()!=null) user.changeSex(updateUserDTO.getSex());
-//        if(updateUserDTO.getImage()!=null) {
-//            userProfileImageService.uploadUserImage(user,updateUserDTO.getImage());
-//        }
         if(updateUserDTO.getDateOfBirth()!=null) user.changeDateOfBirth(LocalDate.parse(updateUserDTO.getDateOfBirth()));
         return user;
     }
