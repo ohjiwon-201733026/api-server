@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -192,7 +193,7 @@ class FeedServiceTest {
         Feed inactiveFeed = feedService.createFeed(null, nonUserFeedDTO);
 
         feedService.deleteFeed(inactiveFeed.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null);
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10));
 
         assertEquals(foundActiveFeeds.getContent().size(), 1);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeed);
@@ -203,17 +204,19 @@ class FeedServiceTest {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
         Feed activeFeedFirst = feedService.createFeed(null, nonUserFeedDTO);
         Feed activeFeedSecond = feedService.createFeed(null, nonUserFeedDTO);
+        PageRequest pageableWithSortNull = PageRequest.of(0, 10);
+        PageRequest pageableWithSortDate = PageRequest.of(0, 10, Sort.by("date"));
 
-        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null);
-        Page<Feed> foundActiveFeedsWithSort = feedService.findAllActiveFeeds(PageRequest.of(0, 10), "DATE");
+        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(pageableWithSortNull);
+        Page<Feed> foundActiveFeedsWithSortDate = feedService.findAllActiveFeeds(pageableWithSortDate);
 
         assertEquals(foundActiveFeedsWithNull.getContent().size(), 2);
         assertEquals(foundActiveFeedsWithNull.getContent().get(0), activeFeedSecond);
         assertEquals(foundActiveFeedsWithNull.getContent().get(1), activeFeedFirst);
 
-        assertEquals(foundActiveFeedsWithSort.getContent().size(), 2);
-        assertEquals(foundActiveFeedsWithSort.getContent().get(0), activeFeedSecond);
-        assertEquals(foundActiveFeedsWithSort.getContent().get(1), activeFeedFirst);
+        assertEquals(foundActiveFeedsWithSortDate.getContent().size(), 2);
+        assertEquals(foundActiveFeedsWithSortDate.getContent().get(0), activeFeedSecond);
+        assertEquals(foundActiveFeedsWithSortDate.getContent().get(1), activeFeedFirst);
     }
 
     @Test
@@ -221,9 +224,10 @@ class FeedServiceTest {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
         Feed activeFeedFirst = feedService.createFeed(null, nonUserFeedDTO);
         Feed activeFeedSecond = feedService.createFeed(null, nonUserFeedDTO);
+        PageRequest pageableWithSortLike = PageRequest.of(0, 10, Sort.by("like"));
 
         feedService.addLikeCount(activeFeedFirst.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), "LIKE");
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(pageableWithSortLike);
 
         assertEquals(foundActiveFeeds.getContent().size(), 2);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeedFirst);
@@ -232,9 +236,10 @@ class FeedServiceTest {
 
     @Test
     void 활성_피드_전체_조회_공통_실패() {
-        checkFoundAllActiveFeedsFail(null, null, "[FeedService] pageable이 유효하지 않습니다.");
-        checkFoundAllActiveFeedsFail(null, "", "[FeedService] sort가 유효하지 않습니다.");
-        checkFoundAllActiveFeedsFail(null, "INVALID", "[FeedService] sort가 유효하지 않습니다.");
+        Pageable pageableWithSortInvalid = PageRequest.of(0, 10, Sort.by("invalid"));
+
+        checkFoundAllActiveFeedsFail(null, "[FeedService] pageable이 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(pageableWithSortInvalid, "[FeedService] sort가 유효하지 않습니다.");
     }
 
     @Test
@@ -374,9 +379,9 @@ class FeedServiceTest {
                 errorMessage);
     }
 
-    private void checkFoundAllActiveFeedsFail(Pageable pageable, String sort, String errorMessage) {
+    private void checkFoundAllActiveFeedsFail(Pageable pageable, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
-            feedService.findAllActiveFeeds(pageable, sort);
+            feedService.findAllActiveFeeds(pageable);
         }, errorMessage);
     }
 

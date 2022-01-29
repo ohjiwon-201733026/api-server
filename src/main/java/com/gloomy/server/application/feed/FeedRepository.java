@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FeedRepository extends JpaRepository<Feed, Long> {
-    Page<Feed> findAllByUserId(Pageable pageable, User userId);
+    Page<Feed> findByUserId(Pageable pageable, User userId);
 
     Page<Feed> findAll(Pageable pageable);
 
-    Page<Feed> findAllByStatusOrderByCreatedAtDesc(Pageable pageable, Status status);
+    Page<Feed> findByStatusOrderByCreatedAtDesc(Pageable pageable, Status status);
 
-    Page<Feed> findAllByStatusOrderByLikeCountDesc(Pageable pageable, Status status);
+    Page<Feed> findByStatusOrderByLikeCountDesc(Pageable pageable, Status status);
 }

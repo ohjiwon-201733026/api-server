@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.gloomy.server.domain.common.EnumModel;
 
 public enum Category implements EnumModel {
-    ALL("카테고리");
+    ALL("모든 고민"), CHAT("잡담"), FAMILY("가족"), FRIEND("친구");
 
     private String title;
 

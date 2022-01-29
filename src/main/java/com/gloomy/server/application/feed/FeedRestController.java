@@ -46,8 +46,8 @@ public class FeedRestController {
     }
 
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Page<FeedDTO.Response> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable, @RequestParam(required = false) String sort) {
-        Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable, sort);
+    public Page<FeedDTO.Response> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
+        Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
         return makeResult(allFeeds);
     }
 

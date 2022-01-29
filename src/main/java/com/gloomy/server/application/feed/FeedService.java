@@ -1,5 +1,6 @@
 package com.gloomy.server.application.feed;
 
+import com.gloomy.server.application.feed.sort.FeedSort;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Category;
@@ -11,9 +12,14 @@ import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -50,7 +56,6 @@ public class FeedService {
                     || !EnumUtils.isValidEnumIgnoreCase(Category.class, feedDTO.getCategory())) {
                 throw new IllegalArgumentException();
             }
-            Category.from(feedDTO.getCategory());
         } catch (Exception e) {
             throw new IllegalArgumentException("[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
         }
@@ -66,19 +71,27 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
-    public Page<Feed> findAllActiveFeeds(Pageable pageable, String sort) {
-        validatePageableAndSort(pageable, sort);
-        if (sort == null || Sort.valueOf(sort) == Sort.DATE) {
-            return feedRepository.findAllByStatusOrderByCreatedAtDesc(pageable, Status.ACTIVE);
+    public Page<Feed> findAllActiveFeeds(Pageable originPageable) {
+        validatePageableAndSort(originPageable);
+        Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
+            return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.ACTIVE);
         }
-        return feedRepository.findAllByStatusOrderByLikeCountDesc(pageable, Status.ACTIVE);
+        return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.ACTIVE);
     }
 
-    private void validatePageableAndSort(Pageable pageable, String sort) {
+    private void validatePageableAndSort(Pageable pageable) {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
-        if (sort != null && !EnumUtils.isValidEnumIgnoreCase(Sort.class, sort)) {
+        Stream<org.springframework.data.domain.Sort.Order> orders = pageable.getSort().stream();
+        if (pageable.getSort().stream().count() > 1) {
+            throw new IllegalArgumentException("[FeedService] sort는 2개 이상이 될 수 없습니다.");
+        }
+        Optional<org.springframework.data.domain.Sort.Order> order = orders.findFirst();
+        if (order.isPresent() && !EnumUtils.isValidEnumIgnoreCase(FeedSort.class, order.get().getProperty())) {
             throw new IllegalArgumentException("[FeedService] sort가 유효하지 않습니다.");
         }
     }
@@ -92,7 +105,7 @@ public class FeedService {
         }
         try {
             User foundUser = userService.findUser(userId);
-            return feedRepository.findAllByUserId(pageable, foundUser);
+            return feedRepository.findByUserId(pageable, foundUser);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
         }
