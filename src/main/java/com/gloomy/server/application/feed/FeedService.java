@@ -1,12 +1,15 @@
 package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
-import com.gloomy.server.domain.common.Status;
-import com.gloomy.server.domain.feed.*;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Category;
+import com.gloomy.server.domain.feed.Content;
+import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -43,7 +46,8 @@ public class FeedService {
         try {
             if ((userId == null) == (feedDTO.getPassword() == null)
                     || feedDTO.getTitle().length() <= 0
-                    || feedDTO.getContent().length() <= 0) {
+                    || feedDTO.getContent().length() <= 0
+                    || !EnumUtils.isValidEnumIgnoreCase(Category.class, feedDTO.getCategory())) {
                 throw new IllegalArgumentException();
             }
             Category.from(feedDTO.getCategory());
@@ -62,11 +66,21 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
-    public Page<Feed> findAllActiveFeeds(Pageable pageable) {
+    public Page<Feed> findAllActiveFeeds(Pageable pageable, String sort) {
+        validatePageableAndSort(pageable, sort);
+        if (sort == null || Sort.valueOf(sort) == Sort.DATE) {
+            return feedRepository.findAllByStatusOrderByCreatedAtDesc(pageable, Status.ACTIVE);
+        }
+        return feedRepository.findAllByStatusOrderByLikeCountDesc(pageable, Status.ACTIVE);
+    }
+
+    private void validatePageableAndSort(Pageable pageable, String sort) {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
-        return feedRepository.findAllByStatus(pageable, Status.ACTIVE);
+        if (sort != null && !EnumUtils.isValidEnumIgnoreCase(Sort.class, sort)) {
+            throw new IllegalArgumentException("[FeedService] sort가 유효하지 않습니다.");
+        }
     }
 
     public Page<Feed> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
@@ -129,5 +143,11 @@ public class FeedService {
     @Transactional
     public void deleteAll() {
         feedRepository.deleteAll();
+    }
+
+    public Feed addLikeCount(Long feedId) {
+        Feed foundFeed = findOneFeed(feedId);
+        foundFeed.addLikeCount();
+        return feedRepository.save(foundFeed);
     }
 }

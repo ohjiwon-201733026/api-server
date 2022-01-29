@@ -1,7 +1,7 @@
 package com.gloomy.server.domain.reply;
 
 import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.*;
+import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;

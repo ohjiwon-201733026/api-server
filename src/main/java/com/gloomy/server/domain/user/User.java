@@ -1,21 +1,16 @@
 package com.gloomy.server.domain.user;
 
-import com.gloomy.server.domain.comment.Comment;
-import com.gloomy.server.domain.common.Status;
-import com.gloomy.server.domain.feed.Feed;
-import lombok.ToString;
-import org.springframework.security.core.parameters.P;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.gloomy.server.domain.common.entity.Status;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Setter
@@ -25,8 +20,9 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 public class User {
 
-    @Id @GeneratedValue(strategy = IDENTITY)
-    @Column(name="user_id")
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(name = "email", nullable = false)
@@ -62,34 +58,34 @@ public class User {
     protected User() {
     }
 
-    private User(String email, Profile profile,Password password) {
+    private User(String email, Profile profile, Password password) {
         this.email = email;
         this.profile = profile;
-        this.role=Role.USER;
+        this.role = Role.USER;
         this.password = password;
     }
 
-    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth,Status joinStatus){
+    private User(String email, Profile profile, Password password, Sex sex, LocalDate dateOfBirth, Status joinStatus) {
         this.email = email;
         this.profile = profile;
-        this.role=Role.USER;
+        this.role = Role.USER;
         this.password = password;
-        this.sex=sex;
-        this.dateOfBirth=dateOfBirth;
-        this.joinStatus=joinStatus;
+        this.sex = sex;
+        this.dateOfBirth = dateOfBirth;
+        this.joinStatus = joinStatus;
     }
 
     public static User of(String email, String name, Password password,
-                          Sex sex, int year,int month,int day,Status status){
-        return new User(email, Profile.from(name),password,sex,LocalDate.of(year,month,day),status);
+                          Sex sex, int year, int month, int day, Status status) {
+        return new User(email, Profile.from(name), password, sex, LocalDate.of(year, month, day), status);
     }
 
     public static User of(String email, String name, Password password) {
-        return new User(email, Profile.from(name),password);
+        return new User(email, Profile.from(name), password);
     }
 
     public static User of(String email, String name) {
-        return new User(email,Profile.from(name), null);
+        return new User(email, Profile.from(name), null);
     }
 
     boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {
@@ -99,16 +95,25 @@ public class User {
     /**
      * change*
      */
-    public void changeId(Long id){
-        this.id=id;
+    public void changeId(Long id) {
+        this.id = id;
     }
-    public void changeEmail(String email){this.email=email;}
-    public void changeSex(Sex sex){this.sex=sex;}
-//    public void changeImage(String image){
+
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changeSex(Sex sex) {
+        this.sex = sex;
+    }
+
+    //    public void changeImage(String image){
 //        System.out.println(">>>>>>>>>>"+this.profile);
 //        System.out.println(">>>>>>>>>>"+this.profile.getImage());
 //        this.profile.getImage().changeImage(image);}
-    public void changeDateOfBirth(LocalDate dateOfBirth){this.dateOfBirth=dateOfBirth;}
+    public void changeDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
 
     /**
      * 비즈니스 로직

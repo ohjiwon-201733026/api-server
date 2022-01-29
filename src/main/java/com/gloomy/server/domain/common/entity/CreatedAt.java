@@ -1,4 +1,4 @@
-package com.gloomy.server.domain.common;
+package com.gloomy.server.domain.common.entity;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;
