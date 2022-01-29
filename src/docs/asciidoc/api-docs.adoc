@@ -146,19 +146,34 @@ include::{snippets}/feed-rest-controller-test/delete-feed/path-parameters.adoc[]
 include::{snippets}/feed-rest-controller-test/delete-feed/response-body.adoc[]
 
 [[get-feed-categories]]
-=== 1.7 카테고리 리스트 조회
+=== 1.8 카테고리 리스트 조회
 
 요청 정보
 
-include::{snippets}/feed-rest-controller-test/get-feed-categories/http-request.adoc[]
+include::{snippets}/category-rest-controller-test/get-feed-categories/http-request.adoc[]
 
 응답 정보
 
-include::{snippets}/feed-rest-controller-test/get-feed-categories/response-body.adoc[]
+include::{snippets}/category-rest-controller-test/get-feed-categories/response-body.adoc[]
 
 응답 형식
 
-include::{snippets}/feed-rest-controller-test/get-feed-categories/response-fields.adoc[]
+include::{snippets}/category-rest-controller-test/get-feed-categories/response-fields.adoc[]
+
+[[get-feed-sorts]]
+=== 1.9 피드 정렬기준 리스트 조회
+
+요청 정보
+
+include::{snippets}/sort-rest-controller-test/get-feed-sorts/http-request.adoc[]
+
+응답 정보
+
+include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-fields.adoc[]
 
 == 2. 댓글 API
 
