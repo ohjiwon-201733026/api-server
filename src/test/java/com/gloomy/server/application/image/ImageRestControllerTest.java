@@ -156,4 +156,25 @@ public class ImageRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )));
     }
+
+    @DisplayName("피드_이미지_삭제")
+    @Test
+    void deleteFeedImages() throws Exception {
+        imageService.uploadImages(testFeed, testImage.makeImages(1));
+
+        this.mockMvc.perform(delete("/feed/image/{feedId}", testFeed.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("feedId").description("삭제할 이미지의 피드 ID")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").type(JsonFieldType.NULL).description("없음"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )
+                ));
+    }
 }
