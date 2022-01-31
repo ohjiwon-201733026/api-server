@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -44,6 +45,9 @@ class FeedRestControllerTest extends AbstractControllerTest {
     private UserService userService;
     @Autowired
     private JWTSerializer jwtSerializer;
+
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     private User testUser;
     TestFeedDTO testFeedDTO;
 
@@ -57,7 +61,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
         userService.deleteAll();
     }

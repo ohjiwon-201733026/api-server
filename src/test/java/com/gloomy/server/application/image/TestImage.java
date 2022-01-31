@@ -14,15 +14,24 @@ import java.util.List;
 @Slf4j
 public class TestImage {
     private final String testDir = "src/test/resources";
-    private final String testFile = "test.jpg";
+    private final String testImageFile = "image.jpg";
+    private final String testUpdateImageFile = "updateImage.jpg";
+
+    public ArrayList<MultipartFile> makeUpdateImages(int imageNum) {
+        return makeCommonImages(testUpdateImageFile, imageNum);
+    }
 
     public ArrayList<MultipartFile> makeImages(int imageNum) {
+        return makeCommonImages(testImageFile, imageNum);
+    }
+
+    private ArrayList<MultipartFile> makeCommonImages(String imageFile, int imageNum) {
         ArrayList<MultipartFile> images = new ArrayList<>();
         File fileDir = new File(testDir);
         MultipartFile image = null;
         try {
-            image = new MockMultipartFile(testFile,
-                    new FileInputStream(new File(fileDir.getAbsolutePath() + "/" + testFile)));
+            image = new MockMultipartFile(testImageFile,
+                    new FileInputStream(new File(fileDir.getAbsolutePath() + "/" + imageFile)));
         } catch (IOException e) {
             log.info("[FeedServiceTest] 테스트 파일 이미지 변환 실패했습니다.");
             e.printStackTrace();

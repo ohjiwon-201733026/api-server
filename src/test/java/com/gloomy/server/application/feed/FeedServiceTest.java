@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +39,8 @@ class FeedServiceTest {
     @Autowired
     private UserService userService;
 
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     private TestFeedDTO testFeedDTO;
     private UpdateFeedDTO.Request updateFeedDTO;
 
@@ -51,7 +54,7 @@ class FeedServiceTest {
 
     @AfterEach
     void afterEach() {
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
         userService.deleteAll();
     }
@@ -178,7 +181,7 @@ class FeedServiceTest {
     void 피드_조회_비회원_실패() {
         Feed createNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
 
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
 
         checkFoundNonUserFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
@@ -252,7 +255,7 @@ class FeedServiceTest {
 
         Feed updatedNonUserFeed = feedService.updateOneFeed(createdNonUserFeed.getId(), updateFeedDTO);
         Feed foundUpdatedNonUserFeed = feedService.findOneFeed(createdNonUserFeed.getId());
-        Images foundActiveImages = imageService.findActiveImages(createdNonUserFeed);
+        Images foundActiveImages = imageService.findAllActiveImages(createdNonUserFeed);
 
         assertEquals(foundUpdatedNonUserFeed, updatedNonUserFeed);
         assertEquals(foundActiveImages.getSize(), updateImages.size());
@@ -304,7 +307,7 @@ class FeedServiceTest {
         Feed createUserFeed = feedService.createFeed(testFeedDTO.getUserId(), testFeedDTO.makeUserFeedDTO());
         Feed createNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
 
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
 
         checkDeletedFeedFail(0L, "[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
@@ -315,7 +318,7 @@ class FeedServiceTest {
 
     private void checkCreatedFeedSuccess(Long userId, FeedDTO.Request feedDTO, Feed createdFeed) {
         assertEquals(createdFeed.getContent().getContent(), feedDTO.getContent());
-        assertEquals(imageService.findImages(createdFeed).getSize(), feedDTO.getImages().size());
+        assertEquals(imageService.findAllImages(createdFeed).getSize(), feedDTO.getImages().size());
 
         if (userId != null) {
             assertEquals(createdFeed.getUserId().getId(), userId);

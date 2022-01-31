@@ -15,11 +15,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,6 +40,8 @@ class ImageServiceTest {
     @Autowired
     private ImageService imageService;
 
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     private TestImage testImage;
     private Feed testFeed;
 
@@ -51,7 +56,7 @@ class ImageServiceTest {
 
     @AfterEach
     void afterEach() {
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
         userService.deleteAll();
     }
@@ -61,8 +66,8 @@ class ImageServiceTest {
         ArrayList<MultipartFile> imagesOne = testImage.makeImages(1);
         ArrayList<MultipartFile> imagesTwo = testImage.makeImages(2);
 
-        Images createdImagesOne = imageService.uploadMany(testFeed, imagesOne);
-        Images createdImagesTwo = imageService.uploadMany(testFeed, imagesTwo);
+        Images createdImagesOne = imageService.uploadImages(testFeed, imagesOne);
+        Images createdImagesTwo = imageService.uploadImages(testFeed, imagesTwo);
 
         checkUploadedImageSuccess(imagesOne, createdImagesOne);
         checkUploadedImageSuccess(imagesTwo, createdImagesTwo);
@@ -72,19 +77,18 @@ class ImageServiceTest {
     void 이미지_업로드_실패() {
         ArrayList<MultipartFile> images = testImage.makeImages(1);
 
-        checkUploadedImageFail(testFeed, null, "[ImageService] 이미지 파일이 존재하지 않습니다.");
-        checkUploadedImageFail(null, images, "[ImageService] 피드가 존재하지 않습니다.");
+        checkUploadedImageFail(null, images, "[ImageService] 해당 피드가 유효하지 않습니다.");
     }
 
     @Test
-    void 이미지_조회_성공() {
+    void 이미지_전체_조회_성공() {
         ArrayList<MultipartFile> imagesFirst = testImage.makeImages(1);
         ArrayList<MultipartFile> imagesSecond = testImage.makeImages(2);
 
-        Images createdImagesFirst = imageService.uploadMany(testFeed, imagesFirst);
-        Images foundImagesFirst = imageService.findImages(testFeed);
-        Images createdImagesSecond = imageService.uploadMany(testFeed, imagesSecond);
-        Images foundImagesSecond = imageService.findImages(testFeed);
+        Images createdImagesFirst = imageService.uploadImages(testFeed, imagesFirst);
+        Images foundImagesFirst = imageService.findAllImages(testFeed);
+        Images createdImagesSecond = imageService.uploadImages(testFeed, imagesSecond);
+        Images foundImagesSecond = imageService.findAllImages(testFeed);
 
         assertEquals(foundImagesFirst.getSize(), imagesFirst.size());
         assertEquals(foundImagesFirst.getImages().get(0), createdImagesFirst.getImages().get(0));
@@ -94,23 +98,83 @@ class ImageServiceTest {
     }
 
     @Test
+    void 이미지_전체_조회_실패() {
+        checkFoundAllImagesFail(null, "[ImageService] 해당 피드가 유효하지 않습니다.");
+    }
+
+    @Test
+    void 이미지_조회_성공() {
+        ArrayList<MultipartFile> images = testImage.makeImages(1);
+
+        Images createdImages = imageService.uploadImages(testFeed, images);
+        Image foundImage = imageService.findOneImage(createdImages.getImages().get(0).getId());
+
+        assertEquals(foundImage, createdImages.getImages().get(0));
+    }
+
+    @Test
     void 이미지_조회_실패() {
-        checkFoundImageFail(null, "[ImageService] 피드가 유효하지 않습니다.");
+        ArrayList<MultipartFile> images = testImage.makeImages(1);
+
+        Image createdImage = imageService.updateImages(testFeed, images).getImages().get(0);
+        imageService.deleteAll(feedTestDir);
+
+        checkFoundImageFail(null, "[ImageService] 해당 이미지 ID가 유효하지 않습니다.");
+        checkFoundImageFail(0L, "[ImageService] 해당 이미지 ID가 유효하지 않습니다.");
+        checkFoundImageFail(createdImage.getId(), "[ImageService] 해당 이미지 ID가 존재하지 않습니다.");
+    }
+
+    @Test
+    void 활성_이미지_전체_조회_성공() {
+        ArrayList<MultipartFile> images = testImage.makeImages(2);
+
+        Images createdImages = imageService.uploadImages(testFeed, images);
+        imageService.deleteImage(createdImages.getImages().get(0).getId());
+        Images deletedImages = imageService.findAllImages(testFeed);
+
+        assertEquals(deletedImages.getSize(), 1);
+        assertEquals(deletedImages.getImages().get(0), createdImages.getImages().get(1));
+    }
+
+    @Test
+    void 활성_이미지_전체_조회_실패() {
+        checkFoundAllActiveImagesFail(null, "[ImageService] 해당 피드가 유효하지 않습니다.");
+    }
+
+    @Transactional
+    @Test
+    void 이미지_수정_성공() {
+        ArrayList<MultipartFile> images = testImage.makeImages(1);
+        ArrayList<MultipartFile> updateImages = testImage.makeUpdateImages(2);
+
+        Images createdImages = imageService.uploadImages(testFeed, images);
+        Images updatedImages = imageService.updateImages(testFeed, updateImages);
+        Images foundImages = imageService.findAllActiveImages(testFeed);
+
+        checkUpdatedImageSuccess(updateImages, createdImages, updatedImages, foundImages);
+    }
+
+    @Test
+    void 이미지_수정_실패() {
+        ArrayList<MultipartFile> images = testImage.makeImages(1);
+
+        checkUpdatedImageFail(null, images, "[ImageService] 해당 피드가 유효하지 않습니다.");
     }
 
     @Test
     void 이미지_삭제_성공() {
         ArrayList<MultipartFile> images = testImage.makeImages(3);
 
-        imageService.uploadMany(testFeed, images);
-        Images deleteImages = imageService.deleteImages(testFeed);
+        imageService.uploadImages(testFeed, images);
+        imageService.deleteImages(testFeed);
+        Images deletedImages = imageService.findAllActiveImages(testFeed);
 
-        checkDeletedImageSuccess(deleteImages);
+        checkDeletedImageSuccess(deletedImages);
     }
 
     @Test
     void 이미지_삭제_실패() {
-        checkDeletedImageFail(null, "[ImageService] 피드가 유효하지 않습니다.");
+        checkDeletedImageFail(null, "[ImageService] 해당 피드가 유효하지 않습니다.");
     }
 
     private void checkUploadedImageSuccess(ArrayList<MultipartFile> images, Images createdImages) {
@@ -123,15 +187,47 @@ class ImageServiceTest {
     private void checkUploadedImageFail(Feed feed, ArrayList<MultipartFile> images, String errorMessage) {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
-                    imageService.uploadMany(feed, images);
+                    imageService.uploadImages(feed, images);
                 }).getMessage(),
                 errorMessage);
     }
 
-    private void checkFoundImageFail(Feed feedId, String errorMessage) {
+    private void checkFoundAllImagesFail(Feed feedId, String errorMessage) {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
-                    imageService.findImages(feedId);
+                    imageService.findAllImages(feedId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkFoundImageFail(Long imageId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    imageService.findOneImage(imageId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkFoundAllActiveImagesFail(Feed feedId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    imageService.findAllActiveImages(feedId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkUpdatedImageSuccess(ArrayList<MultipartFile> updateImages, Images createdImages, Images updatedImages, Images foundImages) {
+        assertEquals(foundImages.getSize(), updateImages.size());
+        for (int num = 0; num < foundImages.getSize(); num++) {
+            assertEquals(foundImages.getImages().get(num).getFeedId(), createdImages.getImages().get(0).getFeedId());
+            assertEquals(foundImages.getImages().get(num).getImageUrl().getImageUrl(), updatedImages.getImages().get(num).getImageUrl().getImageUrl());
+        }
+    }
+
+    private void checkUpdatedImageFail(Feed feedId, List<MultipartFile> images, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    imageService.updateImages(feedId, images);
                 }).getMessage(),
                 errorMessage);
     }
