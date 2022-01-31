@@ -3,10 +3,7 @@ package com.gloomy.server.application.image;
 import com.gloomy.server.application.feed.FeedService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/feed/image")
@@ -21,6 +18,12 @@ public class ImageRestController {
     public ImageDTO.Response createFeedImages(@Validated @ModelAttribute ImageDTO.Request imageDTO) {
         Images images = feedService.uploadImages(imageDTO.getFeedId(), imageDTO.getImages());
         return makeImageDTOResponse(images);
+    }
+
+    @GetMapping("/{feedId}")
+    public ImageDTO.Response getAllActiveFeedImages(@PathVariable Long feedId) {
+        Images allActiveImages = feedService.findAllActiveImages(feedId);
+        return makeImageDTOResponse(allActiveImages);
     }
 
     private ImageDTO.Response makeImageDTOResponse(Images images) {
