@@ -58,7 +58,7 @@ public class ReportRestControllerTest extends AbstractControllerTest{
         testUser= makeTestUser();
         testFeedDTO = new TestFeedDTO(testUser, 1);
         userFeedDTO = new FeedDTO.Request(
-                testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent());
     }
 
     @Test

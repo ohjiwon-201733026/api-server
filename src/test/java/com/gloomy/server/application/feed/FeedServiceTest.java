@@ -89,7 +89,7 @@ class FeedServiceTest {
     @Test
     void 피드_생성_비회원_실패() {
         FeedDTO.Request nonUserFeedDTOWithZeroOrLessPassword = new FeedDTO.Request(
-                "", testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                "", testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent());
 
         checkCreatedFeedFail(null, nonUserFeedDTOWithZeroOrLessPassword, "[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
     }
@@ -97,19 +97,19 @@ class FeedServiceTest {
     @Test
     void 피드_생성_공통_실패() {
         FeedDTO.Request feedDTOWithNoUserIdAndNoPassword = new FeedDTO.Request(
-                null, testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                null, testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent());
         FeedDTO.Request nonUserFeedDTOWithNoCategory = new FeedDTO.Request(
-                testFeedDTO.getPassword(), null, testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getPassword(), null, testFeedDTO.getTitle(), testFeedDTO.getContent());
         FeedDTO.Request nonUserFeedDTOWithInvalidCategory = new FeedDTO.Request(
-                testFeedDTO.getPassword(), "INVALID_CATEGORY", testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getPassword(), "INVALID_CATEGORY", testFeedDTO.getTitle(), testFeedDTO.getContent());
         FeedDTO.Request nonUserFeedDTOWithNoTitle = new FeedDTO.Request(
-                testFeedDTO.getPassword(), testFeedDTO.getCategory(), null, testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getPassword(), testFeedDTO.getCategory(), null, testFeedDTO.getContent());
         FeedDTO.Request nonUserFeedDTOWithZeroOrLessTitle = new FeedDTO.Request(
-                testFeedDTO.getPassword(), testFeedDTO.getCategory(), "", testFeedDTO.getContent(), testFeedDTO.getImages());
+                testFeedDTO.getPassword(), testFeedDTO.getCategory(), "", testFeedDTO.getContent());
         FeedDTO.Request nonUserFeedDTOWithNoContent = new FeedDTO.Request(
-                testFeedDTO.getPassword(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), null, testFeedDTO.getImages());
+                testFeedDTO.getPassword(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), null);
         FeedDTO.Request nonUserFeedDTOWithZeroOrLessContent = new FeedDTO.Request(
-                testFeedDTO.getPassword(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), "", testFeedDTO.getImages());
+                testFeedDTO.getPassword(), testFeedDTO.getCategory(), testFeedDTO.getTitle(), "");
 
         checkCreatedFeedFail(null, feedDTOWithNoUserIdAndNoPassword, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
         checkCreatedFeedFail(null, nonUserFeedDTOWithNoCategory, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
@@ -248,17 +248,17 @@ class FeedServiceTest {
     @Test
     void 피드_수정_공통_성공() {
         Feed createdNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        Images images = imageService.uploadImages(createdNonUserFeed, testFeedDTO.getImages());
         String updateContent = "새 글";
         ArrayList<MultipartFile> updateImages = testFeedDTO.getImages();
         updateFeedDTO.setContent(updateContent);
-        updateFeedDTO.setImages(updateImages);
 
         Feed updatedNonUserFeed = feedService.updateOneFeed(createdNonUserFeed.getId(), updateFeedDTO);
         Feed foundUpdatedNonUserFeed = feedService.findOneFeed(createdNonUserFeed.getId());
         Images foundActiveImages = imageService.findAllActiveImages(createdNonUserFeed);
 
         assertEquals(foundUpdatedNonUserFeed, updatedNonUserFeed);
-        assertEquals(foundActiveImages.getSize(), updateImages.size());
+        assertEquals(foundActiveImages.getSize(), images.getSize());
     }
 
     @Test
@@ -318,7 +318,6 @@ class FeedServiceTest {
 
     private void checkCreatedFeedSuccess(Long userId, FeedDTO.Request feedDTO, Feed createdFeed) {
         assertEquals(createdFeed.getContent().getContent(), feedDTO.getContent());
-        assertEquals(imageService.findAllImages(createdFeed).getSize(), feedDTO.getImages().size());
 
         if (userId != null) {
             assertEquals(createdFeed.getUserId().getId(), userId);
