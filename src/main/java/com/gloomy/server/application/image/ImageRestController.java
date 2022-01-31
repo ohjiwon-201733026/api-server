@@ -4,6 +4,9 @@ import com.gloomy.server.application.feed.FeedService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/feed/image")
@@ -24,6 +27,12 @@ public class ImageRestController {
     public ImageDTO.Response getAllActiveFeedImages(@PathVariable Long feedId) {
         Images allActiveImages = feedService.findAllActiveImages(feedId);
         return makeImageDTOResponse(allActiveImages);
+    }
+
+    @PostMapping("/{feedId}")
+    public ImageDTO.Response updateFeedImages(@PathVariable Long feedId, @RequestParam List<MultipartFile> images) {
+        Images updatedImages = feedService.updateImages(feedId, images);
+        return makeImageDTOResponse(updatedImages);
     }
 
     private ImageDTO.Response makeImageDTOResponse(Images images) {
