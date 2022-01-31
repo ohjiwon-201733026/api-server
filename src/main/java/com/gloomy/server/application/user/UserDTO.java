@@ -86,6 +86,10 @@ public class UserDTO {
         @NotBlank(message = "코드값을 입력하세요.")
         String code;
         String redirect_uri;
+
+        public KakaoCodeRequest(String code){
+            this.code=code;
+        }
     }
 
 
@@ -103,6 +107,7 @@ public class UserDTO {
         public static Response fromUserAndToken(User user, String token) {
             return new Response(user.getId(), user.getEmail(), user.getName(), token);
         }
+
     }
 
 

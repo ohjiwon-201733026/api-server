@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>kakaoLogout</title>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+</head>
+<body>
+<a href="javascript:doSomething();">click me</a>
+<script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript">
+
+</script>
+<script>
+function doSomething() {
+  alert("hello");
+  $.ajax({
+        type: "GET",
+        url: "/logout",
+        headers:{
+            "Authorization":"Bearer zOYiU0nrcKvRxfMTG9-MyZGzJFKkjKHx40GO0go9dRoAAAF-pntTzw"
+        },
+        success: function (res) {
+            alert('성공');
+        },
+        error: function(xhr, status, error){
+            alert(error+' '+status);
+        }
+    });
+}
+</script>
+</body>
+</html>

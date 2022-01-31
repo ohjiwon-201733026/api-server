@@ -291,6 +291,19 @@ class UserRestControllerTest extends AbstractControllerTest {
 
     }
 
+//    @DisplayName("로그아웃")
+//    @Test
+//    public void logout() throws Exception {
+//
+//        this.mockMvc.perform(get("/logout")
+//                .header("Authorization","Bearer eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjUwOSwibmFtZSI6Im9qdzk3MDcyNUBuYXZlci5jb20iLCJpYXQiOjE2NDM0ODAzNDl9.M75k9t84wv8FvclE1HzMUkuCcYdy2f6JURAnDK6Xgqg")
+//                .with(authentication(authentication))
+//                .accept(MediaType.APPLICATION_JSON))
+//                .andDo(print())
+//                .andExpect(status().isOk());
+//
+//    }
+
 
 
 

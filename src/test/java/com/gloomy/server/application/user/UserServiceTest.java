@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -22,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 })
 @Transactional
 public class UserServiceTest {
-
+    @Autowired UserRepository userRepository;
     @Autowired
     UserService userService;
     @Autowired
@@ -45,10 +47,10 @@ public class UserServiceTest {
 
     }
 
-    @AfterEach
-    public void after(){
-        userProfileImageService.deleteAll(user);
-    }
+//    @AfterEach
+//    public void after(){
+//        userProfileImageService.deleteAll(user);
+//    }
     @DisplayName("user create 성공")
     @Test
     public void user_create_success(){
@@ -133,6 +135,12 @@ public class UserServiceTest {
 
         assertThrows(IllegalArgumentException.class,
                 ()->userService.deleteUser(user.getId()));
+    }
+
+    @DisplayName("user logout")
+    @Test
+    public void user_logout(){
+        Optional<User> test= Optional.of(userRepository.save(User.of("email", "nickname", "token")));
     }
 
 

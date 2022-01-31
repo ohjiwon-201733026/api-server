@@ -46,6 +46,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status joinStatus;
 
+    private String kakaoToken;
+
 
     protected User() {
     }
@@ -54,6 +56,13 @@ public class User {
         this.email = email;
         this.profile = profile;
         this.password = password;
+        this.joinStatus=Status.ACTIVE;
+    }
+    private User(String email, Profile profile,Password password,String kakaoToken) {
+        this.email = email;
+        this.profile = profile;
+        this.password = password;
+        this.kakaoToken=kakaoToken;
         this.joinStatus=Status.ACTIVE;
     }
 
@@ -77,6 +86,10 @@ public class User {
 
     public static User of(String email, String name) {
         return new User(email,Profile.from(name), null);
+    }
+
+    public static User of(String email, String name,String kakaoToken) {
+        return new User(email,Profile.from(name), null,kakaoToken);
     }
 
     boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {

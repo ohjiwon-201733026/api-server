@@ -73,7 +73,7 @@ public class UserService {
 
         Optional<User> user = userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
         if(user.isEmpty()) {
-            user= Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname())));
+            user= Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname(), kakaoToken.getAccess_token())));
         }
         return user;
     }
@@ -88,7 +88,8 @@ public class UserService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-                        .with("redirect_uri", request.getRedirect_uri())
+//                        .with("redirect_uri", request.getRedirect_uri())
+                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
@@ -115,6 +116,32 @@ public class UserService {
 
     public User createUser(User user) {
         return userRepository.save(user);
+    }
+
+    public Long kakaoLogout(){
+        Long userId=getMyInfo();
+        Optional<User> user =userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
+        if(user.isEmpty()){
+            throw new IllegalArgumentException("[ userService ] 존재하지 않는 user");
+        }
+        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://kapi.kakao.com");
+        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+
+        URI uri = uriBuilderFactory.uriString("/v1/user/logout").build();
+
+        ResponseEntity<String> response = webClient.post()
+                .uri(uri)
+                .header("Authorization", "Bearer " + user.get().getKakaoToken())
+                .retrieve()
+                .toEntity(String.class)
+                .blockOptional().orElseThrow();
+
+        JSONObject obj = new JSONObject(response.getBody());
+
+        System.out.println(obj.toString());
+
+        return userId;
+
     }
 
     public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
