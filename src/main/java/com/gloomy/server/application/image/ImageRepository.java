@@ -13,4 +13,6 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
     List<Image> findAllByFeedId(Feed feedId);
 
     List<Image> findAllByFeedIdAndStatus(Feed feedId, Status status);
+
+    void deleteAllByFeedId(Feed feedId);
 }

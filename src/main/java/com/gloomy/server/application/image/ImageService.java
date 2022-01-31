@@ -7,7 +7,6 @@ import com.gloomy.server.domain.image.Image;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -26,25 +25,17 @@ public class ImageService {
     }
 
     @Transactional
-    public Images uploadMany(Feed feed, List<MultipartFile> multipartFiles) throws IllegalArgumentException {
-        validateImages(feed, multipartFiles);
-        Images images = new Images();
-        if (!ObjectUtils.isEmpty(multipartFiles)) {
+    public Images uploadImages(Feed feedId, List<MultipartFile> multipartFiles) throws IllegalArgumentException {
+        Images images = null;
+        if (multipartFiles != null) {
+            images = new Images();
+            validateFeedId(feedId);
             for (MultipartFile multipartFile : multipartFiles) {
-                Image createdImage = uploadOne(feed, multipartFile);
+                Image createdImage = uploadOne(feedId, multipartFile);
                 images.addImage(createdImage);
             }
         }
         return images;
-    }
-
-    private void validateImages(Feed feed, List<MultipartFile> multipartFiles) throws IllegalArgumentException {
-        if (feed == null) {
-            throw new IllegalArgumentException("[ImageService] 피드가 존재하지 않습니다.");
-        }
-        if (multipartFiles == null) {
-            throw new IllegalArgumentException("[ImageService] 이미지 파일이 존재하지 않습니다.");
-        }
     }
 
     private Image uploadOne(Feed feed, MultipartFile multipartFile) {
@@ -54,39 +45,61 @@ public class ImageService {
         return imageRepository.save(image);
     }
 
-    public Images findImages(Feed feedId) throws IllegalArgumentException {
-        if (feedId == null) {
-            throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
-        }
+    @Transactional(readOnly = true)
+    public Images findAllImages(Feed feedId) throws IllegalArgumentException {
+        validateFeedId(feedId);
         return new Images(imageRepository.findAllByFeedId(feedId));
     }
 
-    public Images findActiveImages(Feed feedId) throws IllegalArgumentException {
-        if (feedId == null) {
-            throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
-        }
+    @Transactional(readOnly = true)
+    public Images findAllActiveImages(Feed feedId) throws IllegalArgumentException {
+        validateFeedId(feedId);
         return new Images(imageRepository.findAllByFeedIdAndStatus(feedId, Status.ACTIVE));
     }
 
-    public Images updateImages(Feed feedId, List<MultipartFile> images) {
-        deleteImages(feedId);
-        return uploadMany(feedId, images);
+    @Transactional(readOnly = true)
+    public Image findOneImage(Long imageId) {
+        validateImageId(imageId);
+        return imageRepository.findById(imageId).orElseThrow(() -> {
+            throw new IllegalArgumentException("[ImageService] 해당 이미지 ID가 존재하지 않습니다.");
+        });
     }
 
     @Transactional
-    public Images deleteImages(Feed feedId) throws IllegalArgumentException {
-        if (feedId == null) {
-            throw new IllegalArgumentException("[ImageService] 피드가 유효하지 않습니다.");
-        }
-        List<Image> foundImages = imageRepository.findAllByFeedId(feedId);
-        for (Image foundImage : foundImages) {
-            foundImage.delete();
-        }
-        return new Images(imageRepository.saveAll(foundImages));
+    public Images updateImages(Feed feedId, List<MultipartFile> images) {
+        validateFeedId(feedId);
+        deleteImages(feedId);
+        return uploadImages(feedId, images);
     }
 
-    public void deleteAll() {
+    @Transactional
+    public void deleteImages(Feed feedId) throws IllegalArgumentException {
+        validateFeedId(feedId);
+        imageRepository.deleteAllByFeedId(feedId);
+    }
+
+    @Transactional
+    public void deleteImage(Long imageId) throws IllegalArgumentException {
+        validateImageId(imageId);
+        Image foundImage = findOneImage(imageId);
+        imageRepository.delete(foundImage);
+    }
+
+    @Transactional
+    public void deleteAll(String dir) {
         imageRepository.deleteAll();
-        s3Uploader.deleteAll();
+        s3Uploader.deleteDir(dir);
+    }
+
+    private void validateFeedId(Feed feedId) {
+        if (feedId == null) {
+            throw new IllegalArgumentException("[ImageService] 해당 피드가 유효하지 않습니다.");
+        }
+    }
+
+    private void validateImageId(Long imageId) {
+        if (imageId == null || imageId <= 0) {
+            throw new IllegalArgumentException("[ImageService] 해당 이미지 ID가 유효하지 않습니다.");
+        }
     }
 }

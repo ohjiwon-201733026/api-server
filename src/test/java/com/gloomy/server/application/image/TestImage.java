@@ -3,6 +3,8 @@ package com.gloomy.server.application.image;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -14,20 +16,28 @@ import java.util.List;
 @Slf4j
 public class TestImage {
     private final String testDir = "src/test/resources";
-    private final String testFile = "test.jpg";
+    private final String testImageFile = "image.jpg";
+    private final String testUpdateImageFile = "updateImage.jpg";
+
+    public ArrayList<MultipartFile> makeUpdateImages(int imageNum) {
+        return makeCommonImages(testUpdateImageFile, imageNum);
+    }
 
     public ArrayList<MultipartFile> makeImages(int imageNum) {
+        return makeCommonImages(testImageFile, imageNum);
+    }
+
+    private ArrayList<MultipartFile> makeCommonImages(String imageFile, int imageNum) {
         ArrayList<MultipartFile> images = new ArrayList<>();
         File fileDir = new File(testDir);
         MultipartFile image = null;
         try {
-            image = new MockMultipartFile(testFile,
-                    new FileInputStream(new File(fileDir.getAbsolutePath() + "/" + testFile)));
+            image = new MockMultipartFile(testImageFile,
+                    new FileInputStream(new File(fileDir.getAbsolutePath() + "/" + imageFile)));
         } catch (IOException e) {
             log.info("[FeedServiceTest] 테스트 파일 이미지 변환 실패했습니다.");
             e.printStackTrace();
         }
-
         for (int i = 0; i < imageNum; i++) {
             images.add(image);
         }
@@ -45,15 +55,13 @@ public class TestImage {
         }
     }
 
-    public static MockMultipartFile convertOne(MultipartFile image) {
-
+    public static MultiValueMap<String, String> convert(Long feedId) {
         try {
-            return new MockMultipartFile("image",
-                    image.getOriginalFilename(),
-                    MediaType.MULTIPART_FORM_DATA_VALUE,
-                    image.getInputStream());
-        } catch (IOException e) {
-            throw new IllegalArgumentException("[TestImage] 이미지 파일 변환 중 오류가 발생했습니다.");
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("feedId", feedId.toString());
+            return params;
+        } catch (Exception e) {
+            throw new IllegalArgumentException("[TestImage] 변환 중 오류가 발생했습니다.");
         }
     }
 }

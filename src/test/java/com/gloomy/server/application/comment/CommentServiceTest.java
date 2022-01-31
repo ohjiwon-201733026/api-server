@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,6 +39,8 @@ class CommentServiceTest {
     @Autowired
     private ImageService imageService;
 
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     private TestCommentDTO testCommentDTO;
 
     @BeforeEach
@@ -51,7 +54,7 @@ class CommentServiceTest {
 
     @AfterEach
     void afterEach() {
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         commentService.deleteAll();
         feedService.deleteAll();
         userService.deleteAll();
@@ -156,7 +159,7 @@ class CommentServiceTest {
     void 피드_댓글_전체_조회_실패() {
         PageRequest pageable = PageRequest.of(0, 10);
 
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
 
         checkFoundAllCommentFail(pageable, 0L, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");

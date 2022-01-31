@@ -20,6 +20,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -54,6 +55,9 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     private JWTSerializer jwtSerializer;
     @Autowired
     ObjectMapper objectMapper;
+
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     TestReplyDTO testReplyDTO;
 
     @BeforeEach
@@ -71,7 +75,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     @AfterEach
     void afterEach() {
         replyService.deleteAll();
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         commentService.deleteAll();
         feedService.deleteAll();
         userService.deleteAll();
@@ -285,7 +289,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").type(JsonFieldType.NULL).description("삭제한 대댓글 ID"),
+                                fieldWithPath("result").type(JsonFieldType.NULL).description("없음"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));

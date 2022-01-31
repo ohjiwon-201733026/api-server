@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -49,7 +50,10 @@ class CommentRestControllerTest extends AbstractControllerTest {
     private JWTSerializer jwtSerializer;
     @Autowired
     ObjectMapper objectMapper;
-    TestCommentDTO testCommentDTO;
+
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
+    private TestCommentDTO testCommentDTO;
 
     @BeforeEach
     void beforeEach() {
@@ -63,7 +67,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     @AfterEach
     void afterEach() {
         commentService.deleteAll();
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
         userService.deleteAll();
     }
@@ -276,7 +280,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").type(JsonFieldType.NULL).description("삭제한 댓글 ID"),
+                                fieldWithPath("result").type(JsonFieldType.NULL).description("없음"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));

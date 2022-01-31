@@ -2,7 +2,6 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.image.ImageService;
-import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
@@ -13,19 +12,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.MultiValueMap;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.*;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,6 +41,9 @@ class FeedRestControllerTest extends AbstractControllerTest {
     private UserService userService;
     @Autowired
     private JWTSerializer jwtSerializer;
+
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     private User testUser;
     TestFeedDTO testFeedDTO;
 
@@ -57,7 +57,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
         userService.deleteAll();
     }
@@ -65,22 +65,22 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("피드_생성_비회원")
     @Test
     void createNonuserFeed() throws Exception {
-        MockMultipartFile firstImageFile = TestImage.convert(testFeedDTO.getImages(), 0);
-        MultiValueMap<String, String> params = testFeedDTO.convert(false);
+        FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
 
-        this.mockMvc.perform(fileUpload("/feed")
-//                      .file(firstImageFile)
-                        .params(params))
+        String body = objectMapper.writeValueAsString(request);
+
+        this.mockMvc.perform(post("/feed")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
-                        requestParameters(
-                                parameterWithName("password").description("비밀번호"),
-                                parameterWithName("category").description("카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
-                                parameterWithName("title").description("게시글 제목"),
-                                parameterWithName("content").description("게시글 내용")),
-                        requestParts(
-                                partWithName("images").description("이미지 파일 리스트 (선택사항)").optional()),
+                        requestFields(
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -107,24 +107,25 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("피드_생성_회원")
     @Test
     void createUserFeed() throws Exception {
-        MockMultipartFile firstImageFile = TestImage.convert(testFeedDTO.getImages(), 0);
-        MultiValueMap<String, String> params = testFeedDTO.convert(true);
+        FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
+
+        String body = objectMapper.writeValueAsString(request);
 
         this.mockMvc.perform(fileUpload("/feed")
                         .header("Authorization", "Bearer " + testFeedDTO.getToken())
-//                      .file(firstImageFile)
-                        .params(params))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
-                        requestParameters(
-                                parameterWithName("category").description("카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
-                                parameterWithName("title").description("게시글 제목"),
-                                parameterWithName("content").description("게시글 내용")),
-                        requestParts(
-                                partWithName("images").description("이미지 파일 리스트 (선택사항)").optional()),
+                        requestFields(
+                                fieldWithPath("password").type(JsonFieldType.NULL).description("비밀번호 (NULL)"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -151,8 +152,10 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("전체_피드_조회")
     @Test
     void getAllFeeds() throws Exception {
-        feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
-        feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        Feed createdFeedFirst = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        Feed createdFeedSecond = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        imageService.uploadImages(createdFeedFirst, testFeedDTO.getImages());
+        imageService.uploadImages(createdFeedSecond, testFeedDTO.getImages());
 
         this.mockMvc.perform(get("/feed")
                         .param("page", "0")
@@ -205,8 +208,10 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @DisplayName("사용자_피드_조회")
     @Test
     void getUserFeeds() throws Exception {
-        feedService.createFeed(testFeedDTO.getUserId(), testFeedDTO.makeUserFeedDTO());
-        feedService.createFeed(testFeedDTO.getUserId(), testFeedDTO.makeUserFeedDTO());
+        Feed createdFeedFirst = feedService.createFeed(testFeedDTO.getUserId(), testFeedDTO.makeUserFeedDTO());
+        Feed createdFeedSecond = feedService.createFeed(testFeedDTO.getUserId(), testFeedDTO.makeUserFeedDTO());
+        imageService.uploadImages(createdFeedFirst, testFeedDTO.getImages());
+        imageService.uploadImages(createdFeedSecond, testFeedDTO.getImages());
 
         this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
                         .param("page", "0")
@@ -261,6 +266,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     @Test
     void getOneFeed() throws Exception {
         Feed createdNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        imageService.uploadImages(createdNonUserFeed, testFeedDTO.getImages());
 
         this.mockMvc.perform(get("/feed/{feedId}", createdNonUserFeed.getId())
                         .accept(MediaType.APPLICATION_JSON))
@@ -298,29 +304,28 @@ class FeedRestControllerTest extends AbstractControllerTest {
     void updateFeed() throws Exception {
         String updatePassword = "34567";
         String updateContent = "새 글";
-        MockMultipartFile firstUpdateImageFile = TestImage.convert(testFeedDTO.getImages(), 0);
-
         Feed createdNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        imageService.uploadImages(createdNonUserFeed, testFeedDTO.getImages());
+
         UpdateFeedDTO.Request request = new UpdateFeedDTO.Request();
         request.setPassword(updatePassword);
         request.setContent(updateContent);
-        MultiValueMap<String, String> params = TestFeedDTO.convert(request);
+        String body = objectMapper.writeValueAsString(request);
 
-        this.mockMvc.perform(fileUpload("/feed/{feedId}", createdNonUserFeed.getId())
-//                .file(firstUpdateImageFile)
-                        .params(params))
+        this.mockMvc.perform(post("/feed/{feedId}", createdNonUserFeed.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         pathParameters(
                                 parameterWithName("feedId").description("수정할 피드 ID")),
-                        requestParameters(
-                                parameterWithName("password").description("수정할 비회원 비밀번호 (선택사항)").optional(),
-                                parameterWithName("category").description("수정할 카테고리 (선택사항)").optional(),
-                                parameterWithName("title").description("수정할 게시글 제목 (선택사항)").optional(),
-                                parameterWithName("content").description("수정할 게시글 내용 (선택사항)").optional()),
-                        requestParts(
-                                partWithName("images").description("수정할 이미지 파일 리스트 (선택사항)").optional()),
+                        requestFields(
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("수정할 비회원 비밀번호 (선택사항)").optional(),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("수정할 카테고리 (선택사항)").optional(),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("수정할 게시글 제목 (선택사항)").optional(),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("수정할 게시글 내용 (선택사항)").optional()),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -359,7 +364,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
-                                fieldWithPath("result").type(JsonFieldType.NULL).description("삭제한 피드 ID"),
+                                fieldWithPath("result").type(JsonFieldType.NULL).description("없음"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));

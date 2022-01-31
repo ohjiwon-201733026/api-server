@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,15 +36,15 @@ public class FeedRestController {
         this.requestContext = requestContext;
     }
 
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public FeedDTO.Response createFeed(@Validated @ModelAttribute FeedDTO.Request feedDTO) {
+    @PostMapping(value = "")
+    public FeedDTO.Response createFeed(@Validated @RequestBody FeedDTO.Request feedDTO) {
         requestContext.setRequestBody(feedDTO);
         Long userId = userService.getMyInfo();
         Feed createFeed = feedService.createFeed(userId, feedDTO);
         return makeFeedDTOResponse(createFeed);
     }
 
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "")
     public Page<FeedDTO.Response> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
         Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
         return makeResult(allFeeds);
@@ -63,8 +62,8 @@ public class FeedRestController {
         return makeResult(userFeeds);
     }
 
-    @PostMapping(value = "/{feedId}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public FeedDTO.Response updateFeed(@PathVariable Long feedId, @ModelAttribute UpdateFeedDTO.Request updateFeedDTO) {
+    @PostMapping(value = "/{feedId}")
+    public FeedDTO.Response updateFeed(@PathVariable Long feedId, @RequestBody UpdateFeedDTO.Request updateFeedDTO) {
         requestContext.setRequestBody(updateFeedDTO);
         Feed updatedFeed = feedService.updateOneFeed(feedId, updateFeedDTO);
         return makeFeedDTOResponse(updatedFeed);
@@ -84,7 +83,7 @@ public class FeedRestController {
     }
 
     private FeedDTO.Response makeFeedDTOResponse(Feed feed) {
-        Images activeImages = imageService.findActiveImages(feed);
+        Images activeImages = imageService.findAllActiveImages(feed);
         List<Comment> allComments = commentService.findAllComments(feed.getId());
         return FeedDTO.Response.of(feed, activeImages, allComments.size());
     }

@@ -4,8 +4,6 @@ import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.user.User;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -41,46 +39,10 @@ public class TestFeedDTO {
     }
 
     public FeedDTO.Request makeUserFeedDTO() {
-        return new FeedDTO.Request(category, title, content, images);
+        return new FeedDTO.Request(category, title, content);
     }
 
     public FeedDTO.Request makeNonUserFeedDTO() {
-        return new FeedDTO.Request(password, category, title, content, images);
-    }
-
-    public MultiValueMap<String, String> convert(Boolean isUser) {
-        try {
-            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("category", category);
-            params.add("title", title);
-            params.add("content", content);
-            if (!isUser) {
-                params.add("password", password);
-            }
-            return params;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("[TestFeedDTO] 변환 중 오류가 발생했습니다.");
-        }
-    }
-
-    public static MultiValueMap<String, String> convert(UpdateFeedDTO.Request feedDTO) {
-        try {
-            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            if (feedDTO.getPassword() != null) {
-                params.add("password", feedDTO.getPassword());
-            }
-            if (feedDTO.getCategory() != null) {
-                params.add("category", feedDTO.getCategory());
-            }
-            if (feedDTO.getTitle() != null) {
-                params.add("title", feedDTO.getTitle());
-            }
-            if (feedDTO.getContent() != null) {
-                params.add("content", feedDTO.getContent());
-            }
-            return params;
-        } catch (Exception e) {
-            throw new IllegalArgumentException("[TestFeedDTO] 변환 중 오류가 발생했습니다.");
-        }
+        return new FeedDTO.Request(password, category, title, content);
     }
 }

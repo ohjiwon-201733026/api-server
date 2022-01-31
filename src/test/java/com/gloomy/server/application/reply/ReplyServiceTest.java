@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,6 +47,8 @@ public class ReplyServiceTest {
     @Autowired
     private ReplyService replyService;
 
+    @Value("${cloud.aws.s3.feedTestDir}")
+    private String feedTestDir;
     private Comment testComment;
     private TestReplyDTO testReplyDTO;
 
@@ -63,7 +66,7 @@ public class ReplyServiceTest {
     @AfterEach
     void afterEach() {
         replyService.deleteAll();
-        imageService.deleteAll();
+        imageService.deleteAll(feedTestDir);
         commentService.deleteAll();
         feedService.deleteAll();
         userService.deleteAll();
