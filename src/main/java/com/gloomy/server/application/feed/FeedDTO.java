@@ -4,7 +4,6 @@ import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.image.Image;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
@@ -22,21 +21,18 @@ public class FeedDTO {
         private String title;
         @NotBlank
         private String content;
-        private List<MultipartFile> images;
 
-        public Request(String category, String title, String content, List<MultipartFile> images) {
+        public Request(String category, String title, String content) {
             this.category = category;
             this.title = title;
             this.content = content;
-            this.images = images;
         }
 
-        public Request(String password, String category, String title, String content, List<MultipartFile> images) {
+        public Request(String password, String category, String title, String content) {
             this.password = password;
             this.category = category;
             this.title = title;
             this.content = content;
-            this.images = images;
         }
     }
 

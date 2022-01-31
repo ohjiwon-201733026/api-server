@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -44,11 +44,7 @@ public class FeedService {
         if (userId != null) {
             user = userService.findUser(userId);
         }
-        Feed createdFeed = feedRepository.save(Feed.of(user, feedDTO));
-        if (feedDTO.getImages() != null) {
-            imageService.uploadImages(createdFeed, feedDTO.getImages());
-        }
-        return createdFeed;
+        return feedRepository.save(Feed.of(user, feedDTO));
     }
 
     @Transactional(readOnly = true)
@@ -112,9 +108,6 @@ public class FeedService {
         if (feedDTO.getContent() != null) {
             foundFeed.setContent(new Content(feedDTO.getContent()));
         }
-        if (feedDTO.getImages() != null) {
-            imageService.updateImages(foundFeed, feedDTO.getImages());
-        }
     }
 
     @Transactional
@@ -136,7 +129,7 @@ public class FeedService {
         return feedRepository.save(foundFeed);
     }
 
-    public Images uploadImages(Long feedId, ArrayList<MultipartFile> images) {
+    public Images uploadImages(Long feedId, List<MultipartFile> images) {
         return imageService.uploadImages(findOneFeed(feedId), images);
     }
 
@@ -144,7 +137,7 @@ public class FeedService {
         return imageService.findAllActiveImages(findOneFeed(feedId));
     }
 
-    public Images updateImages(Long feedId, ArrayList<MultipartFile> updateImages) {
+    public Images updateImages(Long feedId, List<MultipartFile> updateImages) {
         return imageService.updateImages(findOneFeed(feedId), updateImages);
     }
 
