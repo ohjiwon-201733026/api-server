@@ -35,6 +35,11 @@ public class ImageRestController {
         return makeImageDTOResponse(updatedImages);
     }
 
+    @DeleteMapping("/{feedId}")
+    public void deleteFeedImages(@PathVariable Long feedId) {
+        feedService.deleteImages(feedId);
+    }
+
     private ImageDTO.Response makeImageDTOResponse(Images images) {
         return ImageDTO.Response.of(images);
     }
