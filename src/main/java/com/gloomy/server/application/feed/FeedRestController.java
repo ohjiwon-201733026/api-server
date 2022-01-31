@@ -84,7 +84,7 @@ public class FeedRestController {
     }
 
     private FeedDTO.Response makeFeedDTOResponse(Feed feed) {
-        Images activeImages = imageService.findActiveImages(feed);
+        Images activeImages = imageService.findAllActiveImages(feed);
         List<Comment> allComments = commentService.findAllComments(feed.getId());
         return FeedDTO.Response.of(feed, activeImages, allComments.size());
     }

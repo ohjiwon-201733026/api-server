@@ -2,6 +2,7 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.feed.sort.FeedSort;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Category;
 import com.gloomy.server.domain.feed.Content;
@@ -17,7 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -43,27 +46,12 @@ public class FeedService {
         }
         Feed createdFeed = feedRepository.save(Feed.of(user, feedDTO));
         if (feedDTO.getImages() != null) {
-            imageService.uploadMany(createdFeed, feedDTO.getImages());
+            imageService.uploadImages(createdFeed, feedDTO.getImages());
         }
         return createdFeed;
     }
 
-    private void validateFeedDTO(Long userId, FeedDTO.Request feedDTO) throws IllegalArgumentException {
-        try {
-            if ((userId == null) == (feedDTO.getPassword() == null)
-                    || feedDTO.getTitle().length() <= 0
-                    || feedDTO.getContent().length() <= 0
-                    || !EnumUtils.isValidEnumIgnoreCase(Category.class, feedDTO.getCategory())) {
-                throw new IllegalArgumentException();
-            }
-        } catch (Exception e) {
-            throw new IllegalArgumentException("[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
-        }
-        if ((userId == null) && feedDTO.getPassword().length() <= 0) {
-            throw new IllegalArgumentException("[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
-        }
-    }
-
+    @Transactional(readOnly = true)
     public Page<Feed> findAllFeeds(Pageable pageable) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
@@ -71,6 +59,7 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     public Page<Feed> findAllActiveFeeds(Pageable originPageable) {
         validatePageableAndSort(originPageable);
         Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
@@ -82,20 +71,7 @@ public class FeedService {
         return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.ACTIVE);
     }
 
-    private void validatePageableAndSort(Pageable pageable) {
-        if (pageable == null) {
-            throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
-        }
-        Stream<org.springframework.data.domain.Sort.Order> orders = pageable.getSort().stream();
-        if (pageable.getSort().stream().count() > 1) {
-            throw new IllegalArgumentException("[FeedService] sort는 2개 이상이 될 수 없습니다.");
-        }
-        Optional<org.springframework.data.domain.Sort.Order> order = orders.findFirst();
-        if (order.isPresent() && !EnumUtils.isValidEnumIgnoreCase(FeedSort.class, order.get().getProperty())) {
-            throw new IllegalArgumentException("[FeedService] sort가 유효하지 않습니다.");
-        }
-    }
-
+    @Transactional(readOnly = true)
     public Page<Feed> findUserFeeds(Pageable pageable, Long userId) throws IllegalArgumentException {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] pageable이 유효하지 않습니다.");
@@ -111,6 +87,7 @@ public class FeedService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Feed findOneFeed(Long feedId) throws IllegalArgumentException {
         if (feedId == null || feedId <= 0) {
             throw new IllegalArgumentException("[FeedService] 비회원 피드 ID가 유효하지 않습니다.");
@@ -140,12 +117,6 @@ public class FeedService {
         }
     }
 
-    private void validateUpdateFeedDTO(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
-        if ((foundFeed.getUserId() != null) && feedDTO.getPassword() != null) {
-            throw new IllegalArgumentException("[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
-        }
-    }
-
     @Transactional
     public Feed deleteFeed(Long feedId) {
         Feed foundFeed = findOneFeed(feedId);
@@ -158,9 +129,62 @@ public class FeedService {
         feedRepository.deleteAll();
     }
 
+    @Transactional
     public Feed addLikeCount(Long feedId) {
         Feed foundFeed = findOneFeed(feedId);
         foundFeed.addLikeCount();
         return feedRepository.save(foundFeed);
+    }
+
+    public Images uploadImages(Long feedId, ArrayList<MultipartFile> images) {
+        return imageService.uploadImages(findOneFeed(feedId), images);
+    }
+
+    public Images findAllActiveImages(Long feedId) {
+        return imageService.findAllActiveImages(findOneFeed(feedId));
+    }
+
+    public Images updateImages(Long feedId, ArrayList<MultipartFile> updateImages) {
+        return imageService.updateImages(findOneFeed(feedId), updateImages);
+    }
+
+    public void deleteImages(Long feedId) {
+        imageService.deleteImages(findOneFeed(feedId));
+    }
+
+    private void validateFeedDTO(Long userId, FeedDTO.Request feedDTO) throws IllegalArgumentException {
+        try {
+            if ((userId == null) == (feedDTO.getPassword() == null)
+                    || feedDTO.getTitle().length() <= 0
+                    || feedDTO.getContent().length() <= 0
+                    || !EnumUtils.isValidEnumIgnoreCase(Category.class, feedDTO.getCategory())) {
+                throw new IllegalArgumentException();
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
+        }
+        if ((userId == null) && feedDTO.getPassword().length() <= 0) {
+            throw new IllegalArgumentException("[FeedService] 비회원 피드 등록 요청 메시지가 잘못되었습니다.");
+        }
+    }
+
+    private void validatePageableAndSort(Pageable pageable) {
+        if (pageable == null) {
+            throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
+        }
+        Stream<org.springframework.data.domain.Sort.Order> orders = pageable.getSort().stream();
+        if (pageable.getSort().stream().count() > 1) {
+            throw new IllegalArgumentException("[FeedService] sort는 2개 이상이 될 수 없습니다.");
+        }
+        Optional<org.springframework.data.domain.Sort.Order> order = orders.findFirst();
+        if (order.isPresent() && !EnumUtils.isValidEnumIgnoreCase(FeedSort.class, order.get().getProperty())) {
+            throw new IllegalArgumentException("[FeedService] sort가 유효하지 않습니다.");
+        }
+    }
+
+    private void validateUpdateFeedDTO(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
+        if ((foundFeed.getUserId() != null) && feedDTO.getPassword() != null) {
+            throw new IllegalArgumentException("[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
+        }
     }
 }
