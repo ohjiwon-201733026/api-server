@@ -19,7 +19,6 @@ include::{snippets}/feed-rest-controller-test/create-nonuser-feed/http-request.a
 요청 형식
 
 include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-parts.adoc[]
 
 응답 정보
 
@@ -40,7 +39,6 @@ include::{snippets}/feed-rest-controller-test/create-user-feed/http-request.adoc
 
 include::{snippets}/feed-rest-controller-test/create-user-feed/request-headers.adoc[]
 include::{snippets}/feed-rest-controller-test/create-user-feed/request-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/create-user-feed/request-parts.adoc[]
 
 응답 정보
 
@@ -119,7 +117,6 @@ include::{snippets}/feed-rest-controller-test/update-feed/http-request.adoc[]
 
 include::{snippets}/feed-rest-controller-test/update-feed/path-parameters.adoc[]
 include::{snippets}/feed-rest-controller-test/update-feed/request-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/update-feed/request-parts.adoc[]
 
 응답 정보
 
@@ -175,10 +172,78 @@ include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-body.adoc[
 
 include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-fields.adoc[]
 
-== 2. 댓글 API
+== 2. 이미지 API
+
+[[create-feed-images]]
+=== 2.1 피드 이미지 등록
+
+요청 형식
+
+include::{snippets}/image-rest-controller-test/create-feed-images/request-parameters.adoc[]
+include::{snippets}/image-rest-controller-test/create-feed-images/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/image-rest-controller-test/create-feed-images/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/image-rest-controller-test/create-feed-images/response-fields.adoc[]
+
+[[get-all-active-feeds]]
+=== 2.2 피드 이미지 전체 조회
+
+요청 정보
+
+include::{snippets}/image-rest-controller-test/get-all-active-feeds/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/image-rest-controller-test/get-all-active-feeds/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/image-rest-controller-test/get-all-active-feeds/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/image-rest-controller-test/get-all-active-feeds/response-fields.adoc[]
+
+[[update-feed-images]]
+=== 2.3 피드 이미지 수정
+
+요청 형식
+
+include::{snippets}/image-rest-controller-test/update-feed-images/path-parameters.adoc[]
+include::{snippets}/image-rest-controller-test/update-feed-images/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/image-rest-controller-test/update-feed-images/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/image-rest-controller-test/update-feed-images/response-fields.adoc[]
+
+[[delete-feed-images]]
+=== 2.4 피드 이미지 삭제
+
+요청 정보
+
+include::{snippets}/image-rest-controller-test/delete-feed-images/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/image-rest-controller-test/delete-feed-images/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/image-rest-controller-test/delete-feed-images/response-body.adoc[]
+
+== 3. 댓글 API
 
 [[create-nonuser-comment]]
-=== 2.1 댓글 등록 (비회원)
+=== 3.1 댓글 등록 (비회원)
 
 요청 정보
 
@@ -198,7 +263,7 @@ include::{snippets}/comment-rest-controller-test/create-non-user-comment/respons
 include::{snippets}/comment-rest-controller-test/create-non-user-comment/response-fields.adoc[]
 
 [[create-user-comment]]
-=== 2.2 댓글 등록 (회원)
+=== 3.2 댓글 등록 (회원)
 
 요청 정보
 
@@ -219,7 +284,7 @@ include::{snippets}/comment-rest-controller-test/create-user-comment/response-bo
 include::{snippets}/comment-rest-controller-test/create-user-comment/response-fields.adoc[]
 
 [[get-feed-all-comments]]
-=== 2.3 피드 댓글 전체 조회
+=== 3.3 피드 댓글 전체 조회
 
 요청 정보
 
@@ -238,7 +303,7 @@ include::{snippets}/comment-rest-controller-test/get-feed-all-comments/response-
 include::{snippets}/comment-rest-controller-test/get-feed-all-comments/response-fields.adoc[]
 
 [[get-comment]]
-=== 2.4 댓글 상세 조회
+=== 3.4 댓글 상세 조회
 
 요청 정보
 
@@ -257,7 +322,7 @@ include::{snippets}/comment-rest-controller-test/get-comment/response-body.adoc[
 include::{snippets}/comment-rest-controller-test/get-comment/response-fields.adoc[]
 
 [[update-comment]]
-=== 2.5 댓글 수정
+=== 3.5 댓글 수정
 
 요청 정보
 
@@ -278,7 +343,7 @@ include::{snippets}/comment-rest-controller-test/update-comment/response-fields.
 
 
 [[delete-comment]]
-=== 2.6 댓글 삭제
+=== 3.6 댓글 삭제
 
 요청 정보
 
@@ -292,10 +357,10 @@ include::{snippets}/comment-rest-controller-test/delete-comment/path-parameters.
 
 include::{snippets}/comment-rest-controller-test/delete-comment/response-body.adoc[]
 
-== 3. 대댓글 API
+== 4. 대댓글 API
 
 [[create-nonuser-reply]]
-=== 3.1 대댓글 등록 (비회원)
+=== 4.1 대댓글 등록 (비회원)
 
 요청 정보
 
@@ -315,7 +380,7 @@ include::{snippets}/reply-rest-controller-test/create-non-user-reply/response-bo
 include::{snippets}/reply-rest-controller-test/create-non-user-reply/response-fields.adoc[]
 
 [[create-user-reply]]
-=== 3.2 대댓글 등록 (회원)
+=== 4.2 대댓글 등록 (회원)
 
 요청 정보
 
@@ -336,7 +401,7 @@ include::{snippets}/reply-rest-controller-test/create-user-reply/response-body.a
 include::{snippets}/reply-rest-controller-test/create-user-reply/response-fields.adoc[]
 
 [[get-comment-all-replies]]
-=== 3.3 댓글의 대댓글 전체 조회
+=== 4.3 댓글의 대댓글 전체 조회
 
 요청 정보
 
@@ -355,7 +420,7 @@ include::{snippets}/reply-rest-controller-test/get-comment-all-replies/response-
 include::{snippets}/reply-rest-controller-test/get-comment-all-replies/response-fields.adoc[]
 
 [[get-reply]]
-=== 3.4 대댓글 상세 조회
+=== 4.4 대댓글 상세 조회
 
 요청 정보
 
@@ -374,7 +439,7 @@ include::{snippets}/reply-rest-controller-test/get-reply/response-body.adoc[]
 include::{snippets}/reply-rest-controller-test/get-reply/response-fields.adoc[]
 
 [[update-reply]]
-=== 3.5 대댓글 수정
+=== 4.5 대댓글 수정
 
 요청 정보
 
@@ -395,7 +460,7 @@ include::{snippets}/reply-rest-controller-test/update-reply/response-fields.adoc
 
 
 [[delete-reply]]
-=== 3.6 대댓글 삭제
+=== 4.6 대댓글 삭제
 
 요청 정보
 
@@ -410,9 +475,9 @@ include::{snippets}/reply-rest-controller-test/delete-reply/path-parameters.adoc
 include::{snippets}/reply-rest-controller-test/delete-reply/response-body.adoc[]
 
 
-== 4. 유저 API
+== 5. 유저 API
 [[post-user]]
-=== 4.1 유저 일반 회원가입
+=== 5.1 유저 일반 회원가입
 
 CURL
 
@@ -435,7 +500,7 @@ include::{snippets}/user-rest-controller-test/post-user/http-response.adoc[]
 include::{snippets}/user-rest-controller-test/post-user/response-fields.adoc[]
 
 [[login-user]]
-=== 4.2 유저 일반 로그인
+=== 5.2 유저 일반 로그인
 CURL
 
 include::{snippets}/user-rest-controller-test/login/curl-request.adoc[]
@@ -457,7 +522,7 @@ include::{snippets}/user-rest-controller-test/login/http-response.adoc[]
 include::{snippets}/user-rest-controller-test/login/response-fields.adoc[]
 
 [[login-kakao]]
-=== 4.3 유저 카카오 로그인
+=== 5.3 유저 카카오 로그인
 CURL
 
 include::{snippets}/user-rest-controller-test/kakao-login/curl-request.adoc[]
@@ -476,7 +541,7 @@ include::{snippets}/user-rest-controller-test/kakao-login/request-fields.adoc[]
 include::{snippets}/user-rest-controller-test/kakao-login/response-fields.adoc[]
 
 [[update-user]]
-=== 4.3 회원 탈퇴
+=== 5.3 회원 탈퇴
 CURL
 
 include::{snippets}/user-rest-controller-test/inactive-user/curl-request.adoc[]
@@ -498,9 +563,9 @@ include::{snippets}/user-rest-controller-test/inactive-user/http-response.adoc[]
 include::{snippets}/user-rest-controller-test/inactive-user/response-fields.adoc[]
 
 
-== 5. MyPage API
+== 6. MyPage API
 [[user-feed]]
-=== 5.1 유저 피드 조회
+=== 6.1 유저 피드 조회
 CURL
 
 include::{snippets}/my-page-rest-controller-test/get-user-feeds/curl-request.adoc[]
@@ -523,7 +588,7 @@ include::{snippets}/my-page-rest-controller-test/get-user-feeds/http-response.ad
 include::{snippets}/my-page-rest-controller-test/get-user-feeds/response-fields.adoc[]
 
 [[user-comment]]
-=== 5.2 유저 댓글 조회
+=== 6.2 유저 댓글 조회
 CURL
 
 include::{snippets}/my-page-rest-controller-test/user-comment/curl-request.adoc[]
@@ -546,9 +611,9 @@ include::{snippets}/my-page-rest-controller-test/user-comment/http-response.adoc
 include::{snippets}/my-page-rest-controller-test/user-comment/response-fields.adoc[]
 
 
-== 6. 신고하기
+== 7. 신고하기
 [[inactive-user]]
-== 6.1 feed 신고
+== 7.1 feed 신고
 CURL
 
 include::{snippets}/report-rest-controller-test/report-feed/curl-request.adoc[]
