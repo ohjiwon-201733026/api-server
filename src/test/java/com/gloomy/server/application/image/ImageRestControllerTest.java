@@ -96,4 +96,32 @@ public class ImageRestControllerTest extends AbstractControllerTest {
                         )
                 ));
     }
+
+    @DisplayName("피드_이미지_전체_조회")
+    @Test
+    void getAllActiveFeeds() throws Exception {
+        imageService.uploadImages(testFeed, testImage.makeImages(2));
+
+        this.mockMvc.perform(get("/feed/image/{feedId}", testFeed.getId())
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("feedId").description("조회할 이미지의 피드 ID")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("이미지의 피드 ID"),
+                                fieldWithPath("result.images[]").type(JsonFieldType.ARRAY).description("이미지 리스트"),
+                                fieldWithPath("result.images[].id").type(JsonFieldType.NUMBER).description("이미지 ID"),
+                                fieldWithPath("result.images[].imageURL").type(JsonFieldType.STRING).description("이미지 URL"),
+                                fieldWithPath("result.images[].status").type(JsonFieldType.STRING).description("이미지 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.images[].createdAt").type(JsonFieldType.STRING).description("이미지 생성시간"),
+                                fieldWithPath("result.images[].updatedAt").type(JsonFieldType.STRING).description("이미지 생성시간"),
+                                fieldWithPath("result.images[].deletedAt").type(JsonFieldType.STRING).description("이미지 생성시간"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )));
+    }
 }
