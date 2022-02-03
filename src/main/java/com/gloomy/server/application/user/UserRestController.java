@@ -54,6 +54,18 @@ public class UserRestController {
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
     }
 
+//    @GetMapping(value = "/kakao/signUp")
+//    public Response kakaoLogin(@RequestParam String code) {
+//        KakaoCodeRequest request=new KakaoCodeRequest(code);
+//        User user=userService.kakaoLogin(request).get();
+//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
+//    }
+
+    @GetMapping(value="/logout")
+    public void logout(){
+        userService.logout();
+    }
+
     @GetMapping(value = "/user")
     public Response getUser(@AuthenticationPrincipal UserJWTPayload jwtPayload) {
         User user=userService.findById(jwtPayload.getUserId()).get();
@@ -73,6 +85,8 @@ public class UserRestController {
         User updateUser = userService.updateUser(userId,updateUserDTO);
         return makeUpdateUserDTO(updateUser);
     }
+
+
 
 
     private UpdateUserDTO.Response makeUpdateUserDTO(User user){

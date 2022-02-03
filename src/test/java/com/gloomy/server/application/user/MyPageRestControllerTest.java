@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
 })
-@Transactional
+//@Transactional
 public class MyPageRestControllerTest extends AbstractControllerTest {
 
     @Autowired
