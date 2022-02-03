@@ -19,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -120,6 +121,7 @@ class FeedServiceTest {
         checkCreatedFeedFail(null, nonUserFeedDTOWithZeroOrLessContent, "[FeedService] 피드 등록 요청 메시지가 잘못되었습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_전체_조회_성공() {
         final int allNonUserFeedsNum = 3;
@@ -222,6 +224,7 @@ class FeedServiceTest {
         assertEquals(foundActiveFeedsWithSortDate.getContent().get(1), activeFeedFirst);
     }
 
+    @Transactional
     @Test
     void 활성_피드_전체_조회_일때_인기순_성공() {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
@@ -321,10 +324,10 @@ class FeedServiceTest {
 
         if (userId != null) {
             assertEquals(createdFeed.getUserId().getId(), userId);
-            assertNull(createdFeed.getPassword());
+            assertNull(createdFeed.getNonUser());
             return;
         }
-        assertEquals(createdFeed.getPassword().getPassword(), feedDTO.getPassword());
+        assertEquals(createdFeed.getNonUser().getPassword().getPassword(), feedDTO.getPassword());
         assertNull(createdFeed.getUserId());
     }
 
