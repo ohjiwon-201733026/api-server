@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 class JWTConfiguration {
 
     private static final byte[] SECRET = "SOME_SIGNATURE_SECRET".getBytes(StandardCharsets.UTF_8);
-    private static final int JWT_DURATION_SECONDS = 2 * 60 * 60;
+    private static final int JWT_DURATION_SECONDS = 21599;
 
     @Bean
     HmacSHA256JWTService hmacSHA256JWTService(ObjectMapper objectMapper) {

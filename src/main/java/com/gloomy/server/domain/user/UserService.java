@@ -1,13 +1,9 @@
 package com.gloomy.server.domain.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gloomy.server.application.image.UserProfileImageService;
-import com.gloomy.server.application.security.JWTAuthenticationProvider;
-import com.gloomy.server.domain.comment.Comment;
+import com.gloomy.server.domain.blacklList.Logout;
+import com.gloomy.server.domain.blacklList.LogoutRepository;
 import com.gloomy.server.domain.common.Status;
-import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
-import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -20,12 +16,8 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 import static com.gloomy.server.application.user.UserDTO.*;
@@ -37,7 +29,7 @@ public class UserService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserProfileImageService userProfileImageService;
+    private final LogoutRepository logoutRepository;
     private final JWTDeserializer jwtDeserializer;
 
     @Transactional
@@ -71,11 +63,17 @@ public class UserService {
         KakaoToken kakaoToken = getKakaoToken(request);
         KakaoUser kakaoUser =  getKakaoUser(kakaoToken.getAccess_token());
 
-        Optional<User> user = userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
-        if(user.isEmpty()) {
-            user= Optional.of(userRepository.save(User.of(kakaoUser.getEmail(), kakaoUser.getNickname(), kakaoToken.getAccess_token())));
+        Optional<User> userOp = userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
+        User user;
+        if(userOp.isEmpty()) {
+            user=User.of(kakaoUser.getEmail(), kakaoUser.getNickname(), kakaoToken.getAccess_token());
         }
-        return user;
+        else{
+            user=userOp.get();
+            user.setKakaoToken(kakaoToken.getAccess_token());
+        }
+
+        return Optional.of(userRepository.save(user));
     }
 
     private KakaoToken getKakaoToken(KakaoCodeRequest request) {
@@ -88,8 +86,8 @@ public class UserService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-//                        .with("redirect_uri", request.getRedirect_uri())
-                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
+                        .with("redirect_uri", request.getRedirect_uri())
+//                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
@@ -118,7 +116,15 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Long kakaoLogout(){
+    public void logout(){
+        kakaoLogout();
+        Logout logout= Logout.of(getToken());
+
+        Logout l2=logoutRepository.save(logout);
+        System.out.println(l2.toString());
+    }
+
+    private Long kakaoLogout(){
         Long userId=getMyInfo();
         Optional<User> user =userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
         if(user.isEmpty()){
@@ -138,10 +144,7 @@ public class UserService {
 
         JSONObject obj = new JSONObject(response.getBody());
 
-        System.out.println(obj.toString());
-
         return userId;
-
     }
 
     public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
@@ -187,11 +190,15 @@ public class UserService {
     }
 
     public Long getMyInfo(){
-        Object token=SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getCredentials();
+        Object token=getToken();
         if(token.equals("")) return null;
         return jwtDeserializer.getUserId(token.toString());
+    }
+
+    public String getToken(){
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials().toString();
     }
 
 }

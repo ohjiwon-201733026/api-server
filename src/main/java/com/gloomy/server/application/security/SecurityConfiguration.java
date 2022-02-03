@@ -1,5 +1,6 @@
 package com.gloomy.server.application.security;
 
+import com.gloomy.server.domain.blacklList.LogoutRepository;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -24,9 +25,11 @@ import static org.springframework.http.HttpMethod.POST;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final SecurityConfigurationProperties properties;
+    private final LogoutRepository logoutRepository;
 
-    SecurityConfiguration(SecurityConfigurationProperties properties) {
+    SecurityConfiguration(SecurityConfigurationProperties properties, LogoutRepository logoutRepository) {
         this.properties = properties;
+        this.logoutRepository = logoutRepository;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.csrf().disable();
         http.cors();
         http.logout().disable();
-        http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTAuthenticationFilter(logoutRepository), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()
