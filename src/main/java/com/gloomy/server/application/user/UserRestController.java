@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 import static com.gloomy.server.application.user.UserDTO.*;
 
 @RestController
@@ -46,14 +48,22 @@ public class UserRestController {
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
     }
 
-    @GetMapping(value = "/kakao/signUp")
-    public Response kakaoLogin(@Validated @RequestParam String code) {
-        System.out.println(code);
-        KakaoCodeRequest request=new KakaoCodeRequest(code);
+    @PostMapping(value = "/kakao/signUp")
+    public Response kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
         User user=userService.kakaoLogin(request).get();
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
-//        return of(userService.kakaoLogin(request)
-//                .map(user -> Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user))));
+    }
+
+//    @GetMapping(value = "/kakao/signUp")
+//    public Response kakaoLogin(@RequestParam String code) {
+//        KakaoCodeRequest request=new KakaoCodeRequest(code);
+//        User user=userService.kakaoLogin(request).get();
+//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
+//    }
+
+    @GetMapping(value="/logout")
+    public void logout(){
+        userService.logout();
     }
 
     @GetMapping(value = "/user")
@@ -75,6 +85,8 @@ public class UserRestController {
         User updateUser = userService.updateUser(userId,updateUserDTO);
         return makeUpdateUserDTO(updateUser);
     }
+
+
 
 
     private UpdateUserDTO.Response makeUpdateUserDTO(User user){
@@ -99,6 +111,4 @@ public class UserRestController {
         Long userId=userService.getMyInfo();
         userService.inactiveUser(userId);
     }
-
-
 }

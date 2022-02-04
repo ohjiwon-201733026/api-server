@@ -11,4 +11,10 @@ public class LoginViewController {
     public String kakaoLoginView() {
         return "kakaoLogin";
     }
+
+    @GetMapping("/kakaoLogout")
+    public String logout() {
+        return "kakaoLogout";
+    }
+
 }
