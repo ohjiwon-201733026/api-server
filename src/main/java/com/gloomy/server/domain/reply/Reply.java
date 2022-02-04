@@ -3,6 +3,7 @@ package com.gloomy.server.domain.reply;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.feed.Content;
+import com.gloomy.server.domain.feed.NonUser;
 import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import lombok.AccessLevel;
@@ -28,7 +29,7 @@ public class Reply extends BaseEntity {
     private User userId;
 
     @Embedded
-    private Password password;
+    private NonUser nonUser;
 
     protected Reply() {
     }
@@ -45,10 +46,10 @@ public class Reply extends BaseEntity {
     }
 
     @Builder(builderClassName = "nonUserReplyBuilder", builderMethodName = "nonUserReplyBuilder", access = AccessLevel.PRIVATE)
-    private Reply(Content content, Comment commentId, Password password, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
+    private Reply(Content content, Comment commentId, NonUser nonUser, Status status, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.content = content;
         this.commentId = commentId;
-        this.password = password;
+        this.nonUser = nonUser;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -71,7 +72,7 @@ public class Reply extends BaseEntity {
         return Reply.nonUserReplyBuilder()
                 .content(new Content(content))
                 .commentId(commentId)
-                .password(new Password(password))
+                .nonUser(NonUser.of("익명 친구", password))
                 .status(Status.ACTIVE)
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
@@ -92,14 +93,14 @@ public class Reply extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Reply reply = (Reply) o;
-        boolean result = Objects.equals(id, reply.getId())
-                && Objects.equals(content.getContent(), reply.getContent().getContent())
-                && Objects.equals(commentId.getId(), reply.getCommentId().getId())
-                && status == reply.getStatus();
+        Reply targetReply = (Reply) o;
+        boolean result = Objects.equals(id, targetReply.getId())
+                && Objects.equals(content.getContent(), targetReply.getContent().getContent())
+                && Objects.equals(commentId.getId(), targetReply.getCommentId().getId())
+                && status == targetReply.getStatus();
         if (Objects.nonNull(userId)) {
-            return result && Objects.equals(userId.getId(), reply.getUserId().getId());
+            return result && Objects.equals(userId.getId(), targetReply.getUserId().getId());
         }
-        return result && Objects.equals(password.getPassword(), reply.getPassword().getPassword());
+        return result && Objects.equals(nonUser, targetReply.getNonUser());
     }
 }

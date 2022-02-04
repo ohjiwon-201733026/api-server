@@ -8,16 +8,17 @@ import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @EqualsAndHashCode
-@Getter
 @Embeddable
-public class Ip {
-    @Column(name = "ip", nullable = false)
-    private String ip;
+@Getter
+public class Nickname {
+    @Column(name = "nickname")
+    private String nickname;
 
-    protected Ip() {
+    protected Nickname() {
     }
 
-    public Ip(String ip) {
-        this.ip = ip;
+    public Nickname(String nickName) {
+        this.nickname = nickName;
     }
 }
+

@@ -1,10 +1,13 @@
 package com.gloomy.server.domain.feed;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
+@EqualsAndHashCode
 @Getter
 @Embeddable
 public class Title {

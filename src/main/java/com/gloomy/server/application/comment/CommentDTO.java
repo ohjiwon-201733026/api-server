@@ -38,6 +38,7 @@ public class CommentDTO {
         private final String content;
         private final Long feedId;
         private final Long userId;
+        private final String nickname;
         private final String password;
         private final String status;
         private final String createdAt;
@@ -45,11 +46,12 @@ public class CommentDTO {
         private final String deletedAt;
 
         @Builder
-        public Response(Long id, String content, Long feedId, Long userId, String password, String status, String createdAt, String updatedAt, String deletedAt) {
+        public Response(Long id, String content, Long feedId, Long userId, String nickName, String password, String status, String createdAt, String updatedAt, String deletedAt) {
             this.id = id;
             this.content = content;
             this.feedId = feedId;
             this.userId = userId;
+            this.nickname = nickName;
             this.password = password;
             this.status = status;
             this.createdAt = createdAt;
@@ -64,6 +66,7 @@ public class CommentDTO {
                         .content(comment.getContent().getContent())
                         .feedId(comment.getFeedId().getId())
                         .userId(comment.getUserId().getId())
+                        .nickName(null)
                         .password(null)
                         .status(comment.getStatus().toString())
                         .createdAt(comment.getCreatedAt().getCreatedAt().toString())
@@ -76,7 +79,8 @@ public class CommentDTO {
                     .content(comment.getContent().getContent())
                     .feedId(comment.getFeedId().getId())
                     .userId(null)
-                    .password(comment.getPassword().getPassword())
+                    .nickName(comment.getNonUser().getNickname().getNickname())
+                    .password(comment.getNonUser().getPassword().getPassword())
                     .status(comment.getStatus().toString())
                     .createdAt(comment.getCreatedAt().getCreatedAt().toString())
                     .updatedAt(comment.getUpdatedAt().getUpdatedAt().toString())

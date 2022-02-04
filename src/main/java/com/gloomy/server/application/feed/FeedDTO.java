@@ -41,6 +41,7 @@ public class FeedDTO {
         private final Long id;
         private final String ip;
         private final Long userId;
+        private final String nickname;
         private final String password;
         private final String category;
         private final String title;
@@ -54,10 +55,11 @@ public class FeedDTO {
         private final String deletedAt;
 
         @Builder
-        public Response(Long id, String ip, Long userId, String password, String category, String title, String content, Integer likeCount, List<String> imageURLs, Integer commentCount, String status, String createdAt, String updatedAt, String deletedAt) {
+        public Response(Long id, String ip, Long userId, String nickName, String password, String category, String title, String content, Integer likeCount, List<String> imageURLs, Integer commentCount, String status, String createdAt, String updatedAt, String deletedAt) {
             this.id = id;
             this.ip = ip;
             this.userId = userId;
+            this.nickname = nickName;
             this.password = password;
             this.category = category;
             this.title = title;
@@ -81,6 +83,7 @@ public class FeedDTO {
                         .id(feed.getId())
                         .ip(feed.getIp().getIp())
                         .userId(feed.getUserId().getId())
+                        .nickName(null)
                         .password(null)
                         .category(feed.getCategory().toString())
                         .title(feed.getTitle().getTitle())
@@ -98,7 +101,8 @@ public class FeedDTO {
                     .id(feed.getId())
                     .ip(feed.getIp().getIp())
                     .userId(null)
-                    .password(feed.getPassword().getPassword())
+                    .nickName(feed.getNonUser().getNickname().getNickname())
+                    .password(feed.getNonUser().getPassword().getPassword())
                     .category(feed.getCategory().toString())
                     .title(feed.getTitle().getTitle())
                     .content(feed.getContent().getContent())

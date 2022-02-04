@@ -103,7 +103,7 @@ public class FeedService {
 
     private void updateFeed(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
         if (feedDTO.getPassword() != null) {
-            foundFeed.setPassword(new Password(feedDTO.getPassword()));
+            foundFeed.setPassword(feedDTO.getPassword());
         }
         if (feedDTO.getContent() != null) {
             foundFeed.setContent(new Content(feedDTO.getContent()));

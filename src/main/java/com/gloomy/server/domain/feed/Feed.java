@@ -4,12 +4,14 @@ import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.user.User;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@EqualsAndHashCode(callSuper = false)
 @Getter
 @Entity
 public class Feed extends BaseEntity {
@@ -21,7 +23,7 @@ public class Feed extends BaseEntity {
     private User userId;
 
     @Embedded
-    private Password password;
+    private NonUser nonUser;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -40,10 +42,10 @@ public class Feed extends BaseEntity {
     }
 
     @Builder
-    private Feed(Ip ip, User userId, Password password, Category category, Title title, Status status, Content content, LikeCount likeCount, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
+    private Feed(Ip ip, User userId, NonUser nonUser, Category category, Title title, Status status, Content content, LikeCount likeCount, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.ip = ip;
         this.userId = userId;
-        this.password = password;
+        this.nonUser = nonUser;
         this.category = category;
         this.title = title;
         this.content = content;
@@ -59,7 +61,7 @@ public class Feed extends BaseEntity {
             return builder()
                     .ip(new Ip("111.111.111.111"))
                     .userId(userId)
-                    .password(null)
+                    .nonUser(null)
                     .category(Category.valueOf(feedDTO.getCategory()))
                     .title(new Title(feedDTO.getTitle()))
                     .content(new Content(feedDTO.getContent()))
@@ -73,7 +75,7 @@ public class Feed extends BaseEntity {
         return builder()
                 .ip(new Ip("111.111.111.111"))
                 .userId(null)
-                .password(new Password(feedDTO.getPassword()))
+                .nonUser(NonUser.of("익명 친구", feedDTO.getPassword()))
                 .category(Category.valueOf(feedDTO.getCategory()))
                 .title(new Title(feedDTO.getTitle()))
                 .content(new Content(feedDTO.getContent()))
@@ -90,8 +92,11 @@ public class Feed extends BaseEntity {
         this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
-    public void setPassword(Password password) {
-        this.password = password;
+    public void setPassword(String password) {
+        if (this.getNonUser() == null) {
+            throw new IllegalArgumentException("[Feed] 비회원이 아닙니다.");
+        }
+        this.getNonUser().setPassword(password);
     }
 
     public void setContent(Content content) {
@@ -100,25 +105,5 @@ public class Feed extends BaseEntity {
 
     public void addLikeCount() {
         this.likeCount.addCount();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Feed) {
-            Feed targetFeed = (Feed) o;
-            boolean result = Objects.equals(id, targetFeed.id)
-                    && Objects.equals(ip.getIp(), targetFeed.ip.getIp())
-                    && category == targetFeed.category
-                    && Objects.equals(title.getTitle(), targetFeed.title.getTitle())
-                    && Objects.equals(content.getContent(), targetFeed.content.getContent())
-                    && status == targetFeed.status;
-            if (userId != null) {
-                result &= Objects.equals(userId.getId(), targetFeed.userId.getId());
-                return result;
-            }
-            result &= Objects.equals(password.getPassword(), targetFeed.password.getPassword());
-            return result;
-        }
-        return false;
     }
 }

@@ -39,6 +39,7 @@ public class ReplyDTO {
         private final String content;
         private final Long commentId;
         private final Long userId;
+        private final String nickname;
         private final String password;
         private final String status;
         private final String createdAt;
@@ -46,11 +47,12 @@ public class ReplyDTO {
         private final String deletedAt;
 
         @Builder
-        public Response(Long id, String content, Long commentId, Long userId, String password, String status, String createdAt, String updatedAt, String deletedAt) {
+        public Response(Long id, String content, Long commentId, Long userId, String nickName, String password, String status, String createdAt, String updatedAt, String deletedAt) {
             this.id = id;
             this.content = content;
             this.commentId = commentId;
             this.userId = userId;
+            this.nickname = nickName;
             this.password = password;
             this.status = status;
             this.createdAt = createdAt;
@@ -65,6 +67,7 @@ public class ReplyDTO {
                         .content(reply.getContent().getContent())
                         .commentId(reply.getCommentId().getId())
                         .userId(reply.getUserId().getId())
+                        .nickName(null)
                         .password(null)
                         .status(reply.getStatus().toString())
                         .createdAt(reply.getCreatedAt().getCreatedAt().toString())
@@ -77,7 +80,8 @@ public class ReplyDTO {
                     .content(reply.getContent().getContent())
                     .commentId(reply.getCommentId().getId())
                     .userId(null)
-                    .password(reply.getPassword().getPassword())
+                    .nickName(reply.getNonUser().getNickname().getNickname())
+                    .password(reply.getNonUser().getPassword().getPassword())
                     .status(reply.getStatus().toString())
                     .createdAt(reply.getCreatedAt().getCreatedAt().toString())
                     .updatedAt(reply.getUpdatedAt().getUpdatedAt().toString())
