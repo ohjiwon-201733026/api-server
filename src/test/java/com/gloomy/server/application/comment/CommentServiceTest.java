@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,6 +61,7 @@ class CommentServiceTest {
         userService.deleteAll();
     }
 
+    @Transactional
     @Test
     void 댓글_생성_비회원_성공() {
         CommentDTO.Request nonUserCommentDTO = testCommentDTO.makeNonUserCommentDTO();
@@ -83,6 +85,7 @@ class CommentServiceTest {
         checkCreatedCommentFail(null, nonUserCommentDTOWithoutPassword);
     }
 
+    @Transactional
     @Test
     void 댓글_생성_회원_성공() {
         CommentDTO.Request userCommentDTO = testCommentDTO.makeUserCommentDTO();
@@ -103,6 +106,7 @@ class CommentServiceTest {
         checkCreatedCommentFail(testCommentDTO.getUserId(), userCommentDTOWithoutFeedId);
     }
 
+    @Transactional
     @Test
     void 댓글_조회_비회원_성공() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
@@ -112,6 +116,7 @@ class CommentServiceTest {
         assertEquals(foundComment, createdComment);
     }
 
+    @Transactional
     @Test
     void 댓글_조회_비회원_실패() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
@@ -121,6 +126,7 @@ class CommentServiceTest {
         checkFoundCommentFail(createdComment.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 댓글_조회_회원_성공() {
         Comment createdComment = commentService.createComment(testCommentDTO.getUserId(), testCommentDTO.makeUserCommentDTO());
@@ -145,6 +151,7 @@ class CommentServiceTest {
         checkFoundCommentFail(null, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_댓글_전체_조회_성공() {
         createComments(3);
@@ -168,6 +175,7 @@ class CommentServiceTest {
         checkFoundAllCommentFail(null, testCommentDTO.getFeedId(), "[CommentService] pageable이 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_활성_댓글_전체_조회_성공() {
         Comment activeComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
@@ -193,6 +201,7 @@ class CommentServiceTest {
                 "[CommentService] Pageable이 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 댓글_수정_성공() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
@@ -206,6 +215,7 @@ class CommentServiceTest {
         assertEquals(updatedComment, foundComment);
     }
 
+    @Transactional
     @Test
     void 댓글_수정_실패() {
         Comment deletedComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
@@ -227,6 +237,7 @@ class CommentServiceTest {
                 "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 댓글_삭제_성공() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
@@ -234,6 +245,7 @@ class CommentServiceTest {
         assertEquals(deletedComment.getStatus(), Status.INACTIVE);
     }
 
+    @Transactional
     @Test
     void 댓글_삭제_실패() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
