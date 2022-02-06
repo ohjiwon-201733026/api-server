@@ -6,5 +6,6 @@ public interface JWTPayload extends Serializable {
 
     long getUserId();
     boolean isExpired();
+    long getExpiredTime();
 
 }

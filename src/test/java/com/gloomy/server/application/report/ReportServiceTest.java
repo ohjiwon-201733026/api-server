@@ -49,19 +49,19 @@ public class ReportServiceTest {
                 testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent(), testFeedDTO.getImages());
     }
 
-    @DisplayName("신고하기")
-    @Test
-    public void reportSave(){
-        User saveUser=userService.createUser(testUser);
-        Feed saveFeed = feedService.createFeed(saveUser.getId(), userFeedDTO);
+//    @DisplayName("신고하기")
+//    @Test
+//    public void reportSave(){
+//        User saveUser=userService.createUser(testUser);
+//        Feed saveFeed = feedService.createFeed(saveUser.getId(), userFeedDTO);
 
-        Report report=reportService.saveReport(saveFeed.getId(),saveUser.getId(),"category");
+//        Report report=reportService.saveReport(saveFeed.getId(),saveUser.getId(),"category");
 
-        Report findReport=reportService.findReportById(report.getId()).get();
+//        Report findReport=reportService.findReportById(report.getId()).get();
 
-        checkSameReport(findReport,report);
+//        checkSameReport(findReport,report);
 
-    }
+//    }
 
     private void checkSameReport(Report actual, Report expected){
         Assertions.assertEquals(actual.getFeed_id().getId(),expected.getFeed_id().getId());

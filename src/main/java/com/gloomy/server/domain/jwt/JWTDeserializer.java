@@ -6,4 +6,8 @@ public interface JWTDeserializer {
 
     Long getUserId(String jwtToken);
 
+    Long getExpiredTime(String jwtToken);
+
+
+
 }

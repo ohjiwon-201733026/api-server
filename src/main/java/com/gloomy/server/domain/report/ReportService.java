@@ -1,6 +1,7 @@
 package com.gloomy.server.domain.report;
 
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.application.report.ReportDTO;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
@@ -19,10 +20,11 @@ public class ReportService {
     private final FeedService feedService;
 
 
-    public Report saveReport(Long feedId, Long userId, String reportCategory){
-        User user=userService.findUser(userId);
-        Feed feed=feedService.findOneFeed(feedId);
-        Report report=Report.of(feed,user,reportCategory);
+    public Report saveReport(ReportDTO.Request request){
+        User user=userService.findUser(userService.getMyInfo());
+        Feed feed=feedService.findOneFeed(request.getFeedId());
+        // feed 상태 변경
+        Report report=Report.of(feed,user, request.getReportCategory());
         return reportRepository.save(report);
     }
 

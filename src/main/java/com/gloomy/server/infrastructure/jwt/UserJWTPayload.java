@@ -41,6 +41,11 @@ public class UserJWTPayload implements JWTPayload {
     }
 
     @Override
+    public long getExpiredTime() {
+        return this.iat;
+    }
+
+    @Override
     public String toString() {
         return format("{\"sub\":%d,\"name\":\"%s\",\"iat\":%d}", sub, name, iat);
     }
