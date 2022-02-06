@@ -4,8 +4,13 @@ import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.blacklList.Logout;
 import com.gloomy.server.domain.blacklList.LogoutRepository;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
+import static java.time.Instant.now;
+import com.gloomy.server.domain.jwt.JWTPayload;
+import com.gloomy.server.domain.jwt.JWTSerializer;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +24,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.gloomy.server.application.user.UserDTO.*;
 
@@ -31,6 +37,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final LogoutRepository logoutRepository;
     private final JWTDeserializer jwtDeserializer;
+    private final JWTSerializer jwtSerializer;
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional
     public User signUp(PostRequest postRequest) {
@@ -117,11 +125,13 @@ public class UserService {
     }
 
     public void logout(){
-        kakaoLogout();
-        Logout logout= Logout.of(getToken());
+        kakaoLogout(); // 카카오 로그아웃 처리
+        String token= getToken();
+        long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
+        System.out.println(expiredTime);
+        ValueOperations<String,String> logoutValueOperation=redisTemplate.opsForValue();
+        logoutValueOperation.set(token,"logout",expiredTime, TimeUnit.SECONDS);
 
-        Logout l2=logoutRepository.save(logout);
-        System.out.println(l2.toString());
     }
 
     private Long kakaoLogout(){
@@ -146,6 +156,34 @@ public class UserService {
 
         return userId;
     }
+
+//    public String nicknameCreate(){
+//
+//        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://nickname.hwanmoo.kr");
+//        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+//
+////        URI uri = uriBuilderFactory.uriString(uriBuilder ->
+////                uriBuilder.path("/")
+////                        .queryParam("format", "json")
+////                        .build()).build();
+//
+//
+//
+//        ResponseEntity<String> response = webClient.get()
+//                .uri(uriBuilder ->
+//                        uriBuilder.path("/")
+//                                .queryParam("format", "json")
+//                                .build())
+//                .retrieve()
+//                .toEntity(String.class)
+//                .blockOptional().orElseThrow();
+//
+//        JSONObject obj = new JSONObject(response.getBody());
+//
+//        System.out.println(obj.toString());
+//        return "";
+//
+//    }
 
     public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
         Optional<User> updateUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);

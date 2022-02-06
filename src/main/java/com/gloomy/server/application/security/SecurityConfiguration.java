@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -25,11 +26,11 @@ import static org.springframework.http.HttpMethod.POST;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final SecurityConfigurationProperties properties;
-    private final LogoutRepository logoutRepository;
+    private final StringRedisTemplate redisTemplate;
 
-    SecurityConfiguration(SecurityConfigurationProperties properties, LogoutRepository logoutRepository) {
+    SecurityConfiguration(SecurityConfigurationProperties properties, StringRedisTemplate redisTemplate) {
         this.properties = properties;
-        this.logoutRepository = logoutRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.csrf().disable();
         http.cors();
         http.logout().disable();
-        http.addFilterBefore(new JWTAuthenticationFilter(logoutRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTAuthenticationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()

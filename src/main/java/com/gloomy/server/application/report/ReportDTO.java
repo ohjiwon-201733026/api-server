@@ -1,8 +1,11 @@
 package com.gloomy.server.application.report;
 
+import lombok.Getter;
+
 public class ReportDTO {
 
-    static class Request{
+    @Getter
+    public static class Request{
         private Long feedId;
         private String reportCategory;
 

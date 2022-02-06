@@ -157,7 +157,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 );
     }
 
-    /*
+/*
     @Order(3)
     @DisplayName("카카오 로그인")
     @Test
@@ -166,10 +166,10 @@ class UserRestControllerTest extends AbstractControllerTest {
 //                .code("cBWnEj1Ak9D__ZEthDVehV1_dfFfbgmKf46iFOPhfBkjxjh4pk5vpsUXLADO_yv1cXM5Two9cpgAAAF-i8KLAA")
 //                .build();
         String code="alXSrLik4OWw7sKW-01c8I5rmZpYwtOduQ57HF3u8DqJgQJP8jFNspiIDasXXjigDt8NpQorDNMAAAF-i9qr4g";
-        mockMvc.perform(get("/kakao/signUp")
+        mockMvc.perform(post("/kakao/signUp")
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("code",code))
+                .param("code",code).param("redirect_uri",""))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
@@ -189,7 +189,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 );
     }
-     */
+
 
 
 
@@ -290,13 +290,12 @@ class UserRestControllerTest extends AbstractControllerTest {
                 ).andReturn();
 
     }
-/*
     @DisplayName("로그아웃")
     @Test
     public void logout() throws Exception {
-
+        String token="eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjQ1MywibmFtZSI6Im9qdzk3MDcyNUBuYXZlci5jb20iLCJpYXQiOjE2NDQxODM4NTl9.pAIXEpvIHqZkmTvuXwYaRkrEG6YaKTB61yJrMXsi-Uo";
         this.mockMvc.perform(get("/logout")
-                .header("Authorization","Bearer eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjExNDQsIm5hbWUiOiJvanc5NzA3MjVAbmF2ZXIuY29tIiwiaWF0IjoxNjQzODExNDY5fQ.ndpwhE6b1qtyX-nwcVW4KvdmhOMrO6T5bZ1usCSG3tc")
+                .header("Authorization","Bearer "+token)
                 .with(authentication(authentication))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -304,8 +303,6 @@ class UserRestControllerTest extends AbstractControllerTest {
 
     }
 
-
- */
 
 
 

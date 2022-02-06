@@ -3,11 +3,14 @@ package com.gloomy.server.application.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.core.response.ErrorResponse;
 import com.gloomy.server.domain.blacklList.LogoutRepository;
+import io.netty.util.internal.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -21,7 +24,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final LogoutRepository logoutRepository;
+    private final StringRedisTemplate redisTemplate;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -31,12 +35,13 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
             String token = s.substring("Bearer ".length());
-            SecurityContextHolder.getContext().setAuthentication(new JWT(token));
-
-            if (logoutRepository.findByAccessToken(token).isPresent()) {
+            String isLogout=(String) redisTemplate.opsForValue().get(token);
+            if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
                 setErrorResponse(HttpStatus.BAD_REQUEST, response, new Exception("이미 로그아웃한 토큰"), request);
                 return;
             }
+
+            SecurityContextHolder.getContext().setAuthentication(new JWT(token));
         }
 
         // 중간에 필터 넣기

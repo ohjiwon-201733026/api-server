@@ -85,4 +85,19 @@ class HmacSHA256JWTService implements JWTSerializer, JWTDeserializer {
             throw new IllegalArgumentException(exception);
         }
     }
+
+    @Override
+    public Long getExpiredTime(String jwtToken){
+        final var splintedTokens = jwtToken.split("\\.");
+        try {
+            final var decodedPayload = stringFromBase64URL(splintedTokens[1]);
+            UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
+            if (jwtPayload.isExpired()) {
+                throw new IllegalArgumentException("Token expired");
+            }
+            return jwtPayload.getExpiredTime();
+        } catch (Exception exception) {
+            throw new IllegalArgumentException(exception);
+        }
+    }
 }

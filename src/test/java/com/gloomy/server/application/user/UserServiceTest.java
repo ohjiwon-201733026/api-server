@@ -33,6 +33,7 @@ public class UserServiceTest {
     UserProfileImageService userProfileImageService;
     @Autowired
     JWTSerializer jwtSerializer;
+    @Autowired
     User user;
     UserDTO.UpdateUserDTO.Request updateUserDTO;
     TestFeedDTO testFeedDTO;
@@ -142,6 +143,11 @@ public class UserServiceTest {
     public void user_logout(){
         Optional<User> test= Optional.of(userRepository.save(User.of("email", "nickname", "token")));
     }
+
+//    @Test
+//    public void nicknameCreate(){
+//        userService.nicknameCreate();
+//    }
 
 
 

@@ -12,10 +12,10 @@ public class ReportController {
     private final UserService userService;
     private final ReportService reportService;
 
-    @GetMapping("/report")
-    public void reportFeed(@RequestParam Long feedId, @RequestParam String reportCategory){
+    @PostMapping("/report")
+    public void reportFeed(@RequestBody ReportDTO.Request request){
         Long userId=userService.getMyInfo();
-        reportService.saveReport(feedId,userId,reportCategory);
+        reportService.saveReport(request);
     }
 
 
