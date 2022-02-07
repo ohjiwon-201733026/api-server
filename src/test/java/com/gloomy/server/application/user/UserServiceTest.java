@@ -68,28 +68,27 @@ public class UserServiceTest {
     }
 
 
+//    @DisplayName("user update 성공")
+//    @Test
+//    public void user_update_success(){
+//        User saveUser=userService.createUser(user);
+//        String token=jwtSerializer.jwtFromUser(saveUser);
+//
+//        userService.updateUser(saveUser.getId(),updateUserDTO);
+//
+//        User updateUser=userService.findUser(saveUser.getId());
+//        checkUpdateUser(updateUser);
+//    }
 
-    @DisplayName("user update 성공")
-    @Test
-    public void user_update_success(){
-        User saveUser=userService.createUser(user);
-        String token=jwtSerializer.jwtFromUser(saveUser);
-
-        userService.updateUser(saveUser.getId(),updateUserDTO);
-
-        User updateUser=userService.findUser(saveUser.getId());
-        checkUpdateUser(updateUser);
-    }
-
-    @DisplayName("user update 실패 : 유효하지 않은 user")
-    @Test
-    public void user_update_fail(){
-        user.changeId(notExistUserId);
-        String token=jwtSerializer.jwtFromUser(user);
-
-        assertThrows(IllegalArgumentException.class,
-                ()->userService.updateUser(user.getId(),updateUserDTO));
-    }
+//    @DisplayName("user update 실패 : 유효하지 않은 user")
+//    @Test
+//    public void user_update_fail(){
+//        user.changeId(notExistUserId);
+//        String token=jwtSerializer.jwtFromUser(user);
+//
+//        assertThrows(IllegalArgumentException.class,
+//                ()->userService.updateUser(user.getId(),updateUserDTO));
+//    }
 
     private void checkUpdateUser(User user){
         Assertions.assertEquals(user.getEmail(),updateUserDTO.getEmail());
@@ -144,7 +143,7 @@ public class UserServiceTest {
     @Test
     @DisplayName("닉네임 생성")
     public void nicknameCreate(){
-        String nickname=(String)userService.createNickName();
+        String nickname=userService.createNickName();
         Assertions.assertEquals(nickname!=null,true);
     }
 

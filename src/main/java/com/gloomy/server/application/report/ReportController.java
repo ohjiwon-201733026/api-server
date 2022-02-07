@@ -12,11 +12,11 @@ public class ReportController {
     private final UserService userService;
     private final ReportService reportService;
 
-    @PostMapping("/report")
-    public void reportFeed(@RequestBody ReportDTO.Request request){
-        Long userId=userService.getMyInfo();
-        reportService.saveReport(request);
-    }
+//    @PostMapping("/report")
+//    public void reportFeed(@RequestBody ReportDTO.Request request){
+//        Long userId=userService.getMyInfo();
+//        reportService.saveReport(request);
+//    }
 
 
 }

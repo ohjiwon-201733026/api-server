@@ -31,22 +31,7 @@ public class UserRestController {
         this.userProfileImageService = userProfileImageService;
     }
 
-    /**
-     * 일반 회원가입
-     * @param request
-     * @return
-     */
-    @PostMapping(value = "/user" ,produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response addUser(@Validated @RequestBody PostRequest request) {
-        final User userSaved = userService.signUp(request);
-        return Response.fromUserAndToken(userSaved, jwtSerializer.jwtFromUser(userSaved));
-    }
 
-    @PostMapping(value = "/user/login", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Response login(@Validated @RequestBody LoginRequest request) {
-        User user=userService.login(request).get();
-        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
-    }
 
 //    @PostMapping(value = "/kakao/signUp")
 //    public Response kakaoLogin(@Validated @RequestBody KakaoCodeRequest request) {
@@ -79,21 +64,10 @@ public class UserRestController {
                 .toString();
     }
 
-    @PostMapping(value = "/user/update", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public UpdateUserDTO.Response updateUser(@ModelAttribute UpdateUserDTO.Request updateUserDTO){
-        Long userId=userService.getMyInfo();
-        User updateUser = userService.updateUser(userId,updateUserDTO);
-        return makeUpdateUserDTO(updateUser);
-    }
-
-
-
-
     private UpdateUserDTO.Response makeUpdateUserDTO(User user){
         return UpdateUserDTO.Response.builder()
                 .email(user.getEmail())
                 .sex(user.getSex())
-//                .imageUrl(userProfileImageService.findImageByUserId(user).getImageUrl().getImageUrl())
                 .dateOfBirth(user.getDateOfBirth()==null?"":user.getDateOfBirth().toString())
                 .build();
 
