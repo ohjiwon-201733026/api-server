@@ -8,6 +8,7 @@ import static java.time.Instant.now;
 import com.gloomy.server.domain.jwt.JWTPayload;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -69,6 +70,7 @@ public class UserService {
         KakaoToken kakaoToken = getKakaoToken(request);
         KakaoUser kakaoUser =  getKakaoUser(kakaoToken.getAccess_token());
 
+
         Optional<User> userOp = userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
         User user;
         if(userOp.isEmpty()) {
@@ -92,8 +94,8 @@ public class UserService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-                        .with("redirect_uri", request.getRedirect_uri())
-//                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
+//                        .with("redirect_uri", request.getRedirect_uri())
+                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(KakaoToken.class)
@@ -126,7 +128,6 @@ public class UserService {
         kakaoLogout(); // 카카오 로그아웃 처리
         String token= getToken();
         long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
-        System.out.println(expiredTime);
         ValueOperations<String,String> logoutValueOperation=redisTemplate.opsForValue();
         logoutValueOperation.set(token,"logout",expiredTime, TimeUnit.SECONDS);
 
@@ -155,33 +156,24 @@ public class UserService {
         return userId;
     }
 
-//    public String nicknameCreate(){
-//
-//        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://nickname.hwanmoo.kr");
-//        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-//
-////        URI uri = uriBuilderFactory.uriString(uriBuilder ->
-////                uriBuilder.path("/")
-////                        .queryParam("format", "json")
-////                        .build()).build();
-//
-//
-//
-//        ResponseEntity<String> response = webClient.get()
-//                .uri(uriBuilder ->
-//                        uriBuilder.path("/")
-//                                .queryParam("format", "json")
-//                                .build())
-//                .retrieve()
-//                .toEntity(String.class)
-//                .blockOptional().orElseThrow();
-//
-//        JSONObject obj = new JSONObject(response.getBody());
-//
-//        System.out.println(obj.toString());
-//        return "";
-//
-//    }
+    public Object nicknameCreate(){
+        DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://nickname.hwanmoo.kr");
+        uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
+
+        URI uri = uriBuilderFactory.uriString("/")
+                .queryParam("format","json").build();
+
+        ResponseEntity<String> response = webClient.get()
+                .uri(uri)
+                .retrieve()
+                .toEntity(String.class)
+                .blockOptional().orElseThrow();
+
+        JSONObject words = new JSONObject(response.getBody());
+        JSONArray arr=(JSONArray)words.get("words");
+
+        return arr.get(0);
+    }
 
     public User updateUser(Long userId,UpdateUserDTO.Request updateUserDTO){
         Optional<User> updateUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
