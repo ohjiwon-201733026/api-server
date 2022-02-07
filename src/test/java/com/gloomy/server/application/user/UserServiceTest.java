@@ -144,7 +144,7 @@ public class UserServiceTest {
     @Test
     @DisplayName("닉네임 생성")
     public void nicknameCreate(){
-        String nickname=(String)userService.nicknameCreate();
+        String nickname=(String)userService.createNickName();
         Assertions.assertEquals(nickname!=null,true);
     }
 
