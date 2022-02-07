@@ -24,16 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 })
 @Transactional
 public class UserServiceTest {
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
     @Autowired
     UserService userService;
     @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    UserProfileImageService userProfileImageService;
-    @Autowired
     JWTSerializer jwtSerializer;
-    @Autowired
     User user;
     UserDTO.UpdateUserDTO.Request updateUserDTO;
     TestFeedDTO testFeedDTO;
@@ -52,6 +48,7 @@ public class UserServiceTest {
 //    public void after(){
 //        userProfileImageService.deleteAll(user);
 //    }
+
     @DisplayName("user create 성공")
     @Test
     public void user_create_success(){

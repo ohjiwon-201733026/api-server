@@ -35,9 +35,7 @@ public class UserService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final LogoutRepository logoutRepository;
     private final JWTDeserializer jwtDeserializer;
-    private final JWTSerializer jwtSerializer;
     private final StringRedisTemplate redisTemplate;
 
     @Transactional
