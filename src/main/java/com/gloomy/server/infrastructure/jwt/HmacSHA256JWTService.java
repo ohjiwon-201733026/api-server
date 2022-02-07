@@ -31,6 +31,10 @@ class HmacSHA256JWTService implements JWTSerializer, JWTDeserializer {
         this.objectMapper = objectMapper;
     }
 
+    // jwtSerializer
+    /**
+     * User -> String token
+     */
     @Override
     public String jwtFromUser(User user) {
         final var messageToSign = JWT_HEADER.concat(".").concat(jwtPayloadFromUser(user));
@@ -45,59 +49,37 @@ class HmacSHA256JWTService implements JWTSerializer, JWTDeserializer {
 
     @Override
     public JWTPayload jwtPayloadFromJWT(String jwtToken) {
-        if (!JWT_PATTERN.matcher(jwtToken).matches()) {
-            throw new IllegalArgumentException("Malformed JWT: " + jwtToken);
-        }
+        isValidToken(jwtToken);
 
         final var splintedTokens = jwtToken.split("\\.");
-        if (!splintedTokens[0].equals(JWT_HEADER)) {
-            throw new IllegalArgumentException("Malformed JWT! Token must starts with header: " + JWT_HEADER);
-        }
-
-        final var signatureBytes = HmacSHA256.sign(secret, splintedTokens[0].concat(".").concat(splintedTokens[1]));
-        if (!base64URLFromBytes(signatureBytes).equals(splintedTokens[2])) {
-            throw new IllegalArgumentException("Token has invalid signature: " + jwtToken);
-        }
-
         try {
             final var decodedPayload = stringFromBase64URL(splintedTokens[1]);
             UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
-            if (jwtPayload.isExpired()) {
-                throw new IllegalArgumentException("Token expired");
-            }
+            isExpired(jwtPayload);
             return jwtPayload;
         } catch (Exception exception) {
             throw new IllegalArgumentException(exception);
         }
     }
 
-    @Override
-    public Long getUserId(String jwtToken) {
+    private void isValidToken(String jwtToken){
+
         final var splintedTokens = jwtToken.split("\\.");
-        try {
-            final var decodedPayload = stringFromBase64URL(splintedTokens[1]);
-            UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
-            if (jwtPayload.isExpired()) {
-                throw new IllegalArgumentException("Token expired");
-            }
-            return jwtPayload.getUserId();
-        } catch (Exception exception) {
-            throw new IllegalArgumentException(exception);
+        final var signatureBytes = HmacSHA256.sign(secret, splintedTokens[0].concat(".").concat(splintedTokens[1]));
+        if (!JWT_PATTERN.matcher(jwtToken).matches() ||
+                !splintedTokens[0].equals(JWT_HEADER) ||
+                !base64URLFromBytes(signatureBytes).equals(splintedTokens[2])) {
+            throw new IllegalArgumentException("올바르지 않은 토큰");
+        }
+
+    }
+
+    private void isExpired(JWTPayload jwtPayload){
+        if (jwtPayload.isExpired()) {
+            throw new IllegalArgumentException("Token expired");
         }
     }
 
-    @Override
-    public Long getExpiredTime(String jwtToken){
-        final var splintedTokens = jwtToken.split("\\.");
-        try {
-            final var decodedPayload = stringFromBase64URL(splintedTokens[1]);
-            UserJWTPayload jwtPayload = objectMapper.readValue(decodedPayload, UserJWTPayload.class);
-            if (jwtPayload.isExpired()) {
-                throw new IllegalArgumentException("Token expired");
-            }
-            return jwtPayload.getExpiredTime();
-        } catch (Exception exception) {
-            throw new IllegalArgumentException(exception);
-        }
-    }
+
+
 }

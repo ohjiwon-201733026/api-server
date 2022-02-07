@@ -79,83 +79,83 @@ class UserRestControllerTest extends AbstractControllerTest {
     }
 
 
-    @Order(1)
-    @DisplayName("일반 회원가입")
-    @Test
-    void postUser() throws Exception {
-
-        PostRequest postRequest = PostRequest.builder()
-                .email("test1@gmail.com")
-                .userName("test1")
-                .password("test1234")
-                .build();
-
-        MvcResult mvcResult = mockMvc.perform(post("/user")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(postRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document.document(
-                        requestFields(
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일 (필수)"),
-                                fieldWithPath("userName").type(JsonFieldType.STRING).description("유저 이름 (필수)"),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드 (필수)")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드 (필수)"),
-                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지 (필수)"),
-                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간 (필수)"),
-                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
-                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
-                                fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
-                        )
-                ))
-                .andReturn();
-    }
-
-    @Order(2)
-    @DisplayName("일반 로그인")
-    @Test
-    void login() throws Exception {
-        PostRequest postRequest = PostRequest.builder()
-                .email("test1@gmail.com")
-                .userName("test1")
-                .password("test1234")
-                .build();
-
-        LoginRequest loginRequest = LoginRequest.builder()
-                .email("test1@gmail.com")
-                .password("test1234")
-                .build();
-
-        userService.signUp(postRequest);
-
-        mockMvc.perform(post("/user/login")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(loginRequest)))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andDo(document.document(
-                        requestFields(
-                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일 (필수)"),
-                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드(필수)")
-                        ),
-                        responseFields(
-                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
-                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
-                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
-                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
-                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
-                                fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
-                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
-//                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크").optional()
-                        )
-                        )
-                );
-    }
+//    @Order(1)
+//    @DisplayName("일반 회원가입")
+//    @Test
+//    void postUser() throws Exception {
+//
+//        PostRequest postRequest = PostRequest.builder()
+//                .email("test1@gmail.com")
+//                .userName("test1")
+//                .password("test1234")
+//                .build();
+//
+//        MvcResult mvcResult = mockMvc.perform(post("/user")
+//                .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                .accept(MediaType.APPLICATION_JSON_VALUE)
+//                .content(objectMapper.writeValueAsString(postRequest)))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andDo(document.document(
+//                        requestFields(
+//                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일 (필수)"),
+//                                fieldWithPath("userName").type(JsonFieldType.STRING).description("유저 이름 (필수)"),
+//                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드 (필수)")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드 (필수)"),
+//                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지 (필수)"),
+//                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간 (필수)"),
+//                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
+//                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
+//                                fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
+//                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
+//                        )
+//                ))
+//                .andReturn();
+//    }
+//
+//    @Order(2)
+//    @DisplayName("일반 로그인")
+//    @Test
+//    void login() throws Exception {
+//        PostRequest postRequest = PostRequest.builder()
+//                .email("test1@gmail.com")
+//                .userName("test1")
+//                .password("test1234")
+//                .build();
+//
+//        LoginRequest loginRequest = LoginRequest.builder()
+//                .email("test1@gmail.com")
+//                .password("test1234")
+//                .build();
+//
+//        userService.signUp(postRequest);
+//
+//        mockMvc.perform(post("/user/login")
+//                .contentType(MediaType.APPLICATION_JSON_VALUE)
+//                .accept(MediaType.APPLICATION_JSON_VALUE)
+//                .content(objectMapper.writeValueAsString(loginRequest)))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andDo(document.document(
+//                        requestFields(
+//                                fieldWithPath("email").type(JsonFieldType.STRING).description("유저 로그인 이메일 (필수)"),
+//                                fieldWithPath("password").type(JsonFieldType.STRING).description("유저 로그인 패스워드(필수)")
+//                        ),
+//                        responseFields(
+//                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
+//                                fieldWithPath("message").type(JsonFieldType.STRING).description("상태 설명 메시지"),
+//                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간"),
+//                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 번호").optional(),
+//                                fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일").optional(),
+//                                fieldWithPath("result.username").type(JsonFieldType.STRING).description("유저 이름").optional(),
+//                                fieldWithPath("result.token").type(JsonFieldType.STRING).description("토큰").optional()
+////                                fieldWithPath("result.image").type(JsonFieldType.STRING).description("이미지 링크").optional()
+//                        )
+//                        )
+//                );
+//    }
 
 /*
     @Order(3)

@@ -13,7 +13,6 @@ import java.util.Objects;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-@Setter
 @Getter
 @ToString
 @Table(name = "users")
@@ -102,41 +101,11 @@ public class User {
     public void changeId(Long id) {
         this.id = id;
     }
-
-    public void changeEmail(String email) {
-        this.email = email;
-    }
-
-    public void changeSex(Sex sex) {
-        this.sex = sex;
-    }
-
-    public void changeDateOfBirth(LocalDate dateOfBirth){this.dateOfBirth=dateOfBirth;}
+    public void changeEmail(String email){this.email=email;}
     public void changeJoinStatus(Status status){this.joinStatus=status;}
+    public void changeKakaoToken(String kakaoToken) {this.kakaoToken=kakaoToken;}
 
-    /**
-     * getter
-     */
-    public Long getId() {
-        return id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public String getName() {
-        return getProfile().getName();
-    }
-
-    public Password getPassword() {
-        return password;
-    }
-
+    public String getName(){ return this.profile.getName();}
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

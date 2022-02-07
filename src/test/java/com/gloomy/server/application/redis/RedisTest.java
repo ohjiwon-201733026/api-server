@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
 })
+@Transactional
 public class RedisTest extends AbstractControllerTest {
 
     @Autowired
@@ -30,8 +32,8 @@ public class RedisTest extends AbstractControllerTest {
         ValueOperations<String,String> redis=redisTemplate.opsForValue();
         redis.set("key","value");
 
-//        ValueOperations<String,String> redis2=redisTemplate.opsForValue();
-//        String val=redis2.get("key");
-//        Assertions.assertEquals(val.equals("value"),true);
+        ValueOperations<String,String> redis2=redisTemplate.opsForValue();
+        String val=redis2.get("key");
+        Assertions.assertEquals(val.equals("value"),true);
     }
 }

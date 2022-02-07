@@ -20,13 +20,13 @@ public class ReportService {
     private final FeedService feedService;
 
 
-    public Report saveReport(ReportDTO.Request request){
-        User user=userService.findUser(userService.getMyInfo());
-        Feed feed=feedService.findOneFeed(request.getFeedId());
-        // feed 상태 변경
-        Report report=Report.of(feed,user, request.getReportCategory());
-        return reportRepository.save(report);
-    }
+//    public Report saveReport(ReportDTO.Request request){
+//        User user=userService.findUser(userService.getMyInfo());
+//        Feed feed=feedService.findOneFeed(request.getFeedId());
+//        // feed 상태 변경
+//        Report report=Report.of(feed,user, request.getReportCategory());
+//        return reportRepository.save(report);
+//    }
 
     public Optional<Report> findReportById(Long reportId){
         return reportRepository.findById(reportId);

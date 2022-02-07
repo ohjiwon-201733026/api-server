@@ -2,6 +2,8 @@ package com.gloomy.server.domain.report;
 
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.user.User;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,6 +12,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class Report {
 
     @Id
@@ -21,35 +24,23 @@ public class Report {
     @JoinColumn(name = "feed_id")
     private Feed feed_id;
 
-    private String reportCategory;
+    private ReportCategory reportCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user_id;
 
-    public Report(Feed feed_id, User user_id, String reportCategory) {
+    @Builder
+    public Report(Feed feed_id, User user_id, ReportCategory reportCategory) {
         this.feed_id = feed_id;
         this.reportCategory = reportCategory;
         this.user_id = user_id;
     }
 
-    public static Report of(Feed feed_id,User user_id, String reportCategory){
+    public static Report of(Feed feed_id,User user_id, ReportCategory reportCategory){
         return new Report(feed_id,user_id,reportCategory);
     }
 
-    public Long getId() {
-        return id;
-    }
+    public String getReportCategory(){ return this.reportCategory.toString();}
 
-    public Feed getFeed_id() {
-        return feed_id;
-    }
-
-    public String getReportCategory() {
-        return reportCategory;
-    }
-
-    public User getUser_id() {
-        return user_id;
-    }
 }
