@@ -290,6 +290,7 @@ class UserRestControllerTest extends AbstractControllerTest {
                 ).andReturn();
 
     }
+    /*
     @DisplayName("로그아웃")
     @Test
     public void logout() throws Exception {
@@ -302,6 +303,8 @@ class UserRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk());
 
     }
+
+     */
 
 
 

@@ -60,7 +60,7 @@ public class ReportRestControllerTest extends AbstractControllerTest{
         userFeedDTO = new FeedDTO.Request(
                 testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent());
     }
-
+/*
     @Test
     public void reportFeed() throws Exception {
 
@@ -90,5 +90,8 @@ public class ReportRestControllerTest extends AbstractControllerTest{
                         )
                         )
                 );
+
     }
+
+ */
 }
