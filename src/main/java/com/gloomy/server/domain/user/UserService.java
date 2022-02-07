@@ -156,7 +156,7 @@ public class UserService {
         return userId;
     }
 
-    public Object nicknameCreate(){
+    public Object createNickName(){
         DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("https://nickname.hwanmoo.kr");
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 
