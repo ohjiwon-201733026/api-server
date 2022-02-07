@@ -141,10 +141,12 @@ public class UserServiceTest {
         Optional<User> test= Optional.of(userRepository.save(User.of("email", "nickname", "token")));
     }
 
-//    @Test
-//    public void nicknameCreate(){
-//        userService.nicknameCreate();
-//    }
+    @Test
+    @DisplayName("닉네임 생성")
+    public void nicknameCreate(){
+        String nickname=(String)userService.nicknameCreate();
+        Assertions.assertEquals(nickname!=null,true);
+    }
 
 
 
