@@ -1,7 +1,7 @@
 package com.gloomy.server.domain.user.kakao;
 
 import com.gloomy.server.application.user.UserDTO;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.user.UriService;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
@@ -34,8 +34,8 @@ public class KakaoService {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "authorization_code")
                         .with("client_id", "76867f47209a454ed88ccf1080c4238c")
-//                        .with("redirect_uri", request.getRedirect_uri())
-                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
+                        .with("redirect_uri", request.getRedirect_uri())
+//                        .with("redirect_uri", "http://localhost:8080/kakao/signUp")
                         .with("code", request.getCode()))
                 .retrieve()
                 .bodyToMono(UserDTO.KakaoToken.class)
