@@ -23,17 +23,5 @@ import java.util.concurrent.TimeUnit;
 @Transactional
 public class RedisTest extends AbstractControllerTest {
 
-    @Autowired
-    StringRedisTemplate redisTemplate;
 
-    @Test
-    @DisplayName("redis connect test")
-    public void redis_connect_test(){
-        ValueOperations<String,String> redis=redisTemplate.opsForValue();
-        redis.set("key","value");
-
-        ValueOperations<String,String> redis2=redisTemplate.opsForValue();
-        String val=redis2.get("key");
-        Assertions.assertEquals(val.equals("value"),true);
-    }
 }
