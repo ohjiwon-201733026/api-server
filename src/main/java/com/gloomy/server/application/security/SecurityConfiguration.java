@@ -26,11 +26,15 @@ import static org.springframework.http.HttpMethod.POST;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final SecurityConfigurationProperties properties;
-    private final StringRedisTemplate redisTemplate;
+//    private final StringRedisTemplate redisTemplate;
 
-    SecurityConfiguration(SecurityConfigurationProperties properties, StringRedisTemplate redisTemplate) {
+//    SecurityConfiguration(SecurityConfigurationProperties properties, StringRedisTemplate redisTemplate) {
+//        this.properties = properties;
+//        this.redisTemplate = redisTemplate;
+//    }
+
+    SecurityConfiguration(SecurityConfigurationProperties properties) {
         this.properties = properties;
-        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -39,7 +43,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.csrf().disable();
         http.cors();
         http.logout().disable();
-        http.addFilterBefore(new JWTAuthenticationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(new JWTAuthenticationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()

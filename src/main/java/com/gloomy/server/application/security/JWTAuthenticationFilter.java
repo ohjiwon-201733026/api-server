@@ -24,22 +24,21 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final StringRedisTemplate redisTemplate;
+//    private final StringRedisTemplate redisTemplate;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JWTAuthenticationFilter.doFilterInternal");
         String s = request.getHeader((AUTHORIZATION));
         if (s == null) {
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
             String token = s.substring("Bearer ".length());
-            String isLogout=(String) redisTemplate.opsForValue().get(token);
-            if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
-                setErrorResponse(HttpStatus.BAD_REQUEST, response, new Exception("이미 로그아웃한 토큰"), request);
-                return;
-            }
+//            String isLogout=(String) redisTemplate.opsForValue().get(token);
+//            if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
+//                setErrorResponse(HttpStatus.BAD_REQUEST, response, new Exception("이미 로그아웃한 토큰"), request);
+//                return;
+//            }
 
             SecurityContextHolder.getContext().setAuthentication(new JWT(token));
         }

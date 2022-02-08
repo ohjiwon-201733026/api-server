@@ -31,7 +31,7 @@ public class UserService {
     private final WebClient webClient;
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;
-    private final StringRedisTemplate redisTemplate;
+//    private final StringRedisTemplate redisTemplate;
     private final KakaoService kakaoService;
     private final UriService uriService;
 
@@ -71,8 +71,8 @@ public class UserService {
     private void jwtLogout(){
         String token= getToken();
         long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
-        ValueOperations<String,String> logoutValueOperation=redisTemplate.opsForValue();
-        logoutValueOperation.set(token,"logout",expiredTime, TimeUnit.SECONDS);
+//        ValueOperations<String,String> logoutValueOperation=redisTemplate.opsForValue();
+//        logoutValueOperation.set(token,"logout",expiredTime, TimeUnit.SECONDS);
     }
 
     public String createNickName(){
