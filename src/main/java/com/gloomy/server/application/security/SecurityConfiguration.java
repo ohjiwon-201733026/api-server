@@ -53,6 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/user/**").permitAll()
                 .antMatchers("/myPage/**").permitAll()
                 .antMatchers("/logout").permitAll()
+                .antMatchers("/redis").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin().disable();
