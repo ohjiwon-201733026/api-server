@@ -14,7 +14,7 @@ public class RedisService {
 
     public String redisString(String param){
         ValueOperations<String,Object> operations=redisTemplate.opsForValue();
-        operations.set(param,"test : "+param);
+        operations.set(param,param+" value");
         String redis=(String) operations.get(param);
         return redis;
     }
