@@ -6,10 +6,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
-//@RequiredArgsConstructor
-//@Service
+@RequiredArgsConstructor
+@Service
 public class RedisService {
-/*
+
     private final RedisTemplate<String,Object> redisTemplate;
 
     public String redisString(String param){
@@ -19,5 +19,5 @@ public class RedisService {
         return redis;
     }
 
- */
+
 }
