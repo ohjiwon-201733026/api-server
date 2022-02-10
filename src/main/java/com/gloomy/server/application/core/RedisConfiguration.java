@@ -8,9 +8,9 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-//@Configuration
+@Configuration
 public class RedisConfiguration {
-/*
+
     @Value("${spring.redis.host}")
     private String redisHost;
 
@@ -31,6 +31,6 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
- */
+
 
 }
