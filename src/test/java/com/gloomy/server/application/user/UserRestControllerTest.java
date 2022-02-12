@@ -290,11 +290,12 @@ class UserRestControllerTest extends AbstractControllerTest {
                 ).andReturn();
 
     }
+
     /*
     @DisplayName("로그아웃")
     @Test
     public void logout() throws Exception {
-        String token="eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjQ1MywibmFtZSI6Im9qdzk3MDcyNUBuYXZlci5jb20iLCJpYXQiOjE2NDQxODM4NTl9.pAIXEpvIHqZkmTvuXwYaRkrEG6YaKTB61yJrMXsi-Uo";
+        String token="eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjE0ODQsIm5hbWUiOiJvanc5NzA3MjVAbmF2ZXIuY29tIiwiaWF0IjoxNjQ0NjYwOTA3fQ.es5myqIAHebRFRALNwSE3ruW3rv1SepdVGpnIeXUaOk";
         this.mockMvc.perform(get("/logout")
                 .header("Authorization","Bearer "+token)
                 .with(authentication(authentication))
@@ -305,8 +306,6 @@ class UserRestControllerTest extends AbstractControllerTest {
     }
 
      */
-
-
 
 
 }

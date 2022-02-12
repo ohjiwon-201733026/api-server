@@ -82,12 +82,12 @@ public class UserDTO {
     @Builder
     @Getter
     @ToString
-    public static class KakaoCodeRequest {
+    public static class CodeRequest {
         @NotBlank(message = "코드값을 입력하세요.")
         String code;
         String redirect_uri;
 
-        public KakaoCodeRequest(String code){
+        public CodeRequest(String code){
             this.code=code;
         }
     }

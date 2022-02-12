@@ -2,6 +2,7 @@ package com.gloomy.server.application.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.core.response.ErrorResponse;
+import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.domain.blacklList.LogoutRepository;
 import io.netty.util.internal.ObjectUtil;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-//    private final StringRedisTemplate redisTemplate;
+    private final RedisService redisService;
 
 
     @Override
@@ -34,11 +35,11 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
             String token = s.substring("Bearer ".length());
-//            String isLogout=(String) redisTemplate.opsForValue().get(token);
-//            if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
-//                setErrorResponse(HttpStatus.BAD_REQUEST, response, new Exception("이미 로그아웃한 토큰"), request);
-//                return;
-//            }
+            String isLogout=redisService.getValue(token);
+            if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
+                setErrorResponse(HttpStatus.BAD_REQUEST, response, new Exception("이미 로그아웃한 토큰"), request);
+                return;
+            }
 
             SecurityContextHolder.getContext().setAuthentication(new JWT(token));
         }
