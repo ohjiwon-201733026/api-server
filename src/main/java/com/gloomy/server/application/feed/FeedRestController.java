@@ -46,7 +46,8 @@ public class FeedRestController {
 
     @GetMapping(value = "")
     public Page<FeedDTO.Response> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
-        Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
+        Long userId = userService.getMyInfo();
+        Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable, userId);
         return makeResult(allFeeds);
     }
 

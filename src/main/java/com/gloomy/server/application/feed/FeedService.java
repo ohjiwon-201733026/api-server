@@ -7,7 +7,6 @@ import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Category;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -55,16 +54,31 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
-    @Transactional(readOnly = true)
-    public Page<Feed> findAllActiveFeeds(Pageable originPageable) {
-        validatePageableAndSort(originPageable);
-        Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
-        Pageable pageable = PageRequest.of(0, 10);
-
+    private Page<Feed> findAllActiveFeedsWithoutReport(Pageable pageable, Optional<Sort.Order> order) {
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
             return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.active());
         }
         return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.active());
+    }
+
+    private Page<Feed> findAllActiveFeedsWithReport(Pageable pageable, Optional<Sort.Order> order, Long userId) {
+        User user = userService.findUser(userId);
+        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
+            return feedRepository.findByStatusWithReportOrderByCreated(pageable, user, Status.active());
+        }
+        return feedRepository.findByStatusWithReportOrderByLikeCountDesc(pageable, user, Status.active());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Feed> findAllActiveFeeds(Pageable originPageable, Long userId) {
+        validatePageableAndSortAndUser(originPageable, userId);
+        Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        if (userId == null) {
+            return findAllActiveFeedsWithoutReport(pageable, order);
+        }
+        return findAllActiveFeedsWithReport(pageable, order, userId);
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +94,7 @@ public class FeedService {
             return feedRepository.findByUserId(pageable, foundUser);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
-       ` }
+        }
     }
 
     @Transactional(readOnly = true)
@@ -161,7 +175,7 @@ public class FeedService {
         }
     }
 
-    private void validatePageableAndSort(Pageable pageable) {
+    private void validatePageableAndSortAndUser(Pageable pageable, Long userId) {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
@@ -173,11 +187,18 @@ public class FeedService {
         if (order.isPresent() && !EnumUtils.isValidEnumIgnoreCase(FeedSort.class, order.get().getProperty())) {
             throw new IllegalArgumentException("[FeedService] sort가 유효하지 않습니다.");
         }
+        validateUser(userId);
     }
 
     private void validateUpdateFeedDTO(Feed foundFeed, UpdateFeedDTO.Request feedDTO) {
         if ((foundFeed.getUserId() != null) && feedDTO.getPassword() != null) {
             throw new IllegalArgumentException("[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
+        }
+    }
+
+    private void validateUser(Long userId) {
+        if (userId != null && userId <= 0L) {
+            throw new IllegalArgumentException("[FeedService] 회원 ID가 유효하지 않습니다.");
         }
     }
 }

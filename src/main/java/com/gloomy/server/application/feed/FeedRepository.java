@@ -6,6 +6,8 @@ import com.gloomy.server.domain.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,4 +19,10 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     Page<Feed> findByStatusOrderByCreatedAtDesc(Pageable pageable, Status status);
 
     Page<Feed> findByStatusOrderByLikeCountDesc(Pageable pageable, Status status);
+
+    @Query("select f from Feed f where f not in (select r.feed_id from Report r where r.user_id = :userId) and f.status = :status order by f.createdAt desc")
+    Page<Feed> findByStatusWithReportOrderByCreated(Pageable pageable, @Param("userId") User userId, @Param("status") Status status);
+
+    @Query("select f from Feed f where f not in (select r.feed_id from Report r where r.user_id = :userId) and f.status = :status order by f.likeCount desc")
+    Page<Feed> findByStatusWithReportOrderByLikeCountDesc(Pageable pageable, @Param("userId") User user, @Param("status") Status status);
 }
