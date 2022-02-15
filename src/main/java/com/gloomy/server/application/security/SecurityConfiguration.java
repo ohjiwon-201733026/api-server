@@ -1,5 +1,6 @@
 package com.gloomy.server.application.security;
 
+import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.domain.blacklList.LogoutRepository;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,6 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,15 +28,11 @@ import static org.springframework.http.HttpMethod.POST;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
     private final SecurityConfigurationProperties properties;
-//    private final StringRedisTemplate redisTemplate;
+    private final RedisService redisService;
 
-//    SecurityConfiguration(SecurityConfigurationProperties properties, StringRedisTemplate redisTemplate) {
-//        this.properties = properties;
-//        this.redisTemplate = redisTemplate;
-//    }
-
-    SecurityConfiguration(SecurityConfigurationProperties properties) {
+    SecurityConfiguration(SecurityConfigurationProperties properties, RedisService redisService) {
         this.properties = properties;
+        this.redisService = redisService;
     }
 
     @Override
@@ -43,8 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.csrf().disable();
         http.cors();
         http.logout().disable();
-//        http.addFilterBefore(new JWTAuthenticationFilter(redisTemplate), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JWTAuthenticationFilter(redisService), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()

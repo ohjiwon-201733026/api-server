@@ -1,15 +1,12 @@
 package com.gloomy.server.domain.user;
 
+
 import com.gloomy.server.domain.common.entity.Status;
-import com.gloomy.server.domain.blacklList.Logout;
-import com.gloomy.server.domain.blacklList.LogoutRepository;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import static java.time.Instant.now;
 
-import com.gloomy.server.domain.user.kakao.KakaoService;
+import com.gloomy.server.domain.user.kakao.KakaoApiService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.net.URI;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static com.gloomy.server.application.user.UserDTO.*;
 
@@ -28,62 +24,34 @@ import static com.gloomy.server.application.user.UserDTO.*;
 @Service
 @Transactional
 public class UserService {
-    private final WebClient webClient;
+//    private final WebClient webClient;
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;
-//    private final StringRedisTemplate redisTemplate;
-    private final KakaoService kakaoService;
+//    private final KakaoApiService kakaoApiService;
     private final UriService uriService;
+//    private final RedisService redisService;
 
     @Transactional(readOnly = true)
     public Optional<User> findById(long id) {
-        return userRepository.findByIdAndJoinStatus(id,Status.ACTIVE);
+        return userRepository.findByIdAndJoinStatus(id, Status.ACTIVE);
     }
 
-    @Transactional(readOnly = true)
-    public Optional<User> kakaoLogin(KakaoCodeRequest request) {
-        KakaoToken kakaoToken = kakaoService.getKakaoToken(request);
-        KakaoUser kakaoUser =  kakaoService.getKakaoUser(kakaoToken.getAccess_token());
-
-        Optional<User> userOp =
-                userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getEmail(),Status.ACTIVE);
-        User user;
-        if(userOp.isEmpty()) { // 회원가입
-            user=User.of(kakaoUser.getEmail(), kakaoUser.getNickname(), kakaoToken.getAccess_token());
-        }
-        else{ // 로그인
-            user=userOp.get();
-            user.changeKakaoToken(kakaoToken.getAccess_token());
-        }
-
-        return Optional.of(userRepository.save(user));
-    }
 
     public User createUser(User user) {
         return userRepository.save(user);
     }
 
-    public void logout(){
-        kakaoService.kakaoLogout(getMyInfo()); // 카카오 로그아웃 처리
-        jwtLogout();
-    }
-
-    private void jwtLogout(){
-        String token= getToken();
-        long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
-//        ValueOperations<String,String> logoutValueOperation=redisTemplate.opsForValue();
-//        logoutValueOperation.set(token,"logout",expiredTime, TimeUnit.SECONDS);
-    }
-
     public String createNickName(){
 
         MultiValueMap<String,String> params=new LinkedMultiValueMap<>();
-        params.set("format","text");
+        params.set("format","json");
+
+        WebClient webClient= WebClient.builder().baseUrl("https://nickname.hwanmoo.kr").build();
 
         URI uri=uriService.getUri("https://nickname.hwanmoo.kr","/",params);
 
         ResponseEntity<String> response = webClient.get()
-                .uri(uri)
+                .uri(uriBuilder -> uriBuilder.path("/").queryParam("format","text").build())
                 .retrieve()
                 .toEntity(String.class)
                 .blockOptional().orElseThrow();
@@ -98,7 +66,7 @@ public class UserService {
     }
 
     public void deleteUser(Long userId) {
-        if(userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE).isEmpty()) throw new IllegalArgumentException();
+        if(userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE).isEmpty()) throw new IllegalArgumentException("[ userService ]: 존재하지 않는 user 입니다.");
         else userRepository.delete(findUser(userId));
     }
 
@@ -106,7 +74,8 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    public void inactiveUser(Long userId){
+    public void inactiveUser(){
+        Long userId=getMyInfo();
         Optional<User> findUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
         if(findUser.isPresent()){
             User user=findUser.get();
@@ -127,5 +96,6 @@ public class UserService {
                 .getAuthentication()
                 .getCredentials().toString();
     }
+
 
 }

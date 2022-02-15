@@ -1,7 +1,6 @@
 package com.gloomy.server.application.user;
 
 import com.gloomy.server.application.feed.TestFeedDTO;
-import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.*;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
