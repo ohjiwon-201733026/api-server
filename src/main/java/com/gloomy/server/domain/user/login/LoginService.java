@@ -2,7 +2,7 @@ package com.gloomy.server.domain.user.login;
 
 import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.application.user.UserDTO;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;

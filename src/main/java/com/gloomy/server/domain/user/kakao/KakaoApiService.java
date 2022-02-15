@@ -1,7 +1,7 @@
 package com.gloomy.server.domain.user.kakao;
 
 import com.gloomy.server.application.user.UserDTO;
-import com.gloomy.server.domain.common.Status;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.user.UriService;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
