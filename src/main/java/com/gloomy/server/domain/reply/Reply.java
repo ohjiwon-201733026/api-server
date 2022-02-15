@@ -4,7 +4,6 @@ import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.*;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.NonUser;
-import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -61,7 +60,7 @@ public class Reply extends BaseEntity {
                 .content(new Content(content))
                 .commentId(commentId)
                 .userId(userId)
-                .status(Status.ACTIVE)
+                .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
                 .deletedAt(new DeletedAt())
@@ -73,7 +72,7 @@ public class Reply extends BaseEntity {
                 .content(new Content(content))
                 .commentId(commentId)
                 .nonUser(NonUser.of("익명 친구", password))
-                .status(Status.ACTIVE)
+                .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
                 .deletedAt(new DeletedAt())
@@ -85,7 +84,7 @@ public class Reply extends BaseEntity {
     }
 
     public void delete() {
-        this.status = Status.INACTIVE;
+        this.status = Status.inactive();
         this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 

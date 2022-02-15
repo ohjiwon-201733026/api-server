@@ -38,7 +38,7 @@ public class Image extends BaseEntity {
         return Image.builder()
                 .feedId(feedId)
                 .imageUrl(new ImageURL(imageUrl))
-                .status(Status.ACTIVE)
+                .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
                 .deletedAt(new DeletedAt())
@@ -46,7 +46,7 @@ public class Image extends BaseEntity {
     }
 
     public void delete() {
-        this.status = Status.INACTIVE;
+        this.status = Status.active();
         this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 

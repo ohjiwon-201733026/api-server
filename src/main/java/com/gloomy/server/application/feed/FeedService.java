@@ -62,9 +62,9 @@ public class FeedService {
         Pageable pageable = PageRequest.of(0, 10);
 
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
-            return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.ACTIVE);
+            return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.active());
         }
-        return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.ACTIVE);
+        return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.active());
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +80,7 @@ public class FeedService {
             return feedRepository.findByUserId(pageable, foundUser);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
-        }
+       ` }
     }
 
     @Transactional(readOnly = true)

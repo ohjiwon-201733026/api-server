@@ -9,7 +9,6 @@ import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @EqualsAndHashCode(callSuper = false)
 @Getter
@@ -66,7 +65,7 @@ public class Feed extends BaseEntity {
                     .title(new Title(feedDTO.getTitle()))
                     .content(new Content(feedDTO.getContent()))
                     .likeCount(new LikeCount(0))
-                    .status(Status.ACTIVE)
+                    .status(Status.active())
                     .createdAt(new CreatedAt())
                     .updatedAt(new UpdatedAt())
                     .deletedAt(new DeletedAt())
@@ -80,16 +79,11 @@ public class Feed extends BaseEntity {
                 .title(new Title(feedDTO.getTitle()))
                 .content(new Content(feedDTO.getContent()))
                 .likeCount(new LikeCount(0))
-                .status(Status.ACTIVE)
+                .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
                 .deletedAt(new DeletedAt())
                 .build();
-    }
-
-    public void delete() {
-        this.status = Status.INACTIVE;
-        this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
     public void setPassword(String password) {
@@ -105,5 +99,14 @@ public class Feed extends BaseEntity {
 
     public void addLikeCount() {
         this.likeCount.addCount();
+    }
+
+    public void delete() {
+        this.status = Status.inactive();
+        this.deletedAt.setDeletedAt(LocalDateTime.now());
+    }
+
+    public void report() {
+        this.status = Status.invisible();
     }
 }

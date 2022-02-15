@@ -1,7 +1,6 @@
 package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
-import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Content;
@@ -105,7 +104,7 @@ public class ReplyService {
             throw new IllegalArgumentException("[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
         }
         Comment foundComment = commentService.findComment(commentId);
-        return replyRepository.findAllByCommentIdAndStatus(pageable, foundComment, Status.ACTIVE);
+        return replyRepository.findAllByCommentIdAndStatus(pageable, foundComment, Status.active());
     }
 
     public boolean validateId(Long id) {

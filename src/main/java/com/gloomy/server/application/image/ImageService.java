@@ -54,7 +54,7 @@ public class ImageService {
     @Transactional(readOnly = true)
     public Images findAllActiveImages(Feed feedId) throws IllegalArgumentException {
         validateFeedId(feedId);
-        return new Images(imageRepository.findAllByFeedIdAndStatus(feedId, Status.ACTIVE));
+        return new Images(imageRepository.findAllByFeedIdAndStatus(feedId, Status.active()));
     }
 
     @Transactional(readOnly = true)

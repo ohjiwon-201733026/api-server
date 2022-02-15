@@ -48,7 +48,7 @@ public class ImageDTO {
                 Map<String, Object> toDTO = new LinkedHashMap<>();
                 toDTO.put("id", image.getId());
                 toDTO.put("imageURL", image.getImageUrl().getImageUrl());
-                toDTO.put("status", image.getStatus().getStatusName());
+                toDTO.put("status", image.getStatus().toString());
                 toDTO.put("createdAt", image.getCreatedAt().getCreatedAt());
                 toDTO.put("updatedAt", image.getUpdatedAt().getUpdatedAt());
                 toDTO.put("deletedAt", image.getDeletedAt().getDeletedAt());

@@ -108,7 +108,7 @@ public class CommentService {
             throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
         }
         Feed foundFeed = feedService.findOneFeed(feedId);
-        return commentRepository.findAllByFeedIdAndStatus(pageable, foundFeed, Status.ACTIVE);
+        return commentRepository.findAllByFeedIdAndStatus(pageable, foundFeed, Status.active());
     }
 
     public Page<Comment> getCommentByIdAndActive(Pageable pageable, Long userId) {
@@ -119,7 +119,7 @@ public class CommentService {
             throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
         }
         User findUser = userService.findUser(userId);
-        return commentRepository.findAllByUserIdAndStatus(pageable, findUser, Status.ACTIVE);
+        return commentRepository.findAllByUserIdAndStatus(pageable, findUser, Status.active());
     }
 
     public List<Comment> findAllComments(Long feedId) {

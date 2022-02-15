@@ -61,7 +61,7 @@ public class Comment extends BaseEntity {
                 .content(content)
                 .feedId(feedId)
                 .userId(userId)
-                .status(Status.ACTIVE)
+                .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
                 .deletedAt(new DeletedAt())
@@ -73,7 +73,7 @@ public class Comment extends BaseEntity {
                 .content(content)
                 .feedId(feedId)
                 .nonUser(NonUser.of("익명 친구", password.getPassword()))
-                .status(Status.ACTIVE)
+                .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
                 .deletedAt(new DeletedAt())
@@ -85,7 +85,7 @@ public class Comment extends BaseEntity {
     }
 
     public void delete() {
-        this.status = Status.INACTIVE;
+        this.status = Status.inactive();
         this.deletedAt.setDeletedAt(LocalDateTime.now());
     }
 
