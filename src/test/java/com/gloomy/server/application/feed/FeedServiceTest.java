@@ -4,6 +4,8 @@ import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.report.ReportCategory;
+import com.gloomy.server.domain.report.ReportService;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,8 @@ class FeedServiceTest {
     @Autowired
     private FeedService feedService;
     @Autowired
+    private ReportService reportService;
+    @Autowired
     private ImageService imageService;
     @Autowired
     private UserService userService;
@@ -55,6 +59,7 @@ class FeedServiceTest {
 
     @AfterEach
     void afterEach() {
+        reportService.deleteAll();
         imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
         userService.deleteAll();
@@ -198,7 +203,7 @@ class FeedServiceTest {
         Feed inactiveFeed = feedService.createFeed(null, nonUserFeedDTO);
 
         feedService.deleteFeed(inactiveFeed.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10));
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null);
 
         assertEquals(foundActiveFeeds.getContent().size(), 1);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeed);
@@ -212,8 +217,8 @@ class FeedServiceTest {
         PageRequest pageableWithSortNull = PageRequest.of(0, 10);
         PageRequest pageableWithSortDate = PageRequest.of(0, 10, Sort.by("date"));
 
-        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(pageableWithSortNull);
-        Page<Feed> foundActiveFeedsWithSortDate = feedService.findAllActiveFeeds(pageableWithSortDate);
+        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(pageableWithSortNull, null);
+        Page<Feed> foundActiveFeedsWithSortDate = feedService.findAllActiveFeeds(pageableWithSortDate, null);
 
         assertEquals(foundActiveFeedsWithNull.getContent().size(), 2);
         assertEquals(foundActiveFeedsWithNull.getContent().get(0), activeFeedSecond);
@@ -233,7 +238,7 @@ class FeedServiceTest {
         PageRequest pageableWithSortLike = PageRequest.of(0, 10, Sort.by("like"));
 
         feedService.addLikeCount(activeFeedFirst.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(pageableWithSortLike);
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(pageableWithSortLike, null);
 
         assertEquals(foundActiveFeeds.getContent().size(), 2);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeedFirst);
@@ -241,11 +246,27 @@ class FeedServiceTest {
     }
 
     @Test
+    void 활성_피드_전체_조회_신고_여부_체크_성공() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        Feed feedWithReport = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+
+        Page<Feed> allActiveFeedsBeforeReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId());
+        reportService.saveReport(feedWithReport.getId(), testFeedDTO.getUserId(), ReportCategory.A.name());
+        Page<Feed> allActiveFeedsAfterReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId());
+
+        assertEquals(allActiveFeedsBeforeReport.getContent().size(), 1);
+        assertEquals(allActiveFeedsAfterReport.getContent().size(), 0);
+    }
+
+    @Test
     void 활성_피드_전체_조회_공통_실패() {
         Pageable pageableWithSortInvalid = PageRequest.of(0, 10, Sort.by("invalid"));
 
-        checkFoundAllActiveFeedsFail(null, "[FeedService] pageable이 유효하지 않습니다.");
-        checkFoundAllActiveFeedsFail(pageableWithSortInvalid, "[FeedService] sort가 유효하지 않습니다.");
+        userService.deleteAll();
+
+        checkFoundAllActiveFeedsFail(null, testFeedDTO.getUserId(), "[FeedService] 회원 ID가 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(null, null, "[FeedService] pageable이 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(pageableWithSortInvalid, null, "[FeedService] sort가 유효하지 않습니다.");
     }
 
     @Test
@@ -292,7 +313,7 @@ class FeedServiceTest {
         Feed createdUserFeed = feedService.createFeed(testFeedDTO.getUserId(), userFeedDTO);
         Feed deletedUserFeed = feedService.deleteFeed(createdUserFeed.getId());
 
-        assertEquals(deletedUserFeed.getStatus(), Status.INACTIVE);
+        assertEquals(deletedUserFeed.getStatus(), Status.inactive());
     }
 
     @Test
@@ -302,7 +323,7 @@ class FeedServiceTest {
         Feed createdNonUserFeed = feedService.createFeed(null, nonUserFeedDTO);
         Feed deletedNonUserFeed = feedService.deleteFeed(createdNonUserFeed.getId());
 
-        assertEquals(deletedNonUserFeed.getStatus(), Status.INACTIVE);
+        assertEquals(deletedNonUserFeed.getStatus(), Status.inactive());
     }
 
     @Test
@@ -384,9 +405,9 @@ class FeedServiceTest {
                 errorMessage);
     }
 
-    private void checkFoundAllActiveFeedsFail(Pageable pageable, String errorMessage) {
+    private void checkFoundAllActiveFeedsFail(Pageable pageable, Long userId, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
-            feedService.findAllActiveFeeds(pageable);
+            feedService.findAllActiveFeeds(pageable, userId);
         }, errorMessage);
     }
 
