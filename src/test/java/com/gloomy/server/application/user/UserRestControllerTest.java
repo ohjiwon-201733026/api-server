@@ -291,21 +291,19 @@ class UserRestControllerTest extends AbstractControllerTest {
 
     }
 
-    /*
+/*
     @DisplayName("로그아웃")
     @Test
     public void logout() throws Exception {
-        String token="eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjE0ODQsIm5hbWUiOiJvanc5NzA3MjVAbmF2ZXIuY29tIiwiaWF0IjoxNjQ0NjYwOTA3fQ.es5myqIAHebRFRALNwSE3ruW3rv1SepdVGpnIeXUaOk";
-        this.mockMvc.perform(get("/logout")
+        String token="eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJzdWIiOjE1MjgsIm5hbWUiOiJvanc5NzA3MjVAbmF2ZXIuY29tIiwiaWF0IjoxNjQ0OTMwNzIwfQ.IVrqbiCi_2gI0EXaCHbDDcwqn-LiMtlaw4kWLUcab5k";
+        this.mockMvc.perform(get("/kakao/logout")
                 .header("Authorization","Bearer "+token)
                 .with(authentication(authentication))
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
-
     }
-
-     */
+ */
 
 
 }

@@ -24,12 +24,12 @@ import static com.gloomy.server.application.user.UserDTO.*;
 @Service
 @Transactional
 public class UserService {
-    private final WebClient webClient;
+//    private final WebClient webClient;
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;
-    private final KakaoApiService kakaoApiService;
+//    private final KakaoApiService kakaoApiService;
     private final UriService uriService;
-    private final RedisService redisService;
+//    private final RedisService redisService;
 
     @Transactional(readOnly = true)
     public Optional<User> findById(long id) {
@@ -44,12 +44,14 @@ public class UserService {
     public String createNickName(){
 
         MultiValueMap<String,String> params=new LinkedMultiValueMap<>();
-        params.set("format","text");
+        params.set("format","json");
+
+        WebClient webClient= WebClient.builder().baseUrl("https://nickname.hwanmoo.kr").build();
 
         URI uri=uriService.getUri("https://nickname.hwanmoo.kr","/",params);
 
         ResponseEntity<String> response = webClient.get()
-                .uri(uri)
+                .uri(uriBuilder -> uriBuilder.path("/").queryParam("format","text").build())
                 .retrieve()
                 .toEntity(String.class)
                 .blockOptional().orElseThrow();
