@@ -157,7 +157,7 @@ include::{snippets}/feed-rest-controller-test/update-feed/http-request.adoc[]
 요청 형식
 
 include::{snippets}/feed-rest-controller-test/update-feed/path-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/update-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/update-feed/request-fields.adoc[]
 
 응답 정보
 
@@ -203,15 +203,15 @@ include::{snippets}/category-rest-controller-test/get-feed-categories/response-f
 
 요청 정보
 
-include::{snippets}/sort-rest-controller-test/get-feed-sorts/http-request.adoc[]
+include::{snippets}/feed-sort-rest-controller-test/get-feed-sorts/http-request.adoc[]
 
 응답 정보
 
-include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-body.adoc[]
+include::{snippets}/feed-sort-rest-controller-test/get-feed-sorts/response-body.adoc[]
 
 응답 형식
 
-include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-fields.adoc[]
+include::{snippets}/feed-sort-rest-controller-test/get-feed-sorts/response-fields.adoc[]
 
 == 2. 이미지 API
 
@@ -251,16 +251,16 @@ include::{snippets}/image-rest-controller-test/create-user-feed-images-without-f
 
 요청 형식
 
-include::{snippets}/image-rest-controller-test/create-feed-images-with-feed/request-parameters.adoc[]
-include::{snippets}/image-rest-controller-test/create-feed-images-with-feed/request-parts.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-with-feed/request-parameters.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-with-feed/request-parts.adoc[]
 
 응답 정보
 
-include::{snippets}/image-rest-controller-test/create-feed-images-with-feed/response-body.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-with-feed/response-body.adoc[]
 
 응답 형식
 
-include::{snippets}/image-rest-controller-test/create-feed-images-with-feed/response-fields.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-with-feed/response-fields.adoc[]
 
 [[create-user-feed-images-with-feed]]
 === 2.4 회원 피드 이미지 등록 (생성된 피드 있을 경우)
