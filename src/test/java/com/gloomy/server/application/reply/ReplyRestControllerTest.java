@@ -26,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -81,6 +82,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("대댓글_생성_비회원")
+    @Transactional
     @Test
     void createNonUserReply() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
@@ -118,6 +120,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("대댓글_생성_회원")
+    @Transactional
     @Test
     void createUserReply() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeUserReplyDTO();
@@ -158,6 +161,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("댓글_대댓글_전체_조회")
+    @Transactional
     @Test
     void getCommentAllReplies() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
@@ -205,6 +209,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("댓글_상세_조회")
+    @Transactional
     @Test
     void getReply() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
@@ -237,6 +242,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("대댓글_수정")
+    @Transactional
     @Test
     void updateReply() throws Exception {
         String updateContent = "새 글";
@@ -278,6 +284,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("대댓글 삭제")
+    @Transactional
     @Test
     void deleteReply() throws Exception {
         ReplyDTO.Request request = testReplyDTO.makeNonUserReplyDTO();
