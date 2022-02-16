@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -70,6 +71,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("비회원_피드_이미지_등록_피드_없을_경우")
+    @Transactional
     @Test
     void createNonUserFeedImagesWithoutFeed() throws Exception {
         MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
@@ -100,6 +102,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("회원_피드_이미지_등록_피드_없을_경우")
+    @Transactional
     @Test
     void createUserFeedImagesWithoutFeed() throws Exception {
         MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
@@ -133,6 +136,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("비회원_피드_이미지_등록_피드_있을_경우")
+    @Transactional
     @Test
     void createNonUserFeedImagesWithFeed() throws Exception {
         MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
@@ -169,6 +173,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("회원_피드_이미지_등록_피드_있을_경우")
+    @Transactional
     @Test
     void createUserFeedImagesWithFeed() throws Exception {
         MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
@@ -208,6 +213,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_이미지_전체_조회")
+    @Transactional
     @Test
     void getAllActiveFeeds() throws Exception {
         imageService.uploadImages(testFeed, TestImage.makeImages(2));
@@ -236,6 +242,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_이미지_수정")
+    @Transactional
     @Test
     void updateFeedImages() throws Exception {
         MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
@@ -268,6 +275,7 @@ public class ImageRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_이미지_삭제")
+    @Transactional
     @Test
     void deleteFeedImages() throws Exception {
         imageService.uploadImages(testFeed, TestImage.makeImages(1));
