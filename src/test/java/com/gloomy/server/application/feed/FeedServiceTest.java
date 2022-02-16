@@ -5,6 +5,7 @@ import com.gloomy.server.application.image.Images;
 import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.application.report.ReportDTO;
 import com.gloomy.server.domain.common.entity.Status;
+import com.gloomy.server.domain.feed.Category;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.report.ReportCategory;
 import com.gloomy.server.domain.report.ReportService;
@@ -158,6 +159,7 @@ class FeedServiceTest {
         checkUploadedUserFeedImageFail(userFeed.getId(), invalidUser.getId(), null, "[FeedService] 피드 ID의 회원 ID가 일치하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 비회원_피드_이미지_업로드_피드_있을_경우_성공() {
         ArrayList<MultipartFile> images = TestImage.makeImages(2);
@@ -168,6 +170,7 @@ class FeedServiceTest {
         checkUploadedImageSuccess(nonUserFeed, createdImages, images);
     }
 
+    @Transactional
     @Test
     void 비회원_피드_이미지_업로드_피드_없을_경우_성공() {
         ArrayList<MultipartFile> images = TestImage.makeImages(2);
@@ -200,6 +203,7 @@ class FeedServiceTest {
         checkFoundAllFeedsFail(null, "[FeedService] Pageable이 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_조회_회원_성공() {
         FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
@@ -232,6 +236,7 @@ class FeedServiceTest {
         checkFoundUserFeedFail(null, createdUser.getId(), "[FeedService] pageable이 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_조회_비회원_성공() {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
@@ -254,6 +259,7 @@ class FeedServiceTest {
         checkFoundNonUserFeedFail(createNonUserFeed.getId(), "[FeedService] 해당 피드 ID가 존재하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 활성_피드_전체_조회_활성여부_성공() {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
@@ -261,12 +267,13 @@ class FeedServiceTest {
         Feed inactiveFeed = feedService.createFeed(null, nonUserFeedDTO);
 
         feedService.deleteFeed(inactiveFeed.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null);
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(PageRequest.of(0, 10), null, null);
 
         assertEquals(foundActiveFeeds.getContent().size(), 1);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeed);
     }
 
+    @Transactional
     @Test
     void 활성_피드_전체_조회_최신순_성공() {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
@@ -275,8 +282,8 @@ class FeedServiceTest {
         PageRequest pageableWithSortNull = PageRequest.of(0, 10);
         PageRequest pageableWithSortDate = PageRequest.of(0, 10, Sort.by("date"));
 
-        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(pageableWithSortNull, null);
-        Page<Feed> foundActiveFeedsWithSortDate = feedService.findAllActiveFeeds(pageableWithSortDate, null);
+        Page<Feed> foundActiveFeedsWithNull = feedService.findAllActiveFeeds(pageableWithSortNull, null, null);
+        Page<Feed> foundActiveFeedsWithSortDate = feedService.findAllActiveFeeds(pageableWithSortDate, null, null);
 
         assertEquals(foundActiveFeedsWithNull.getContent().size(), 2);
         assertEquals(foundActiveFeedsWithNull.getContent().get(0), activeFeedSecond);
@@ -296,25 +303,53 @@ class FeedServiceTest {
         PageRequest pageableWithSortLike = PageRequest.of(0, 10, Sort.by("like"));
 
         feedService.addLikeCount(activeFeedFirst.getId());
-        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(pageableWithSortLike, null);
+        Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(pageableWithSortLike, null, null);
 
         assertEquals(foundActiveFeeds.getContent().size(), 2);
         assertEquals(foundActiveFeeds.getContent().get(0), activeFeedFirst);
         assertEquals(foundActiveFeeds.getContent().get(1), activeFeedSecond);
     }
 
+    @Transactional
     @Test
     void 활성_피드_전체_조회_신고_여부_체크_성공() {
         PageRequest pageable = PageRequest.of(0, 10);
         Feed feedWithReport = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
-        ReportDTO.Request reportRequestDTO = new ReportDTO.Request(feedWithReport.getId(),ReportCategory.ABUSE.toString());
+        ReportDTO.Request reportRequestDTO = new ReportDTO.Request(feedWithReport.getId(), ReportCategory.ABUSE.toString());
 
-        Page<Feed> allActiveFeedsBeforeReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId());
+        Page<Feed> allActiveFeedsBeforeReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId(), null);
         reportService.saveReport(reportRequestDTO, testFeedDTO.getUserId());
-        Page<Feed> allActiveFeedsAfterReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId());
+        Page<Feed> allActiveFeedsAfterReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId(), null);
 
         assertEquals(allActiveFeedsBeforeReport.getContent().size(), 1);
         assertEquals(allActiveFeedsAfterReport.getContent().size(), 0);
+    }
+
+    @Transactional
+    @Test
+    void 활성_피드_전체_조회_일때_카테고리_전체_조회_성공() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        createFeed("FRIEND");
+        createFeed("FAMILY");
+
+        Page<Feed> foundAllFeeds = feedService.findAllActiveFeeds(pageable, null, null);
+
+        assertEquals(foundAllFeeds.getContent().size(), 2);
+        assertEquals(foundAllFeeds.getContent().get(0).getCategory(), Category.FAMILY);
+        assertEquals(foundAllFeeds.getContent().get(1).getCategory(), Category.FRIEND);
+    }
+
+    @Transactional
+    @Test
+    void 활성_피드_전체_조회_일때_카테고리별_조회_성공() {
+        PageRequest pageable = PageRequest.of(0, 10);
+        createFeed("FRIEND");
+        createFeed("FAMILY");
+
+        Page<Feed> foundAllFeeds = feedService.findAllActiveFeeds(pageable, null, "FAMILY");
+
+        assertEquals(foundAllFeeds.getContent().size(), 1);
+        assertEquals(foundAllFeeds.getContent().get(0).getCategory(), Category.FAMILY);
     }
 
     @Test
@@ -323,11 +358,13 @@ class FeedServiceTest {
 
         userService.deleteAll();
 
-        checkFoundAllActiveFeedsFail(null, testFeedDTO.getUserId(), "[FeedService] 회원 ID가 유효하지 않습니다.");
-        checkFoundAllActiveFeedsFail(null, null, "[FeedService] pageable이 유효하지 않습니다.");
-        checkFoundAllActiveFeedsFail(pageableWithSortInvalid, null, "[FeedService] sort가 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(null, testFeedDTO.getUserId(), null, "[FeedService] 회원 ID가 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(null, null, null, "[FeedService] pageable이 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(pageableWithSortInvalid, null, null, "[FeedService] sort가 유효하지 않습니다.");
+        checkFoundAllActiveFeedsFail(null, null, "INVALID", "[FeedService] category가 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_수정_공통_성공() {
         Feed createdNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
@@ -344,6 +381,7 @@ class FeedServiceTest {
         assertEquals(foundActiveImages.getSize(), images.getSize());
     }
 
+    @Transactional
     @Test
     void 피드_수정_비회원_성공() {
         String updatePassword = "34567";
@@ -365,6 +403,7 @@ class FeedServiceTest {
         checkUpdatedFeedFail(createdUserFeed.getId(), updateFeedDTO, "[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
     }
 
+    @Transactional
     @Test
     void 피드_삭제_성공() {
         FeedDTO.Request userFeedDTO = testFeedDTO.makeUserFeedDTO();
@@ -375,6 +414,7 @@ class FeedServiceTest {
         assertEquals(deletedUserFeed.getStatus(), Status.inactive());
     }
 
+    @Transactional
     @Test
     void 피드_삭제_비회원_성공() {
         FeedDTO.Request nonUserFeedDTO = testFeedDTO.makeNonUserFeedDTO();
@@ -464,9 +504,9 @@ class FeedServiceTest {
                 errorMessage);
     }
 
-    private void checkFoundAllActiveFeedsFail(Pageable pageable, Long userId, String errorMessage) {
+    private void checkFoundAllActiveFeedsFail(Pageable pageable, Long userId, String category, String errorMessage) {
         assertThrows(IllegalArgumentException.class, () -> {
-            feedService.findAllActiveFeeds(pageable, userId);
+            feedService.findAllActiveFeeds(pageable, userId, category);
         }, errorMessage);
     }
 
@@ -499,5 +539,11 @@ class FeedServiceTest {
                     feedService.uploadImages(feedId, userId, images);
                 }).getMessage(),
                 errorMessage);
+    }
+
+    private void createFeed(String category) {
+        testFeedDTO.setCategory(category);
+        FeedDTO.Request nonUserFeed = testFeedDTO.makeNonUserFeedDTO();
+        feedService.createFeed(null, nonUserFeed);
     }
 }
