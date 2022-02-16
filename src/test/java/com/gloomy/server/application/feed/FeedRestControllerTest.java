@@ -310,12 +310,15 @@ class FeedRestControllerTest extends AbstractControllerTest {
         imageService.uploadImages(createdFeedFirst, testFeedDTO.getImages());
         imageService.uploadImages(createdFeedSecond, testFeedDTO.getImages());
 
-        this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
+        this.mockMvc.perform(get("/feed/user")
+                        .header("Authorization", "Bearer " + testFeedDTO.getToken())
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestParameters(
                                 parameterWithName("page").description("페이지 넘버")),
                         responseFields(
