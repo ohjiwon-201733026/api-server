@@ -18,7 +18,7 @@ include::{snippets}/feed-rest-controller-test/create-nonuser-feed/http-request.a
 
 요청 형식
 
-include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/create-nonuser-feed/request-fields.adoc[]
 
 응답 정보
 
@@ -38,7 +38,7 @@ include::{snippets}/feed-rest-controller-test/create-user-feed/http-request.adoc
 요청 형식
 
 include::{snippets}/feed-rest-controller-test/create-user-feed/request-headers.adoc[]
-include::{snippets}/feed-rest-controller-test/create-user-feed/request-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/create-user-feed/request-fields.adoc[]
 
 응답 정보
 
@@ -58,7 +58,7 @@ include::{snippets}/feed-rest-controller-test/create-undefined-non-user-feed/htt
 요청 형식
 
 include::{snippets}/feed-rest-controller-test/create-undefined-non-user-feed/path-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/create-undefined-non-user-feed/request-body.adoc[]
+include::{snippets}/feed-rest-controller-test/create-undefined-non-user-feed/request-fields.adoc[]
 
 응답 정보
 
@@ -77,8 +77,9 @@ include::{snippets}/feed-rest-controller-test/create-undefined-user-feed/http-re
 
 요청 형식
 
+include::{snippets}/feed-rest-controller-test/create-user-feed/request-headers.adoc[]
 include::{snippets}/feed-rest-controller-test/create-undefined-user-feed/path-parameters.adoc[]
-include::{snippets}/feed-rest-controller-test/create-undefined-user-feed/request-body.adoc[]
+include::{snippets}/feed-rest-controller-test/create-undefined-user-feed/request-fields.adoc[]
 
 응답 정보
 
@@ -116,7 +117,7 @@ include::{snippets}/feed-rest-controller-test/get-user-feeds/http-request.adoc[]
 
 요청 형식
 
-include::{snippets}/feed-rest-controller-test/get-user-feeds/path-parameters.adoc[]
+include::{snippets}/feed-rest-controller-test/get-user-feeds/request-headers.adoc[]
 include::{snippets}/feed-rest-controller-test/get-user-feeds/request-parameters.adoc[]
 
 응답 정보
@@ -214,23 +215,39 @@ include::{snippets}/sort-rest-controller-test/get-feed-sorts/response-fields.ado
 
 == 2. 이미지 API
 
-[[create-feed-images-without-feed]]
-=== 2.1 피드 이미지 등록 (생성된 피드 없을 경우)
+[[create-non-user-feed-images-without-feed]]
+=== 2.1 비회원 피드 이미지 등록 (생성된 피드 없을 경우)
 
 요청 형식
 
-include::{snippets}/image-rest-controller-test/create-feed-images-without-feed/request-parts.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-without-feed/request-parts.adoc[]
 
 응답 정보
 
-include::{snippets}/image-rest-controller-test/create-feed-images-without-feed/response-body.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-without-feed/response-body.adoc[]
 
 응답 형식
 
-include::{snippets}/image-rest-controller-test/create-feed-images-without-feed/response-fields.adoc[]
+include::{snippets}/image-rest-controller-test/create-non-user-feed-images-without-feed/response-fields.adoc[]
 
-[[create-feed-images-with-feed]]
-=== 2.2 피드 이미지 등록 (생성된 피드 있을 경우)
+[[create-user-feed-images-without-feed]]
+=== 2.2 회원 피드 이미지 등록 (생성된 피드 없을 경우)
+
+요청 형식
+
+include::{snippets}/comment-rest-controller-test/create-user-comment/request-headers.adoc[]
+include::{snippets}/image-rest-controller-test/create-user-feed-images-without-feed/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/image-rest-controller-test/create-user-feed-images-without-feed/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/image-rest-controller-test/create-user-feed-images-without-feed/response-fields.adoc[]
+
+[[create-non-user-feed-images-with-feed]]
+=== 2.3 비회원 피드 이미지 등록 (생성된 피드 있을 경우)
 
 요청 형식
 
@@ -245,8 +262,25 @@ include::{snippets}/image-rest-controller-test/create-feed-images-with-feed/resp
 
 include::{snippets}/image-rest-controller-test/create-feed-images-with-feed/response-fields.adoc[]
 
+[[create-user-feed-images-with-feed]]
+=== 2.4 회원 피드 이미지 등록 (생성된 피드 있을 경우)
+
+요청 형식
+
+include::{snippets}/image-rest-controller-test/create-user-feed-images-with-feed/request-headers.adoc[]
+include::{snippets}/image-rest-controller-test/create-user-feed-images-with-feed/request-parameters.adoc[]
+include::{snippets}/image-rest-controller-test/create-user-feed-images-with-feed/request-parts.adoc[]
+
+응답 정보
+
+include::{snippets}/image-rest-controller-test/create-user-feed-images-with-feed/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/image-rest-controller-test/create-user-feed-images-with-feed/response-fields.adoc[]
+
 [[get-all-active-feeds]]
-=== 2.3 피드 이미지 전체 조회
+=== 2.5 피드 이미지 전체 조회
 
 요청 정보
 
@@ -265,7 +299,7 @@ include::{snippets}/image-rest-controller-test/get-all-active-feeds/response-bod
 include::{snippets}/image-rest-controller-test/get-all-active-feeds/response-fields.adoc[]
 
 [[update-feed-images]]
-=== 2.4 피드 이미지 수정
+=== 2.6 피드 이미지 수정
 
 요청 형식
 
@@ -281,7 +315,7 @@ include::{snippets}/image-rest-controller-test/update-feed-images/response-body.
 include::{snippets}/image-rest-controller-test/update-feed-images/response-fields.adoc[]
 
 [[delete-feed-images]]
-=== 2.5 피드 이미지 삭제
+=== 2.7 피드 이미지 삭제
 
 요청 정보
 
