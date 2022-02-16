@@ -65,8 +65,9 @@ public class FeedRestController {
         return makeFeedDTOResponse(foundFeed);
     }
 
-    @GetMapping("/user/{userId}")
-    public Page<FeedDTO.Response> getUserFeeds(@PathVariable Long userId, @PageableDefault(size = 10) Pageable pageable) {
+    @GetMapping("/user")
+    public Page<FeedDTO.Response> getUserFeeds(@PageableDefault(size = 10) Pageable pageable) {
+        Long userId = userService.getMyInfo();
         Page<Feed> userFeeds = feedService.findUserFeeds(pageable, userId);
         return makeResult(userFeeds);
     }
