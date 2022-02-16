@@ -4,8 +4,11 @@ import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.user.TestUserDTO;
+import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.report.Report;
+import com.gloomy.server.domain.report.ReportCategory;
+import com.gloomy.server.domain.report.ReportRepository;
 import com.gloomy.server.domain.report.ReportService;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -17,9 +20,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.gloomy.server.application.user.TestUserDTO.TestUser.makeTestUser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
 @ExtendWith(SpringExtension.class)
@@ -28,45 +33,48 @@ import static com.gloomy.server.application.user.TestUserDTO.TestUser.makeTestUs
 })
 @Transactional
 public class ReportServiceTest {
-
-    @Autowired
-    ReportService reportService;
-    @Autowired
-    UserService userService;
-    @Autowired
-    FeedService feedService;
-
+    @Autowired private ReportRepository reportRepository;
+    @Autowired private ReportService reportService;
+    @Autowired private UserService userService;
+    @Autowired private FeedService feedService;
     private User testUser;
-    private Report testReport;
-    private TestFeedDTO testFeedDTO;
-    FeedDTO.Request userFeedDTO;
+    private Feed testFeed;
+    private ReportDTO.Request testReportDto;
 
     @BeforeEach
     public void setUp(){
-        testUser= makeTestUser();
-        testFeedDTO = new TestFeedDTO(testUser, 1);
-        userFeedDTO = new FeedDTO.Request(
-                testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent());
+        testUser=userService.createUser(TestUserDTO.TestUser.makeTestUser());
+        TestFeedDTO feedDTO=new TestFeedDTO(testUser,1);
+        testFeed=feedService.createFeed(testUser.getId(),feedDTO.makeUserFeedDTO());
+        testReportDto=ReportDTO.Request.of(testFeed.getId(),"ABUSE");
     }
 
-//    @DisplayName("신고하기")
-//    @Test
-//    public void reportSave(){
-//        User saveUser=userService.createUser(testUser);
-//        Feed saveFeed = feedService.createFeed(saveUser.getId(), userFeedDTO);
+    @Test
+    @DisplayName("신고하기 (5회 미만)")
+    public void saveReportUnderFive(){
+        Report report=reportService.saveReport(testReportDto,testUser.getId());
 
-//        Report report=reportService.saveReport(saveFeed.getId(),saveUser.getId(),"category");
+        Optional<Report> findReport=reportService.findReportById(report.getId());
 
-//        Report findReport=reportService.findReportById(report.getId()).get();
-
-//        checkSameReport(findReport,report);
-
-//    }
-
-    private void checkSameReport(Report actual, Report expected){
-        Assertions.assertEquals(actual.getFeed_id().getId(),expected.getFeed_id().getId());
-        Assertions.assertEquals(actual.getId(),expected.getId());
-        Assertions.assertEquals(actual.getUser_id().getId(),expected.getUser_id().getId());
-        Assertions.assertEquals(actual.getReportCategory(),expected.getReportCategory());
+        assertEquals(report.getId(),findReport.get().getId());
+        assertEquals(report.getFeedId().getStatus(), Status.ACTIVE);
     }
+
+    @Test
+    @DisplayName("신고하기 (5회이상)")
+    public void saveReportMoreThanFive(){
+        Report report=null;
+        for(int i=0;i<5;++i){
+            report=reportService.saveReport(testReportDto,testUser.getId());
+        }
+
+        List<Report> reportList=reportRepository.findByFeedId(testFeed);
+
+        assertEquals(5,reportList.size());
+        assertEquals(report.getFeedId().getStatus(), Status.INVISIBLE);
+    }
+
+    private void isSameReport(Report expect, Report actual){
+    }
+
 }

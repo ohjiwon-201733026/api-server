@@ -22,20 +22,20 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "feed_id")
-    private Feed feed_id;
+    private Feed feedId;
 
     @Enumerated
     private ReportCategory reportCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user_id;
+    private User userId;
 
     @Builder
     public Report(Feed feed_id, User user_id, ReportCategory reportCategory) {
-        this.feed_id = feed_id;
+        this.feedId = feed_id;
         this.reportCategory = reportCategory;
-        this.user_id = user_id;
+        this.userId = user_id;
     }
 
     public static Report of(Feed feed_id,User user_id, ReportCategory reportCategory){

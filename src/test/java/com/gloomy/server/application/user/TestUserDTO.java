@@ -43,9 +43,6 @@ public class TestUserDTO {
             if (request.getDateOfBirth() != null) {
                 params.add("dateOfBirth", request.getDateOfBirth().toString());
             }
-//        if(updateUserDTO.getImage()!=null){
-//            params.add("image",firstUpdateImageFile.getBytes().toString());
-//        }
 
             return params;
         }

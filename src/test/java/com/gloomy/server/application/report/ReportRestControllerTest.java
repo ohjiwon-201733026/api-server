@@ -20,6 +20,9 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.gloomy.server.application.user.TestUserDTO.TestUser.makeTestUser;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -60,7 +63,7 @@ public class ReportRestControllerTest extends AbstractControllerTest{
         userFeedDTO = new FeedDTO.Request(
                 testFeedDTO.getCategory(), testFeedDTO.getTitle(), testFeedDTO.getContent());
     }
-/*
+
     @Test
     public void reportFeed() throws Exception {
 
@@ -69,18 +72,20 @@ public class ReportRestControllerTest extends AbstractControllerTest{
 
         String token=jwtSerializer.jwtFromUser(saveUser);
 
-        mockMvc.perform(get("/report")
+        ReportDTO.Request request=ReportDTO.Request.of(saveFeed.getId(),"ADVERTISEMENT");
+
+        this.mockMvc.perform(post("/report/feed")
+                .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization","Bearer "+token)
-                .param("feedId",String.valueOf(saveFeed.getId()))
-                .param("reportCategory","category"))
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
-                        requestParameters(
-                                parameterWithName("feedId").description("신고 피드 id ( 필수 )"),
-                                parameterWithName("reportCategory").description("신고 사유 카테고리 ( 필수 )")
+                        requestFields(
+                                fieldWithPath("feedId").description("신고 피드 id ( 필수 )"),
+                                fieldWithPath("reportCategory").description("신고 사유 카테고리 ( 필수 )")
                         ),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("Http 상태 코드"),
@@ -93,5 +98,4 @@ public class ReportRestControllerTest extends AbstractControllerTest{
 
     }
 
- */
 }

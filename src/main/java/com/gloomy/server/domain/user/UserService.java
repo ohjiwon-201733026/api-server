@@ -24,12 +24,9 @@ import static com.gloomy.server.application.user.UserDTO.*;
 @Service
 @Transactional
 public class UserService {
-//    private final WebClient webClient;
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;
-//    private final KakaoApiService kakaoApiService;
     private final UriService uriService;
-//    private final RedisService redisService;
 
     @Transactional(readOnly = true)
     public Optional<User> findById(long id) {

@@ -20,9 +20,9 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     Page<Feed> findByStatusOrderByLikeCountDesc(Pageable pageable, Status status);
 
-    @Query("select f from Feed f where f not in (select r.feed_id from Report r where r.user_id = :userId) and f.status = :status order by f.createdAt desc")
+    @Query("select f from Feed f where f not in (select r.feedId from Report r where r.userId = :userId) and f.status = :status order by f.createdAt desc")
     Page<Feed> findByStatusWithReportOrderByCreated(Pageable pageable, @Param("userId") User userId, @Param("status") Status status);
 
-    @Query("select f from Feed f where f not in (select r.feed_id from Report r where r.user_id = :userId) and f.status = :status order by f.likeCount desc")
+    @Query("select f from Feed f where f not in (select r.feedId from Report r where r.userId = :userId) and f.status = :status order by f.likeCount desc")
     Page<Feed> findByStatusWithReportOrderByLikeCountDesc(Pageable pageable, @Param("userId") User user, @Param("status") Status status);
 }
