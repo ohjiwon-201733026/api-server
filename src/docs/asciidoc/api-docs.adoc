@@ -565,72 +565,8 @@ include::{snippets}/reply-rest-controller-test/delete-reply/response-body.adoc[]
 
 
 == 5. 유저 API
-[[post-user]]
-=== 5.1 유저 일반 회원가입
-
-CURL
-
-include::{snippets}/user-rest-controller-test/post-user/curl-request.adoc[]
-
-요청 정보
-
-include::{snippets}/user-rest-controller-test/post-user/http-request.adoc[]
-
-요청 형식
-
-include::{snippets}/user-rest-controller-test/post-user/request-fields.adoc[]
-
-응답 정보
-
-include::{snippets}/user-rest-controller-test/post-user/http-response.adoc[]
-
-응답 형식
-
-include::{snippets}/user-rest-controller-test/post-user/response-fields.adoc[]
-
-[[login-user]]
-=== 5.2 유저 일반 로그인
-CURL
-
-include::{snippets}/user-rest-controller-test/login/curl-request.adoc[]
-
-요청 정보
-
-include::{snippets}/user-rest-controller-test/login/http-request.adoc[]
-
-요청 형식
-
-include::{snippets}/user-rest-controller-test/login/request-fields.adoc[]
-
-응답 정보
-
-include::{snippets}/user-rest-controller-test/login/http-response.adoc[]
-
-응답 형식
-
-include::{snippets}/user-rest-controller-test/login/response-fields.adoc[]
-
-[[login-kakao]]
-=== 5.3 유저 카카오 로그인
-CURL
-
-include::{snippets}/user-rest-controller-test/kakao-login/curl-request.adoc[]
-
-요청 정보
-
-include::{snippets}/user-rest-controller-test/kakao-login/http-request.adoc[]
-
-요청 형식
-
-include::{snippets}/user-rest-controller-test/kakao-login/request-fields.adoc[]
-
-
-응답 형식
-
-include::{snippets}/user-rest-controller-test/kakao-login/response-fields.adoc[]
-
 [[update-user]]
-=== 5.3 회원 탈퇴
+=== 5.1 회원 탈퇴
 CURL
 
 include::{snippets}/user-rest-controller-test/inactive-user/curl-request.adoc[]
@@ -714,9 +650,11 @@ include::{snippets}/report-rest-controller-test/report-feed/http-request.adoc[]
 요청 형식
 
 include::{snippets}/report-rest-controller-test/report-feed/request-headers.adoc[]
-include::{snippets}/report-rest-controller-test/report-feed/request-parameters.adoc[]
+include::{snippets}/report-rest-controller-test/report-feed/request-fields.adoc[]
 
 응답 정보
 
+include::{snippets}/report-rest-controller-test/report-feed/http-response.adoc[]
 
 응답 형식
+include::{snippets}/report-rest-controller-test/report-feed/response-fields.adoc[]
