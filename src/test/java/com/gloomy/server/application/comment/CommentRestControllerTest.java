@@ -57,7 +57,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        User testUser = userService.createUser(new TestUserDTO().makeTestUser());
+        User testUser = userService.createUser(TestUserDTO.makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
@@ -72,7 +72,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
         userService.deleteAll();
     }
 
-    @DisplayName("댓글_생성_비회원")
+    @DisplayName("비회원_댓글_생성")
     @Test
     void createNonUserComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
@@ -109,7 +109,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
                 ));
     }
 
-    @DisplayName("댓글_생성_회원")
+    @DisplayName("회원_댓글_생성")
     @Test
     void createUserComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeUserCommentDTO();
