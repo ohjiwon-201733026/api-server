@@ -14,7 +14,7 @@ public class TestFeedDTO {
     private final User user;
     private final Long userId;
     private final String password;
-    private final String category;
+    private String category;
     private final String title;
     private final String content;
     private ArrayList<MultipartFile> images;
@@ -28,6 +28,10 @@ public class TestFeedDTO {
         this.password = "12345";
         this.content = "글 작성 샘플입니다.";
         this.images = TestImage.makeImages(imageNum);
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public void setToken(String token) {
