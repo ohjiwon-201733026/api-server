@@ -257,13 +257,15 @@ class FeedRestControllerTest extends AbstractControllerTest {
         this.mockMvc.perform(get("/feed")
                         .param("page", "0")
                         .param("sort", "date")
+                        .param("category", "ALL")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         requestParameters(
+                                parameterWithName("page").description("페이지 넘버"),
                                 parameterWithName("sort").description("피드 정렬기준 (date(기본), like)"),
-                                parameterWithName("page").description("페이지 넘버")),
+                                parameterWithName("category").description("조회할 카테고리 (ALL(기본))")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
