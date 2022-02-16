@@ -44,6 +44,14 @@ public class FeedRestController {
         return makeFeedDTOResponse(createFeed);
     }
 
+    @PutMapping(value = "/{feedId}")
+    public FeedDTO.Response createUndefinedFeed(@PathVariable Long feedId, @RequestBody FeedDTO.Request feedDTO) {
+        requestContext.setRequestBody(feedDTO);
+        Long userId = userService.getMyInfo();
+        Feed createFeed = feedService.createUndefinedFeed(feedId, userId, feedDTO);
+        return makeFeedDTOResponse(createFeed);
+    }
+
     @GetMapping(value = "")
     public Page<FeedDTO.Response> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
         Long userId = userService.getMyInfo();
