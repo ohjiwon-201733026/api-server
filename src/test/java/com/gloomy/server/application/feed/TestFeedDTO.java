@@ -27,7 +27,7 @@ public class TestFeedDTO {
         this.title = "글 제목";
         this.password = "12345";
         this.content = "글 작성 샘플입니다.";
-        this.images = new TestImage().makeImages(imageNum);
+        this.images = TestImage.makeImages(imageNum);
     }
 
     public void setToken(String token) {
@@ -35,7 +35,7 @@ public class TestFeedDTO {
     }
 
     public void setImages(int imageNum) {
-        this.images = new TestImage().makeImages(imageNum);
+        this.images = TestImage.makeImages(imageNum);
     }
 
     public FeedDTO.Request makeUserFeedDTO() {

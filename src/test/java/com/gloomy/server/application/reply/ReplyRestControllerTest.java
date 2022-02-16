@@ -62,8 +62,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        TestUserDTO testUserDTO = new TestUserDTO();
-        User testUser = userService.createUser(testUserDTO.makeTestUser());
+        User testUser = userService.createUser(TestUserDTO.makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         TestCommentDTO testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());

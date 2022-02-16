@@ -46,8 +46,7 @@ class CommentServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        User testUser = new TestUserDTO().makeTestUser();
-        userService.createUser(testUser);
+        User testUser = userService.createUser(TestUserDTO.makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
         testCommentDTO = new TestCommentDTO(testUser.getId(), testFeed.getId());

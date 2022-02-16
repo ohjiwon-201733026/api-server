@@ -19,4 +19,8 @@ public class Content {
     public Content(String content) {
         this.content = content;
     }
+
+    void setContent(String content) {
+        this.content = content;
+    }
 }

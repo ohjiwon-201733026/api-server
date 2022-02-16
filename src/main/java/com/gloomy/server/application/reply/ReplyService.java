@@ -1,7 +1,6 @@
 package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
-import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Content;
@@ -12,8 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -72,6 +71,7 @@ public class ReplyService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Reply findReply(Long replyId) {
         if (!validateId(replyId)) {
             throw new IllegalArgumentException("[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
@@ -92,11 +92,13 @@ public class ReplyService {
         return new PageImpl<>(feedAllReplies, pageable, feedAllReplies.size());
     }
 
+    @Transactional(readOnly = true)
     public List<Reply> findAllReplies(Long commentId) {
         Comment foundComment = commentService.findComment(commentId);
         return replyRepository.findAllByCommentId(foundComment);
     }
 
+    @Transactional(readOnly = true)
     public Page<Reply> getCommentAllActiveReplies(Pageable pageable, Long commentId) {
         if (pageable == null) {
             throw new IllegalArgumentException("[ReplyService] Pageable이 유효하지 않습니다.");
@@ -105,7 +107,7 @@ public class ReplyService {
             throw new IllegalArgumentException("[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
         }
         Comment foundComment = commentService.findComment(commentId);
-        return replyRepository.findAllByCommentIdAndStatus(pageable, foundComment, Status.ACTIVE);
+        return replyRepository.findAllByCommentIdAndStatus(pageable, foundComment, Status.active());
     }
 
     public boolean validateId(Long id) {

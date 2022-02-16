@@ -15,19 +15,19 @@ import java.util.List;
 
 @Slf4j
 public class TestImage {
-    private final String testDir = "src/test/resources";
-    private final String testImageFile = "image.jpg";
-    private final String testUpdateImageFile = "updateImage.jpg";
+    private static final String testDir = "src/test/resources";
+    private static final String testImageFile = "image.jpg";
+    private static final String testUpdateImageFile = "updateImage.jpg";
 
-    public ArrayList<MultipartFile> makeUpdateImages(int imageNum) {
+    public static ArrayList<MultipartFile> makeUpdateImages(int imageNum) {
         return makeCommonImages(testUpdateImageFile, imageNum);
     }
 
-    public ArrayList<MultipartFile> makeImages(int imageNum) {
+    public static ArrayList<MultipartFile> makeImages(int imageNum) {
         return makeCommonImages(testImageFile, imageNum);
     }
 
-    private ArrayList<MultipartFile> makeCommonImages(String imageFile, int imageNum) {
+    private static ArrayList<MultipartFile> makeCommonImages(String imageFile, int imageNum) {
         ArrayList<MultipartFile> images = new ArrayList<>();
         File fileDir = new File(testDir);
         MultipartFile image = null;

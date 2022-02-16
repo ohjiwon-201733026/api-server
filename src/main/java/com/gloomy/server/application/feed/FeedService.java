@@ -5,9 +5,7 @@ import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Category;
-import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
-import com.gloomy.server.domain.feed.Password;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +37,26 @@ public class FeedService {
 
     @Transactional
     public Feed createFeed(Long userId, FeedDTO.Request feedDTO) throws IllegalArgumentException {
-        User user = null;
         validateFeedDTO(userId, feedDTO);
-        if (userId != null) {
-            user = userService.findUser(userId);
-        }
+        User user = getUser(userId);
         return feedRepository.save(Feed.of(user, feedDTO));
+    }
+
+    @Transactional
+    Feed createFeed(User userId) {
+        return feedRepository.save(Feed.from(userId));
+    }
+
+    public Feed createUndefinedFeed(Long feedId, Long userId, FeedDTO.Request feedDTO) {
+        validateFeedDTO(userId, feedDTO);
+        Feed foundFeed = findOneFeed(feedId);
+        if (foundFeed.getUserId() == null) {
+            foundFeed.setPassword(feedDTO.getPassword());
+        }
+        foundFeed.setCategory(feedDTO.getCategory());
+        foundFeed.setTitle(feedDTO.getTitle());
+        foundFeed.setContent(feedDTO.getContent());
+        return feedRepository.save(foundFeed);
     }
 
     @Transactional(readOnly = true)
@@ -55,16 +67,31 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
+    private Page<Feed> findAllActiveFeedsWithoutReport(Pageable pageable, Optional<Sort.Order> order) {
+        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
+            return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.active());
+        }
+        return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.active());
+    }
+
+    private Page<Feed> findAllActiveFeedsWithReport(Pageable pageable, Optional<Sort.Order> order, Long userId) {
+        User user = userService.findUser(userId);
+        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
+            return feedRepository.findByStatusWithReportOrderByCreated(pageable, user, Status.active());
+        }
+        return feedRepository.findByStatusWithReportOrderByLikeCountDesc(pageable, user, Status.active());
+    }
+
     @Transactional(readOnly = true)
-    public Page<Feed> findAllActiveFeeds(Pageable originPageable) {
+    public Page<Feed> findAllActiveFeeds(Pageable originPageable, Long userId) {
         validatePageableAndSort(originPageable);
         Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
         Pageable pageable = PageRequest.of(0, 10);
 
-        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
-            return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.ACTIVE);
+        if (userId == null) {
+            return findAllActiveFeedsWithoutReport(pageable, order);
         }
-        return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.ACTIVE);
+        return findAllActiveFeedsWithReport(pageable, order, userId);
     }
 
     @Transactional(readOnly = true)
@@ -73,13 +100,13 @@ public class FeedService {
             throw new IllegalArgumentException("[FeedService] pageable이 유효하지 않습니다.");
         }
         if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("[FeedService] 사용자 ID가 유효하지 않습니다.");
+            throw new IllegalArgumentException("[FeedService] 회원 ID가 유효하지 않습니다.");
         }
         try {
             User foundUser = userService.findUser(userId);
             return feedRepository.findByUserId(pageable, foundUser);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("[FeedService] 해당하는 사용자가 없습니다.");
+            throw new IllegalArgumentException("[FeedService] 해당하는 회원이 없습니다.");
         }
     }
 
@@ -106,7 +133,7 @@ public class FeedService {
             foundFeed.setPassword(feedDTO.getPassword());
         }
         if (feedDTO.getContent() != null) {
-            foundFeed.setContent(new Content(feedDTO.getContent()));
+            foundFeed.setContent(feedDTO.getContent());
         }
     }
 
@@ -129,18 +156,40 @@ public class FeedService {
         return feedRepository.save(foundFeed);
     }
 
-    public Images uploadImages(Long feedId, List<MultipartFile> images) {
-        return imageService.uploadImages(findOneFeed(feedId), images);
+    @Transactional
+    public Images uploadImages(Long feedId, Long userId, List<MultipartFile> images) {
+        return imageService.uploadImages(getFeed(feedId, userId), images);
     }
 
+    private Feed getFeed(Long feedId, Long userId) {
+        User user = getUser(userId);
+        if (feedId == null) {
+            return createFeed(user);
+        }
+        Feed foundFeed = findOneFeed(feedId);
+        if (foundFeed.getUserId() == null && user != null) {
+            throw new IllegalArgumentException("[FeedService] 비회원 피드에 요청 메시지가 잘못되었습니다.");
+        }
+        if (foundFeed.getUserId() != null && user == null) {
+            throw new IllegalArgumentException("[FeedService] 회원 피드에 요청 메시지가 잘못되었습니다.");
+        }
+        if (foundFeed.getUserId() != user) {
+            throw new IllegalArgumentException("[FeedService] 피드 ID의 회원 ID가 일치하지 않습니다.");
+        }
+        return foundFeed;
+    }
+
+    @Transactional(readOnly = true)
     public Images findAllActiveImages(Long feedId) {
         return imageService.findAllActiveImages(findOneFeed(feedId));
     }
 
+    @Transactional
     public Images updateImages(Long feedId, List<MultipartFile> updateImages) {
         return imageService.updateImages(findOneFeed(feedId), updateImages);
     }
 
+    @Transactional
     public void deleteImages(Long feedId) {
         imageService.deleteImages(findOneFeed(feedId));
     }
@@ -150,7 +199,7 @@ public class FeedService {
             if ((userId == null) == (feedDTO.getPassword() == null)
                     || feedDTO.getTitle().length() <= 0
                     || feedDTO.getContent().length() <= 0
-                    || !EnumUtils.isValidEnumIgnoreCase(Category.class, feedDTO.getCategory())) {
+                    || !Category.isValidCategory(feedDTO.getCategory())) {
                 throw new IllegalArgumentException();
             }
         } catch (Exception e) {
@@ -179,5 +228,12 @@ public class FeedService {
         if ((foundFeed.getUserId() != null) && feedDTO.getPassword() != null) {
             throw new IllegalArgumentException("[FeedService] 회원 피드 수정 요청 메시지가 잘못되었습니다.");
         }
+    }
+
+    private User getUser(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        return userService.findUser(userId);
     }
 }

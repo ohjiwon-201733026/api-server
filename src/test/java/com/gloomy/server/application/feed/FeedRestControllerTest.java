@@ -2,6 +2,7 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.AbstractControllerTest;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
@@ -49,8 +50,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     void beforeEach() {
-        User tmpUser = new TestUserDTO().makeTestUser();
-        testUser = userService.createUser(tmpUser);
+        testUser = userService.createUser(TestUserDTO.makeTestUser());
         testFeedDTO = new TestFeedDTO(testUser, 1);
         testFeedDTO.setToken(jwtSerializer.jwtFromUser(testUser));
     }
@@ -62,7 +62,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
         userService.deleteAll();
     }
 
-    @DisplayName("피드_생성_비회원")
+    @DisplayName("비회원_피드_생성")
     @Test
     void createNonuserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
@@ -78,7 +78,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestFields(
                                 fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
-                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")),
                         responseFields(
@@ -90,7 +90,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.userId").type(JsonFieldType.NULL).description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.nickname").type(JsonFieldType.STRING).description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.password").type(JsonFieldType.STRING).description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
@@ -105,14 +105,14 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 ));
     }
 
-    @DisplayName("피드_생성_회원")
+    @DisplayName("회원_피드_생성")
     @Test
     void createUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
 
         String body = objectMapper.writeValueAsString(request);
 
-        this.mockMvc.perform(fileUpload("/feed")
+        this.mockMvc.perform(post("/feed")
                         .header("Authorization", "Bearer " + testFeedDTO.getToken())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -124,7 +124,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestFields(
                                 fieldWithPath("password").type(JsonFieldType.NULL).description("비밀번호 (NULL)"),
-                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
                                 fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
                                 fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")),
                         responseFields(
@@ -136,7 +136,102 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.nickname").type(JsonFieldType.NULL).description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.password").type(JsonFieldType.NULL).description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("피드 제목"),
+                                fieldWithPath("result.content").type(JsonFieldType.STRING).description("피드 내용"),
+                                fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
+                                fieldWithPath("result.imageURLs").type(JsonFieldType.ARRAY).description("피드 이미지 리스트"),
+                                fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("피드의 댓글 수"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("피드 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("피드 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("피드 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("피드 삭제시간"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )
+                ));
+    }
+
+    @DisplayName("피드_이미지_등록_후_비회원_피드_생성")
+    @Test
+    void createUndefinedNonUserFeed() throws Exception {
+        FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
+
+        Feed undefinedNonUserFeed = feedService.uploadImages(null, null, TestImage.makeUpdateImages(1)).getImages().get(0).getFeedId();
+        String body = objectMapper.writeValueAsString(request);
+
+        this.mockMvc.perform(put("/feed/{feedId}", undefinedNonUserFeed.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        pathParameters(
+                                parameterWithName("feedId").description("등록할 피드 ID")),
+                        requestFields(
+                                fieldWithPath("password").type(JsonFieldType.STRING).description("비밀번호"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NULL).description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.nickname").type(JsonFieldType.STRING).description("(비회원일 경우) 닉네임"),
+                                fieldWithPath("result.password").type(JsonFieldType.STRING).description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("피드 제목"),
+                                fieldWithPath("result.content").type(JsonFieldType.STRING).description("피드 내용"),
+                                fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
+                                fieldWithPath("result.imageURLs").type(JsonFieldType.ARRAY).description("피드 이미지 리스트"),
+                                fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("피드의 댓글 수"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("피드 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("피드 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("피드 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("피드 삭제시간"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )
+                ));
+    }
+
+    @DisplayName("피드_이미지_등록_후_회원_피드_생성")
+    @Test
+    void createUndefinedUserFeed() throws Exception {
+        FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
+
+        Feed undefinedUserFeed = feedService.uploadImages(null, testFeedDTO.getUserId(), TestImage.makeUpdateImages(1)).getImages().get(0).getFeedId();
+        String body = objectMapper.writeValueAsString(request);
+
+        this.mockMvc.perform(put("/feed/{feedId}", undefinedUserFeed.getId())
+                        .header("Authorization", "Bearer " + testFeedDTO.getToken())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
+                        pathParameters(
+                                parameterWithName("feedId").description("등록할 피드 ID")),
+                        requestFields(
+                                fieldWithPath("password").type(JsonFieldType.NULL).description("비밀번호 (NULL)"),
+                                fieldWithPath("category").type(JsonFieldType.STRING).description("카테고리"),
+                                fieldWithPath("title").type(JsonFieldType.STRING).description("게시글 제목"),
+                                fieldWithPath("content").type(JsonFieldType.STRING).description("게시글 내용")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.ip").type(JsonFieldType.STRING).description("작성자 IP"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("(회원일 경우) 회원 ID"),
+                                fieldWithPath("result.nickname").type(JsonFieldType.NULL).description("(비회원일 경우) 닉네임"),
+                                fieldWithPath("result.password").type(JsonFieldType.NULL).description("(비회원일 경우) 비밀번호"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
@@ -168,8 +263,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andDo(document.document(
                         requestParameters(
                                 parameterWithName("sort").description("피드 정렬기준 (date(기본), like)"),
-                                parameterWithName("page").description("페이지 넘버")
-                        ),
+                                parameterWithName("page").description("페이지 넘버")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -180,7 +274,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.content[].userId").description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.content[].nickname").type(JsonFieldType.STRING).description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.content[].password").description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.content[].title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.content[].likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
@@ -216,18 +310,17 @@ class FeedRestControllerTest extends AbstractControllerTest {
         imageService.uploadImages(createdFeedFirst, testFeedDTO.getImages());
         imageService.uploadImages(createdFeedSecond, testFeedDTO.getImages());
 
-        this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
+        this.mockMvc.perform(get("/feed/user")
+                        .header("Authorization", "Bearer " + testFeedDTO.getToken())
                         .param("page", "0")
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestParameters(
-                                parameterWithName("page").description("페이지 넘버")
-                        ),
-                        pathParameters(
-                                parameterWithName("userId").description("조회할 사용자 ID")
-                        ),
+                                parameterWithName("page").description("페이지 넘버")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -238,7 +331,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.content[].userId").type(JsonFieldType.NUMBER).description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.content[].nickname").type(JsonFieldType.NULL).description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.content[].password").type(JsonFieldType.NULL).description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.content[].title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.content[].likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
@@ -278,8 +371,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document.document(
                         pathParameters(
-                                parameterWithName("feedId").description("조회할 피드 ID")
-                        ),
+                                parameterWithName("feedId").description("조회할 피드 ID")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -289,7 +381,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.userId").description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.nickname").description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.password").description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),
@@ -340,7 +432,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.userId").description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.nickname").description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.password").description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL, CHAT, FAMILY, FRIEND)"),
+                                fieldWithPath("result.category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),

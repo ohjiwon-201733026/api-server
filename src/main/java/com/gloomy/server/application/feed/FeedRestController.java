@@ -44,9 +44,18 @@ public class FeedRestController {
         return makeFeedDTOResponse(createFeed);
     }
 
+    @PutMapping(value = "/{feedId}")
+    public FeedDTO.Response createUndefinedFeed(@PathVariable Long feedId, @RequestBody FeedDTO.Request feedDTO) {
+        requestContext.setRequestBody(feedDTO);
+        Long userId = userService.getMyInfo();
+        Feed createFeed = feedService.createUndefinedFeed(feedId, userId, feedDTO);
+        return makeFeedDTOResponse(createFeed);
+    }
+
     @GetMapping(value = "")
     public Page<FeedDTO.Response> getAllActiveFeeds(@PageableDefault(size = 10) Pageable pageable) {
-        Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable);
+        Long userId = userService.getMyInfo();
+        Page<Feed> allFeeds = feedService.findAllActiveFeeds(pageable, userId);
         return makeResult(allFeeds);
     }
 
@@ -56,8 +65,9 @@ public class FeedRestController {
         return makeFeedDTOResponse(foundFeed);
     }
 
-    @GetMapping("/user/{userId}")
-    public Page<FeedDTO.Response> getUserFeeds(@PathVariable Long userId, @PageableDefault(size = 10) Pageable pageable) {
+    @GetMapping("/user")
+    public Page<FeedDTO.Response> getUserFeeds(@PageableDefault(size = 10) Pageable pageable) {
+        Long userId = userService.getMyInfo();
         Page<Feed> userFeeds = feedService.findUserFeeds(pageable, userId);
         return makeResult(userFeeds);
     }

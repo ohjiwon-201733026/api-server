@@ -1,6 +1,7 @@
 package com.gloomy.server.application.image;
 
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.domain.user.UserService;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +13,17 @@ import java.util.List;
 @RequestMapping("/feed/image")
 public class ImageRestController {
     private final FeedService feedService;
+    private final UserService userService;
 
-    public ImageRestController(FeedService feedService) {
+    public ImageRestController(FeedService feedService, UserService userService) {
         this.feedService = feedService;
+        this.userService = userService;
     }
 
     @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ImageDTO.Response createFeedImages(@Validated @ModelAttribute ImageDTO.Request imageDTO) {
-        Images images = feedService.uploadImages(imageDTO.getFeedId(), imageDTO.getImages());
+        Long userId = userService.getMyInfo();
+        Images images = feedService.uploadImages(imageDTO.getFeedId(), userId, imageDTO.getImages());
         return makeImageDTOResponse(images);
     }
 

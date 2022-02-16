@@ -42,16 +42,13 @@ class ImageServiceTest {
 
     @Value("${cloud.aws.s3.feedTestDir}")
     private String feedTestDir;
-    private TestImage testImage;
     private Feed testFeed;
 
     @BeforeEach
     void beforeEach() {
-        User testUser = new TestUserDTO().makeTestUser();
-        userService.createUser(testUser);
+        User testUser = userService.createUser(TestUserDTO.makeTestUser());
         FeedDTO.Request testFeedDTO = new TestFeedDTO(testUser, 0).makeUserFeedDTO();
         testFeed = feedService.createFeed(testUser.getId(), testFeedDTO);
-        testImage = new TestImage();
     }
 
     @AfterEach
@@ -63,8 +60,8 @@ class ImageServiceTest {
 
     @Test
     void 이미지_업로드_성공() {
-        ArrayList<MultipartFile> imagesOne = testImage.makeImages(1);
-        ArrayList<MultipartFile> imagesTwo = testImage.makeImages(2);
+        ArrayList<MultipartFile> imagesOne = TestImage.makeImages(1);
+        ArrayList<MultipartFile> imagesTwo = TestImage.makeImages(2);
 
         Images createdImagesOne = imageService.uploadImages(testFeed, imagesOne);
         Images createdImagesTwo = imageService.uploadImages(testFeed, imagesTwo);
@@ -75,15 +72,15 @@ class ImageServiceTest {
 
     @Test
     void 이미지_업로드_실패() {
-        ArrayList<MultipartFile> images = testImage.makeImages(1);
+        ArrayList<MultipartFile> images = TestImage.makeImages(1);
 
         checkUploadedImageFail(null, images, "[ImageService] 해당 피드가 유효하지 않습니다.");
     }
 
     @Test
     void 이미지_전체_조회_성공() {
-        ArrayList<MultipartFile> imagesFirst = testImage.makeImages(1);
-        ArrayList<MultipartFile> imagesSecond = testImage.makeImages(2);
+        ArrayList<MultipartFile> imagesFirst = TestImage.makeImages(1);
+        ArrayList<MultipartFile> imagesSecond = TestImage.makeImages(2);
 
         Images createdImagesFirst = imageService.uploadImages(testFeed, imagesFirst);
         Images foundImagesFirst = imageService.findAllImages(testFeed);
@@ -104,7 +101,7 @@ class ImageServiceTest {
 
     @Test
     void 이미지_조회_성공() {
-        ArrayList<MultipartFile> images = testImage.makeImages(1);
+        ArrayList<MultipartFile> images = TestImage.makeImages(1);
 
         Images createdImages = imageService.uploadImages(testFeed, images);
         Image foundImage = imageService.findOneImage(createdImages.getImages().get(0).getId());
@@ -114,7 +111,7 @@ class ImageServiceTest {
 
     @Test
     void 이미지_조회_실패() {
-        ArrayList<MultipartFile> images = testImage.makeImages(1);
+        ArrayList<MultipartFile> images = TestImage.makeImages(1);
 
         Image createdImage = imageService.updateImages(testFeed, images).getImages().get(0);
         imageService.deleteAll(feedTestDir);
@@ -126,7 +123,7 @@ class ImageServiceTest {
 
     @Test
     void 활성_이미지_전체_조회_성공() {
-        ArrayList<MultipartFile> images = testImage.makeImages(2);
+        ArrayList<MultipartFile> images = TestImage.makeImages(2);
 
         Images createdImages = imageService.uploadImages(testFeed, images);
         imageService.deleteImage(createdImages.getImages().get(0).getId());
@@ -144,8 +141,8 @@ class ImageServiceTest {
     @Transactional
     @Test
     void 이미지_수정_성공() {
-        ArrayList<MultipartFile> images = testImage.makeImages(1);
-        ArrayList<MultipartFile> updateImages = testImage.makeUpdateImages(2);
+        ArrayList<MultipartFile> images = TestImage.makeImages(1);
+        ArrayList<MultipartFile> updateImages = TestImage.makeUpdateImages(2);
 
         Images createdImages = imageService.uploadImages(testFeed, images);
         Images updatedImages = imageService.updateImages(testFeed, updateImages);
@@ -156,14 +153,14 @@ class ImageServiceTest {
 
     @Test
     void 이미지_수정_실패() {
-        ArrayList<MultipartFile> images = testImage.makeImages(1);
+        ArrayList<MultipartFile> images = TestImage.makeImages(1);
 
         checkUpdatedImageFail(null, images, "[ImageService] 해당 피드가 유효하지 않습니다.");
     }
 
     @Test
     void 이미지_삭제_성공() {
-        ArrayList<MultipartFile> images = testImage.makeImages(3);
+        ArrayList<MultipartFile> images = TestImage.makeImages(3);
 
         imageService.uploadImages(testFeed, images);
         imageService.deleteImages(testFeed);
