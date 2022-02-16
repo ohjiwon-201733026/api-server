@@ -132,19 +132,60 @@ public class ImageRestControllerTest extends AbstractControllerTest {
                 ));
     }
 
-    @DisplayName("피드_이미지_등록_피드_있을_경우")
+    @DisplayName("비회원_피드_이미지_등록_피드_있을_경우")
     @Test
-    void createFeedImagesWithFeed() throws Exception {
+    void createNonUserFeedImagesWithFeed() throws Exception {
         MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
         MultiValueMap<String, String> params = TestImage.convert(testFeed.getId());
 
-        this.mockMvc.perform(fileUpload("/feed/image")
+        Feed nonUserFeed = feedService.uploadImages(null, null, TestImage.makeImages(1)).getImages().get(0).getFeedId();
+
+        this.mockMvc.perform(fileUpload("/feed/image/{feedId}", nonUserFeed.getId())
                         .file(imageFile)
                         .params(params)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestParameters(
+                                parameterWithName("feedId").description("등록할 이미지의 피드 ID")),
+                        requestParts(
+                                partWithName("images").description("이미지 파일 리스트 (선택사항)").optional()),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").type(JsonFieldType.OBJECT).description("응답 데이터"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("이미지의 피드 ID"),
+                                fieldWithPath("result.images[]").type(JsonFieldType.ARRAY).description("이미지 리스트"),
+                                fieldWithPath("result.images[].id").type(JsonFieldType.NUMBER).description("이미지 ID"),
+                                fieldWithPath("result.images[].imageURL").type(JsonFieldType.STRING).description("이미지 URL"),
+                                fieldWithPath("result.images[].status").type(JsonFieldType.STRING).description("이미지 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.images[].createdAt").type(JsonFieldType.STRING).description("이미지 등록시간"),
+                                fieldWithPath("result.images[].updatedAt").type(JsonFieldType.STRING).description("이미지 수정시간"),
+                                fieldWithPath("result.images[].deletedAt").type(JsonFieldType.STRING).description("이미지 삭제시간"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )
+                ));
+    }
+
+    @DisplayName("회원_피드_이미지_등록_피드_있을_경우")
+    @Test
+    void createUserFeedImagesWithFeed() throws Exception {
+        MockMultipartFile imageFile = TestImage.convert(TestImage.makeImages(1), 0);
+        MultiValueMap<String, String> params = TestImage.convert(testFeed.getId());
+
+        Feed userFeed = feedService.uploadImages(null, testFeedDTO.getUserId(), TestImage.makeImages(1)).getImages().get(0).getFeedId();
+
+        this.mockMvc.perform(fileUpload("/feed/image/{feedId}", userFeed.getId())
+                        .file(imageFile)
+                        .header("Authorization", "Bearer " + testFeedDTO.getToken())
+                        .params(params)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestParameters(
                                 parameterWithName("feedId").description("등록할 이미지의 피드 ID")),
                         requestParts(
