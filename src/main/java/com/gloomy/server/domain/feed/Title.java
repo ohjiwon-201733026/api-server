@@ -5,7 +5,6 @@ import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.util.Objects;
 
 @EqualsAndHashCode
 @Getter
@@ -18,6 +17,10 @@ public class Title {
     }
 
     public Title(String title) {
+        this.title = title;
+    }
+
+    void setTitle(String title) {
         this.title = title;
     }
 }

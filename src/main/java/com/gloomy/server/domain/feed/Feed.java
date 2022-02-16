@@ -55,6 +55,37 @@ public class Feed extends BaseEntity {
         this.deletedAt = deletedAt;
     }
 
+    public static Feed from(User userId) {
+        if (userId != null) {
+            return builder()
+                    .ip(new Ip("111.111.111.111"))
+                    .userId(userId)
+                    .nonUser(null)
+                    .category(Category.ALL)
+                    .title(new Title(""))
+                    .content(new Content(""))
+                    .likeCount(new LikeCount(0))
+                    .status(Status.active())
+                    .createdAt(new CreatedAt())
+                    .updatedAt(new UpdatedAt())
+                    .deletedAt(new DeletedAt())
+                    .build();
+        }
+        return builder()
+                .ip(new Ip("111.111.111.111"))
+                .userId(null)
+                .nonUser(NonUser.of("익명 친구", ""))
+                .category(Category.UNDEFINED)
+                .title(new Title(""))
+                .content(new Content(""))
+                .likeCount(new LikeCount(0))
+                .status(Status.active())
+                .createdAt(new CreatedAt())
+                .updatedAt(new UpdatedAt())
+                .deletedAt(new DeletedAt())
+                .build();
+    }
+
     public static Feed of(User userId, FeedDTO.Request feedDTO) {
         if (userId != null) {
             return builder()
@@ -93,8 +124,16 @@ public class Feed extends BaseEntity {
         this.getNonUser().setPassword(password);
     }
 
-    public void setContent(Content content) {
-        this.content = content;
+    public void setCategory(String category) {
+        this.category = Category.valueOf(category);
+    }
+
+    public void setTitle(String title) {
+        this.title.setTitle(title);
+    }
+
+    public void setContent(String content) {
+        this.content.setContent(content);
     }
 
     public void addLikeCount() {

@@ -2,6 +2,7 @@ package com.gloomy.server.domain.feed;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.gloomy.server.domain.common.EnumModel;
+import org.apache.commons.lang3.EnumUtils;
 
 public enum Category implements EnumModel {
     ALL("모든 고민"),
@@ -32,5 +33,10 @@ public enum Category implements EnumModel {
 
     public String getTitle() {
         return title;
+    }
+
+    public static Boolean isValidCategory(String category) {
+        return EnumUtils.isValidEnumIgnoreCase(Category.class, category)
+                && Category.from(category) != Category.UNDEFINED;
     }
 }
