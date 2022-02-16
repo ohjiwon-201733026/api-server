@@ -2,6 +2,7 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
+import com.gloomy.server.application.image.TestImage;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.report.ReportCategory;
@@ -51,8 +52,7 @@ class FeedServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        User testUser = new TestUserDTO().makeTestUser();
-        userService.createUser(testUser);
+        User testUser = userService.createUser(TestUserDTO.makeTestUser());
         testFeedDTO = new TestFeedDTO(testUser, 1);
         updateFeedDTO = new UpdateFeedDTO.Request();
     }
@@ -128,6 +128,63 @@ class FeedServiceTest {
 
     @Transactional
     @Test
+    void 회원_피드_이미지_업로드_피드_있을_경우_성공() {
+        ArrayList<MultipartFile> images = TestImage.makeImages(2);
+        Feed userFeed = feedService.createFeed(testFeedDTO.getUser());
+
+        Images createdImages = feedService.uploadImages(userFeed.getId(), testFeedDTO.getUserId(), images);
+
+        checkUploadedImageSuccess(userFeed, createdImages, images);
+    }
+
+    @Transactional
+    @Test
+    void 회원_피드_이미지_업로드_피드_없을_경우_성공() {
+        ArrayList<MultipartFile> images = TestImage.makeImages(2);
+
+        Images createdImages = feedService.uploadImages(null, testFeedDTO.getUserId(), images);
+
+        checkUploadedImageSuccess(createdImages.getImages().get(0).getFeedId(), createdImages, images);
+    }
+
+    @Transactional
+    @Test
+    void 회원_피드_이미지_업로드_실패() {
+        User invalidUser = userService.createUser(TestUserDTO.makeTestUser());
+        Feed userFeed = feedService.createFeed(testFeedDTO.getUser());
+
+        checkUploadedUserFeedImageFail(userFeed.getId(), null, null, "[FeedService] 회원 피드에 요청 메시지가 잘못되었습니다.");
+        checkUploadedUserFeedImageFail(userFeed.getId(), invalidUser.getId(), null, "[FeedService] 피드 ID의 회원 ID가 일치하지 않습니다.");
+    }
+
+    @Test
+    void 비회원_피드_이미지_업로드_피드_있을_경우_성공() {
+        ArrayList<MultipartFile> images = TestImage.makeImages(2);
+        Feed nonUserFeed = feedService.createFeed(null);
+
+        Images createdImages = feedService.uploadImages(nonUserFeed.getId(), null, images);
+
+        checkUploadedImageSuccess(nonUserFeed, createdImages, images);
+    }
+
+    @Test
+    void 비회원_피드_이미지_업로드_피드_없을_경우_성공() {
+        ArrayList<MultipartFile> images = TestImage.makeImages(2);
+
+        Images createdImages = feedService.uploadImages(null, null, images);
+
+        checkUploadedImageSuccess(createdImages.getImages().get(0).getFeedId(), createdImages, images);
+    }
+
+    @Test
+    void 비회원_피드_이미지_업로드_실패() {
+        Feed nonUserFeed = feedService.createFeed(null);
+
+        checkUploadedUserFeedImageFail(nonUserFeed.getId(), testFeedDTO.getUserId(), null, "[FeedService] 비회원 피드에 요청 메시지가 잘못되었습니다.");
+    }
+
+    @Transactional
+    @Test
     void 피드_전체_조회_성공() {
         final int allNonUserFeedsNum = 3;
         final int allUserFeedsNum = 3;
@@ -162,15 +219,15 @@ class FeedServiceTest {
 
     @Test
     void 피드_조회_회원_실패() {
-        User createdUser = userService.createUser(new TestUserDTO().makeTestUser());
-        User deletedUser = userService.createUser(new TestUserDTO().makeTestUser());
+        User createdUser = userService.createUser(TestUserDTO.makeTestUser());
+        User deletedUser = userService.createUser(TestUserDTO.makeTestUser());
         PageRequest pageable = PageRequest.of(0, 10);
 
         userService.deleteUser(deletedUser.getId());
 
-        checkFoundUserFeedFail(pageable, null, "[FeedService] 사용자 ID가 유효하지 않습니다.");
-        checkFoundUserFeedFail(pageable, 0L, "[FeedService] 사용자 ID가 유효하지 않습니다.");
-        checkFoundUserFeedFail(pageable, deletedUser.getId(), "[FeedService] 해당하는 사용자가 없습니다.");
+        checkFoundUserFeedFail(pageable, null, "[FeedService] 회원 ID가 유효하지 않습니다.");
+        checkFoundUserFeedFail(pageable, 0L, "[FeedService] 회원 ID가 유효하지 않습니다.");
+        checkFoundUserFeedFail(pageable, deletedUser.getId(), "[FeedService] 해당하는 회원이 없습니다.");
         checkFoundUserFeedFail(null, createdUser.getId(), "[FeedService] pageable이 유효하지 않습니다.");
     }
 
@@ -423,6 +480,21 @@ class FeedServiceTest {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     feedService.deleteFeed(feedId);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkUploadedImageSuccess(Feed feed, Images createdImages, ArrayList<MultipartFile> images) {
+        assertEquals(createdImages.getSize(), images.size());
+        for (int i = 0; i < images.size(); i++) {
+            assertEquals(createdImages.getImages().get(i).getFeedId().getId(), feed.getId());
+        }
+    }
+
+    private void checkUploadedUserFeedImageFail(Long feedId, Long userId, ArrayList<MultipartFile> images, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    feedService.uploadImages(feedId, userId, images);
                 }).getMessage(),
                 errorMessage);
     }
