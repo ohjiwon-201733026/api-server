@@ -67,6 +67,50 @@ public class FeedService {
         return feedRepository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
+    public Page<Feed> findAllActiveFeeds(Pageable originPageable, Long userId, String category) {
+        validatePageableAndSortAndCategory(originPageable, category);
+        Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        if (category == null || Category.valueOf(category) == Category.ALL) {
+            return findAllActiveFeedsWithoutCategory(pageable, order, userId);
+        }
+        return findAllActiveFeedsWithCategory(pageable, order, userId, category);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Feed> findAllActiveFeedsWithoutCategory(Pageable pageable, Optional<Sort.Order> order, Long userId) {
+        if (userId == null) {
+            return findAllActiveFeedsWithoutReport(pageable, order);
+        }
+        return findAllActiveFeedsWithReport(pageable, order, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Feed> findAllActiveFeedsWithCategory(Pageable pageable, Optional<Sort.Order> order, Long userId, String originCategory) {
+        Category category = originCategory == null ? Category.ALL : Category.valueOf(originCategory);
+        if (userId == null) {
+            return findAllActiveFeedsByCategoryWithoutReport(pageable, order, category);
+        }
+        return findAllActiveFeedsByCategoryWithReport(pageable, order, userId, category);
+    }
+
+    private Page<Feed> findAllActiveFeedsByCategoryWithoutReport(Pageable pageable, Optional<Sort.Order> order, Category category) {
+        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
+            return feedRepository.findByStatusAndCategoryOrderByCreatedAtDesc(pageable, Status.active(), category);
+        }
+        return feedRepository.findByStatusAndCategoryOrderByLikeCountDesc(pageable, Status.active(), category);
+    }
+
+    private Page<Feed> findAllActiveFeedsByCategoryWithReport(Pageable pageable, Optional<Sort.Order> order, Long userId, Category category) {
+        User user = userService.findUser(userId);
+        if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
+            return feedRepository.findByStatusAndCategoryWithReportOrderByCreatedDesc(pageable, user, Status.active(), category);
+        }
+        return feedRepository.findByStatusAndCategoryWithReportOrderByLikeCountDesc(pageable, user, Status.active(), category);
+    }
+
     private Page<Feed> findAllActiveFeedsWithoutReport(Pageable pageable, Optional<Sort.Order> order) {
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
             return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.active());
@@ -77,21 +121,9 @@ public class FeedService {
     private Page<Feed> findAllActiveFeedsWithReport(Pageable pageable, Optional<Sort.Order> order, Long userId) {
         User user = userService.findUser(userId);
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
-            return feedRepository.findByStatusWithReportOrderByCreated(pageable, user, Status.active());
+            return feedRepository.findByStatusWithReportOrderByCreatedDesc(pageable, user, Status.active());
         }
         return feedRepository.findByStatusWithReportOrderByLikeCountDesc(pageable, user, Status.active());
-    }
-
-    @Transactional(readOnly = true)
-    public Page<Feed> findAllActiveFeeds(Pageable originPageable, Long userId) {
-        validatePageableAndSort(originPageable);
-        Optional<Sort.Order> order = originPageable.getSort().stream().findFirst();
-        Pageable pageable = PageRequest.of(0, 10);
-
-        if (userId == null) {
-            return findAllActiveFeedsWithoutReport(pageable, order);
-        }
-        return findAllActiveFeedsWithReport(pageable, order, userId);
     }
 
     @Transactional(readOnly = true)
@@ -210,7 +242,7 @@ public class FeedService {
         }
     }
 
-    private void validatePageableAndSort(Pageable pageable) {
+    private void validatePageableAndSortAndCategory(Pageable pageable, String category) {
         if (pageable == null) {
             throw new IllegalArgumentException("[FeedService] Pageable이 유효하지 않습니다.");
         }
@@ -221,6 +253,9 @@ public class FeedService {
         Optional<org.springframework.data.domain.Sort.Order> order = orders.findFirst();
         if (order.isPresent() && !EnumUtils.isValidEnumIgnoreCase(FeedSort.class, order.get().getProperty())) {
             throw new IllegalArgumentException("[FeedService] sort가 유효하지 않습니다.");
+        }
+        if (category != null && !Category.isValidCategory(category)) {
+            throw new IllegalArgumentException("[FeedService] category가 유효하지 않습니다.");
         }
     }
 
