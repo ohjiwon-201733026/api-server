@@ -3,6 +3,7 @@ package com.gloomy.server.application.feed;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.application.image.TestImage;
+import com.gloomy.server.application.report.ReportDTO;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.report.ReportCategory;
@@ -306,9 +307,10 @@ class FeedServiceTest {
     void 활성_피드_전체_조회_신고_여부_체크_성공() {
         PageRequest pageable = PageRequest.of(0, 10);
         Feed feedWithReport = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
+        ReportDTO.Request reportRequestDTO = new ReportDTO.Request(feedWithReport.getId(),ReportCategory.ABUSE.toString());
 
         Page<Feed> allActiveFeedsBeforeReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId());
-        reportService.saveReport(feedWithReport.getId(), testFeedDTO.getUserId(), ReportCategory.A.name());
+        reportService.saveReport(reportRequestDTO, testFeedDTO.getUserId());
         Page<Feed> allActiveFeedsAfterReport = feedService.findAllActiveFeeds(pageable, testFeedDTO.getUserId());
 
         assertEquals(allActiveFeedsBeforeReport.getContent().size(), 1);

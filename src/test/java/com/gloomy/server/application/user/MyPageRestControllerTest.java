@@ -69,21 +69,22 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
     @DisplayName("사용자_피드_조회")
     @Test
     void getUserFeeds() throws Exception {
+        User saveUser=userService.createUser(user);
         feedService.createFeed(testFeedDTO1.getUserId(), testFeedDTO1.makeUserFeedDTO());
         feedService.createFeed(testFeedDTO2.getUserId(), testFeedDTO2.makeUserFeedDTO());
 
-        this.mockMvc.perform(get("/feed/user/{userId}", testUser.getId())
+        String token=jwtSerializer.jwtFromUser(saveUser);
+        mockMvc.perform(get("/feed/user")
+                .header("Authorization", "Bearer " + token)
                 .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
                         requestParameters(
-                                parameterWithName("page").description("페이지 넘버 (필수)")
-                        ),
-                        pathParameters(
-                                parameterWithName("userId").description("조회할 사용자 ID (필수)")
-                        ),
+                                parameterWithName("page").description("페이지 넘버")),
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
@@ -94,7 +95,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.content[].userId").type(JsonFieldType.NUMBER).description("(회원일 경우) 회원 ID"),
                                 fieldWithPath("result.content[].nickname").type(JsonFieldType.NULL).description("(비회원일 경우) 닉네임"),
                                 fieldWithPath("result.content[].password").type(JsonFieldType.NULL).description("(비회원일 경우) 비밀번호"),
-                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("피드 카테고리 (ALL)"),
+                                fieldWithPath("result.content[].category").type(JsonFieldType.STRING).description("피드 카테고리"),
                                 fieldWithPath("result.content[].title").type(JsonFieldType.STRING).description("피드 제목"),
                                 fieldWithPath("result.content[].content").type(JsonFieldType.STRING).description("피드 내용"),
                                 fieldWithPath("result.content[].likeCount").type(JsonFieldType.NUMBER).description("피드 좋아요 수"),

@@ -9,7 +9,7 @@ public class ReportDTO {
         private Long feedId;
         private String reportCategory;
 
-        private Request(Long feedId, String reportCategory) {
+        public Request(Long feedId, String reportCategory) {
             this.feedId = feedId;
             this.reportCategory = reportCategory;
         }

@@ -10,4 +10,5 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
 
     Report save(Report report);
     Optional<Report> findById(Long id);
+    void deleteAll();
 }
