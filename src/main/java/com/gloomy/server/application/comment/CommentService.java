@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -51,6 +51,7 @@ public class CommentService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Comment findComment(Long commentId) {
         if (commentId == null || commentId <= 0L) {
             throw new IllegalArgumentException("[CommentService] 해당 댓글 ID가 유효하지 않습니다.");
@@ -100,6 +101,7 @@ public class CommentService {
         return new PageImpl<>(feedAllComments, pageable, feedAllComments.size());
     }
 
+    @Transactional(readOnly = true)
     public Page<Comment> getFeedAllActiveComments(Pageable pageable, Long feedId) {
         if (pageable == null) {
             throw new IllegalArgumentException("[CommentService] Pageable이 유효하지 않습니다.");
@@ -111,6 +113,7 @@ public class CommentService {
         return commentRepository.findAllByFeedIdAndStatus(pageable, foundFeed, Status.active());
     }
 
+    @Transactional(readOnly = true)
     public Page<Comment> getCommentByIdAndActive(Pageable pageable, Long userId) {
         if (pageable == null) {
             throw new IllegalArgumentException("[CommentService] Pageable이 유효하지 않습니다.");
@@ -122,6 +125,7 @@ public class CommentService {
         return commentRepository.findAllByUserIdAndStatus(pageable, findUser, Status.active());
     }
 
+    @Transactional(readOnly = true)
     public List<Comment> findAllComments(Long feedId) {
         Feed foundFeed = feedService.findOneFeed(feedId);
         return commentRepository.findAllByFeedId(foundFeed);

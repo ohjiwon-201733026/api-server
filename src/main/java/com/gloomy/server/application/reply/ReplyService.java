@@ -11,8 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -71,6 +71,7 @@ public class ReplyService {
         }
     }
 
+    @Transactional(readOnly = true)
     public Reply findReply(Long replyId) {
         if (!validateId(replyId)) {
             throw new IllegalArgumentException("[ReplyService] 해당 대댓글 ID가 유효하지 않습니다.");
@@ -91,11 +92,13 @@ public class ReplyService {
         return new PageImpl<>(feedAllReplies, pageable, feedAllReplies.size());
     }
 
+    @Transactional(readOnly = true)
     public List<Reply> findAllReplies(Long commentId) {
         Comment foundComment = commentService.findComment(commentId);
         return replyRepository.findAllByCommentId(foundComment);
     }
 
+    @Transactional(readOnly = true)
     public Page<Reply> getCommentAllActiveReplies(Pageable pageable, Long commentId) {
         if (pageable == null) {
             throw new IllegalArgumentException("[ReplyService] Pageable이 유효하지 않습니다.");
