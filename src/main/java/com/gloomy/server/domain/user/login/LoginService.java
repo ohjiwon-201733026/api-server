@@ -1,5 +1,6 @@
 package com.gloomy.server.domain.user.login;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.common.entity.Status;
@@ -27,9 +28,10 @@ public class LoginService {
     private final JWTDeserializer jwtDeserializer;
     private final RedisService redisService;
     private final UserService userService;
+    private final JWTSerializer jwtSerializer;
 
     @Transactional(readOnly = true)
-    public User kakaoLogin(UserDTO.CodeRequest request) {
+    public User login(UserDTO.CodeRequest request) {
         UserDTO.KakaoToken kakaoToken = kakaoApiService.getToken(request).block();
         UserDTO.KakaoUser kakaoUser =  kakaoApiService.getUserInfo(kakaoToken.getAccess_token()).block();
 
@@ -37,7 +39,8 @@ public class LoginService {
                 userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getKakao_account().getEmail(), Status.ACTIVE);
         User user;
         if(userOp.isEmpty()) { // 회원가입
-            user=User.of(kakaoUser.getKakao_account().getEmail(), kakaoUser.getKakao_account().getProfile().getNickname(), kakaoToken.getAccess_token());
+            user=User.of(kakaoUser.getKakao_account().getEmail(), kakaoUser.getKakao_account().getProfile().getNickname()
+                    , kakaoToken.getAccess_token(),jwtSerializer.createRefreshToken());
         }
         else{ // 로그인
             user=userOp.get();
@@ -49,7 +52,7 @@ public class LoginService {
         return user;
     }
 
-    public void logout(){
+    public void logout() throws JsonProcessingException {
 
         Long userId=userService.getMyInfo();
 
@@ -62,7 +65,7 @@ public class LoginService {
         jwtLogout();
     }
 
-    private void jwtLogout(){
+    private void jwtLogout() throws JsonProcessingException {
         String token= userService.getToken();
         long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
         redisService.setKey(token,"logout",expiredTime);

@@ -2,18 +2,17 @@ package com.gloomy.server.application.security;
 
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.jwt.JWTPayload;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.Optional;
 
 import static java.util.Collections.singleton;
 import static java.util.Optional.of;
 
+@Slf4j
 public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     private final JWTDeserializer jwtDeserializer;
@@ -23,7 +22,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Authentication authenticate(Authentication authentication)
+    public JWTAuthentication authenticate(Authentication authentication)
             throws AuthenticationException {
         try {
             return of(authentication).map(JWTAuthenticationFilter.JWT.class::cast)
@@ -53,7 +52,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
             this.token = token;
         }
         @Override
-        public Object getPrincipal() {
+        public JWTPayload getPrincipal() {
             return jwtPayload;
         }
 
@@ -61,6 +60,8 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
         public Object getCredentials() {
             return token;
         }
+
+
     }
 
 }

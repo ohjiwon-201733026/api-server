@@ -1,5 +1,6 @@
 package com.gloomy.server.application.user;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.user.login.LoginService;
 import com.gloomy.server.domain.jwt.JWTSerializer;
@@ -29,28 +30,22 @@ public class UserRestController {
         this.userProfileImageService = userProfileImageService;
     }
 
-    @PostMapping(value = "/kakao/signUp")
-    public Response kakaoLogin(@Validated @RequestBody CodeRequest request) {
-        User user=loginService.kakaoLogin(request);
-        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
-    }
-
-//    @GetMapping(value = "/kakao/signUp")
-//    public Response kakaoLogin(@RequestParam String code) {
-//        CodeRequest request=new CodeRequest(code);
-//        User user=loginService.kakaoLogin(request);
-//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user));
+//    @PostMapping(value = "/kakao/signUp")
+//    public Response kakaoLogin(@Validated @RequestBody CodeRequest request) {
+//        User user=loginService.login(request);
+//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
 //    }
 
-    @GetMapping(value="/kakao/logout")
-    public void logout(){
-        loginService.logout();
+    @GetMapping(value = "/kakao/signUp")
+    public Response kakaoLogin(@RequestParam String code) {
+        CodeRequest request=new CodeRequest(code);
+        User user=loginService.login(request);
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user),user.getRefreshToken());
     }
 
-    @GetMapping(value = "/user")
-    public Response getUser(@AuthenticationPrincipal UserJWTPayload jwtPayload) {
-        User user=userService.findById(jwtPayload.getUserId()).get();
-        return Response.fromUserAndToken(user, getCurrentCredential());
+    @GetMapping(value="/kakao/logout")
+    public void logout() throws JsonProcessingException {
+        loginService.logout();
     }
 
     private static String getCurrentCredential() {
@@ -79,6 +74,6 @@ public class UserRestController {
     @GetMapping(value = "/user/inactive")
     public void inactiveUser(){
         Long userId=userService.getMyInfo();
-        userService.inactiveUser();
+        userService.inactiveUser(userId);
     }
 }

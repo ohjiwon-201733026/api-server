@@ -4,6 +4,7 @@ import com.gloomy.server.domain.user.User;
 
 public interface JWTSerializer {
 
-    String jwtFromUser(User user);
+    public String jwtFromUser(User user);
+    public String createRefreshToken();
 
 }

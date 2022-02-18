@@ -1,15 +1,12 @@
 package com.gloomy.server.application.security;
 
 import com.gloomy.server.application.redis.RedisService;
-import com.gloomy.server.domain.blacklList.LogoutRepository;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -56,6 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/myPage/**").permitAll()
                 .antMatchers("/logout").permitAll()
                 .antMatchers("/report/**").permitAll()
+                .antMatchers("/jwt/reissue").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin().disable();

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public interface JWTPayload extends Serializable {
 
-    long getUserId();
+    Long getUserId();
     boolean isExpired();
     long getExpiredTime();
 
