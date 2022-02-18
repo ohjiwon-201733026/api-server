@@ -23,6 +23,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -73,6 +74,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("비회원_댓글_생성")
+    @Transactional
     @Test
     void createNonUserComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
@@ -110,6 +112,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("회원_댓글_생성")
+    @Transactional
     @Test
     void createUserComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeUserCommentDTO();
@@ -150,6 +153,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_댓글_전체_조회")
+    @Transactional
     @Test
     void getFeedAllComments() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
@@ -197,6 +201,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("댓글_조회")
+    @Transactional
     @Test
     void getComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();
@@ -229,6 +234,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("댓글_수정")
+    @Transactional
     @Test
     void updateComment() throws Exception {
         String updateContent = "새 글";
@@ -270,6 +276,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("댓글 삭제")
+    @Transactional
     @Test
     void deleteComment() throws Exception {
         CommentDTO.Request request = testCommentDTO.makeNonUserCommentDTO();

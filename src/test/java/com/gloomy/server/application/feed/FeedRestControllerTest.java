@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
@@ -63,6 +64,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("비회원_피드_생성")
+    @Transactional
     @Test
     void createNonuserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
@@ -106,6 +108,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("회원_피드_생성")
+    @Transactional
     @Test
     void createUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
@@ -152,6 +155,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_이미지_등록_후_비회원_피드_생성")
+    @Transactional
     @Test
     void createUndefinedNonUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeNonUserFeedDTO();
@@ -198,6 +202,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_이미지_등록_후_회원_피드_생성")
+    @Transactional
     @Test
     void createUndefinedUserFeed() throws Exception {
         FeedDTO.Request request = testFeedDTO.makeUserFeedDTO();
@@ -247,6 +252,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("전체_피드_조회")
+    @Transactional
     @Test
     void getAllFeeds() throws Exception {
         Feed createdFeedFirst = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
@@ -305,6 +311,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("사용자_피드_조회")
+    @Transactional
     @Test
     void getUserFeeds() throws Exception {
         Feed createdFeedFirst = feedService.createFeed(testFeedDTO.getUserId(), testFeedDTO.makeUserFeedDTO());
@@ -362,6 +369,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_조회")
+    @Transactional
     @Test
     void getOneFeed() throws Exception {
         Feed createdNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
@@ -399,6 +407,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드_수정")
+    @Transactional
     @Test
     void updateFeed() throws Exception {
         String updatePassword = "34567";
@@ -450,6 +459,7 @@ class FeedRestControllerTest extends AbstractControllerTest {
     }
 
     @DisplayName("피드 삭제")
+    @Transactional
     @Test
     void deleteFeed() throws Exception {
         Feed createdNonUserFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
