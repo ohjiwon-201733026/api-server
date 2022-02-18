@@ -146,11 +146,11 @@ public class UserDTO {
         long id;
         String email;
         String username;
-        String token;
-//        String image;
+        String accessToken;
+        String refreshToken;
 
-        public static Response fromUserAndToken(User user, String token) {
-            return new Response(user.getId(), user.getEmail(), user.getName(), token);
+        public static Response fromUserAndToken(User user, String accessToken,String refreshToken) {
+            return new Response(user.getId(), user.getEmail(), user.getName(), accessToken,refreshToken);
         }
 
     }

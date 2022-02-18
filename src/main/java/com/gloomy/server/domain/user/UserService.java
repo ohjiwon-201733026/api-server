@@ -3,9 +3,6 @@ package com.gloomy.server.domain.user;
 
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
-import static java.time.Instant.now;
-
-import com.gloomy.server.domain.user.kakao.KakaoApiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +15,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.net.URI;
 import java.util.Optional;
 
-import static com.gloomy.server.application.user.UserDTO.*;
 
 @RequiredArgsConstructor
 @Service
@@ -71,21 +67,22 @@ public class UserService {
         userRepository.deleteAll();
     }
 
-    public void inactiveUser(){
-        Long userId=getMyInfo();
+    public User inactiveUser(Long userId){
         Optional<User> findUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
         if(findUser.isPresent()){
             User user=findUser.get();
             user.inactiveUser();
-            userRepository.save(user);
+            return userRepository.save(user);
         }
         else throw new IllegalArgumentException("[ UserService ] 존재하지 않는 사용자");
     }
 
+
     public Long getMyInfo(){
         String token=getToken();
+        System.out.println(token);
         if(token.equals("")) return null;
-        return jwtDeserializer.jwtPayloadFromJWT(token.toString()).getUserId();
+        return jwtDeserializer.jwtPayloadFromJWT(token).getUserId();
     }
 
     public String getToken(){

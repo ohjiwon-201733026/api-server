@@ -10,11 +10,12 @@ import java.nio.charset.StandardCharsets;
 class JWTConfiguration {
 
     private static final byte[] SECRET = "SOME_SIGNATURE_SECRET".getBytes(StandardCharsets.UTF_8);
-    private static final int JWT_DURATION_SECONDS = 21599;
+    private static final int JWT_ACCESS_TOKEN_EXPIRE_TIME = 21599;
+    private static final int JWT_REFRESH_TOKEN_EXPIRE_TIME=5183999;
 
     @Bean
     HmacSHA256JWTService hmacSHA256JWTService(ObjectMapper objectMapper) {
-        return new HmacSHA256JWTService(SECRET, JWT_DURATION_SECONDS, objectMapper);
+        return new HmacSHA256JWTService(SECRET, JWT_ACCESS_TOKEN_EXPIRE_TIME,JWT_REFRESH_TOKEN_EXPIRE_TIME, objectMapper);
     }
 
 }

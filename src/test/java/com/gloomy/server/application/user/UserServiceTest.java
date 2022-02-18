@@ -1,8 +1,10 @@
 package com.gloomy.server.application.user;
 
 import com.gloomy.server.application.feed.TestFeedDTO;
-import com.gloomy.server.domain.jwt.JWTSerializer;
-import com.gloomy.server.domain.user.*;
+import com.gloomy.server.domain.common.entity.Status;
+import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.user.UserRepository;
+import com.gloomy.server.domain.user.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,11 +13,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@Slf4j
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
@@ -26,12 +27,10 @@ public class UserServiceTest {
     UserRepository userRepository;
     @Autowired
     UserService userService;
-    @Autowired
-    JWTSerializer jwtSerializer;
     User user;
     UserDTO.UpdateUserDTO.Request updateUserDTO;
     TestFeedDTO testFeedDTO;
-    final Long notExistUserId=100L;
+    final Long notExistUserId=-1L;
 
 
     @BeforeEach
@@ -39,13 +38,8 @@ public class UserServiceTest {
         this.user= TestUserDTO.TestUser.makeTestUser();
         this.updateUserDTO= TestUserDTO.UpdateUserTestDTO.makeUpdateUserDtoRequest();
         testFeedDTO = new TestFeedDTO(user, 1);
-
     }
 
-//    @AfterEach
-//    public void after(){
-//        userProfileImageService.deleteAll(user);
-//    }
 
     @DisplayName("user create 성공")
     @Test
@@ -66,34 +60,6 @@ public class UserServiceTest {
     }
 
 
-//    @DisplayName("user update 성공")
-//    @Test
-//    public void user_update_success(){
-//        User saveUser=userService.createUser(user);
-//        String token=jwtSerializer.jwtFromUser(saveUser);
-//
-//        userService.updateUser(saveUser.getId(),updateUserDTO);
-//
-//        User updateUser=userService.findUser(saveUser.getId());
-//        checkUpdateUser(updateUser);
-//    }
-
-//    @DisplayName("user update 실패 : 유효하지 않은 user")
-//    @Test
-//    public void user_update_fail(){
-//        user.changeId(notExistUserId);
-//        String token=jwtSerializer.jwtFromUser(user);
-//
-//        assertThrows(IllegalArgumentException.class,
-//                ()->userService.updateUser(user.getId(),updateUserDTO));
-//    }
-
-    private void checkUpdateUser(User user){
-        Assertions.assertEquals(user.getEmail(),updateUserDTO.getEmail());
-        Assertions.assertEquals(user.getSex(),updateUserDTO.getSex());
-        Assertions.assertEquals(user.getDateOfBirth().toString(),updateUserDTO.getDateOfBirth());
-    }
-
     @DisplayName("user find 성공")
     @Test
     public void user_find_success(){
@@ -103,14 +69,14 @@ public class UserServiceTest {
 
         checkSameUser(saveUser,findUser);
     }
-    /*
+
     @DisplayName("user find 실패 : 존재하지 않는 유저")
     @Test
     public void user_find_fail(){
         assertThrows(IllegalArgumentException.class,
                 ()->userService.findUser(notExistUserId));
     }
-     */
+
 
     @DisplayName("user delete 성공")
     @Test
@@ -129,13 +95,37 @@ public class UserServiceTest {
         user.changeId(notExistUserId);
 
         assertThrows(IllegalArgumentException.class,
-                ()->userService.deleteUser(user.getId()));
+                ()->userService.deleteUser(notExistUserId));
     }
 
-    @DisplayName("user logout")
+    @DisplayName("user deleteAll 성공")
     @Test
-    public void user_logout(){
-        Optional<User> test= Optional.of(userRepository.save(User.of("email", "nickname", "token")));
+    public void user_deleteAll(){
+
+        for(int i=0;i<5;++i) userService.createUser(user);
+
+        userService.deleteAll();
+
+        List<User> userList=userRepository.findAll();
+
+        Assertions.assertEquals(userList.size(),0);
+    }
+
+    @DisplayName("user inactive(탈퇴) 성공")
+    @Test
+    public void user_inactive_success(){
+        User saveUser= userService.createUser(user);
+
+        User inactiveUser=userService.inactiveUser(saveUser.getId());
+
+        Assertions.assertEquals(Status.INACTIVE, inactiveUser.getJoinStatus());
+    }
+
+    @DisplayName("user inactive(탈퇴) 실패")
+    @Test
+    public void user_inactive_fail(){
+        assertThrows(IllegalArgumentException.class,
+                ()->userService.inactiveUser(notExistUserId));
     }
 
     @Test

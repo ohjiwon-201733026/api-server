@@ -42,6 +42,7 @@ public class User {
     private Status joinStatus;
 
     private String kakaoToken;
+    private String refreshToken;
 
 
     protected User() {
@@ -53,12 +54,13 @@ public class User {
         this.password = password;
         this.joinStatus=Status.ACTIVE;
     }
-    private User(String email, Profile profile,Password password,String kakaoToken) {
+    private User(String email, Profile profile,Password password,String kakaoToken,String refreshToken) {
         this.email = email;
         this.profile = profile;
         this.password = password;
         this.kakaoToken=kakaoToken;
         this.joinStatus=Status.ACTIVE;
+        this.refreshToken=refreshToken;
     }
 
     private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth){
@@ -83,8 +85,8 @@ public class User {
         return new User(email, Profile.from(name), null);
     }
 
-    public static User of(String email, String name,String kakaoToken) {
-        return new User(email,Profile.from(name), null,kakaoToken);
+    public static User of(String email, String name,String kakaoToken,String refreshToken) {
+        return new User(email,Profile.from(name), null,kakaoToken,refreshToken);
     }
 
     boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {
@@ -104,6 +106,7 @@ public class User {
     public void changeEmail(String email){this.email=email;}
     public void changeJoinStatus(Status status){this.joinStatus=status;}
     public void changeKakaoToken(String kakaoToken) {this.kakaoToken=kakaoToken;}
+    public void changeRefreshToken(String refreshToken) {this.refreshToken=refreshToken;}
 
     public String getName(){ return this.profile.getName();}
     @Override

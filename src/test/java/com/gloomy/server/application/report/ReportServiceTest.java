@@ -1,13 +1,11 @@
 package com.gloomy.server.application.report;
 
-import com.gloomy.server.application.feed.FeedDTO;
 import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.user.TestUserDTO;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.report.Report;
-import com.gloomy.server.domain.report.ReportCategory;
 import com.gloomy.server.domain.report.ReportRepository;
 import com.gloomy.server.domain.report.ReportService;
 import com.gloomy.server.domain.user.User;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static com.gloomy.server.application.user.TestUserDTO.TestUser.makeTestUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Slf4j
@@ -74,7 +71,6 @@ public class ReportServiceTest {
         assertEquals(report.getFeedId().getStatus(), Status.INVISIBLE);
     }
 
-    private void isSameReport(Report expect, Report actual){
-    }
+
 
 }

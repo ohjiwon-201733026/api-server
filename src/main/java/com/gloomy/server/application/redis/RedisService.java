@@ -14,12 +14,6 @@ public class RedisService {
 
     private final RedisTemplate<String,Object> redisTemplate;
 
-    public String redisString(String param){
-        ValueOperations<String,Object> operations=redisTemplate.opsForValue();
-        operations.set(param,param+" value");
-        String redis=(String) operations.get(param);
-        return redis;
-    }
 
     public String getValue(String key){
         return (String)redisTemplate.opsForValue().get(key);
@@ -28,6 +22,10 @@ public class RedisService {
     public void setKey(String key, String value, long expiredTime){
         ValueOperations<String, Object> logoutValueOperation=redisTemplate.opsForValue();
         logoutValueOperation.set(key,value,expiredTime, TimeUnit.SECONDS);
+    }
+
+    public void deleteKey(String key){
+        redisTemplate.delete(key);
     }
 
 
