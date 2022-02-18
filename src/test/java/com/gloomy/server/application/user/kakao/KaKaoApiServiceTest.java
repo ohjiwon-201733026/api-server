@@ -3,7 +3,6 @@ package com.gloomy.server.application.user.kakao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.user.UriService;
-import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
 import com.gloomy.server.domain.user.kakao.KakaoApiService;
 import okhttp3.mockwebserver.MockResponse;
