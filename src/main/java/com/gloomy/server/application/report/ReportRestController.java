@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-public class ReportController {
+public class ReportRestController {
 
     private final UserService userService;
     private final ReportService reportService;
