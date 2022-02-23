@@ -1,7 +1,6 @@
 package com.gloomy.server.application.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gloomy.server.application.image.UserProfileImageService;
 import com.gloomy.server.domain.user.login.LoginService;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
@@ -21,13 +20,11 @@ public class UserRestController {
     private final LoginService loginService;
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
-    private final UserProfileImageService userProfileImageService;
 
-    UserRestController(LoginService loginService, UserService userService, JWTSerializer jwtSerializer, UserProfileImageService userProfileImageService) {
+    UserRestController(LoginService loginService, UserService userService, JWTSerializer jwtSerializer) {
         this.loginService = loginService;
         this.userService = userService;
         this.jwtSerializer = jwtSerializer;
-        this.userProfileImageService = userProfileImageService;
     }
 
     @PostMapping(value = "/kakao/signUp")

@@ -52,6 +52,7 @@ public class UserService {
         return response.getBody();
     }
 
+    @Transactional(readOnly = true)
     public User findUser(Long userId) {
         return userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE).orElseThrow(() -> {
             throw new IllegalArgumentException("[ userService ]: 존재하지 않는 user 입니다.");
@@ -69,18 +70,20 @@ public class UserService {
 
     public User inactiveUser(Long userId){
         Optional<User> findUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
-        if(findUser.isPresent()){
+
+        if(findUser.isPresent()) {
             User user=findUser.get();
             user.inactiveUser();
             return userRepository.save(user);
         }
-        else throw new IllegalArgumentException("[ UserService ] 존재하지 않는 사용자");
+
+        throw new IllegalArgumentException("[ UserService ] 존재하지 않는 사용자");
+
     }
 
 
     public Long getMyInfo(){
         String token=getToken();
-        System.out.println(token);
         if(token.equals("")) return null;
         return jwtDeserializer.jwtPayloadFromJWT(token).getUserId();
     }
