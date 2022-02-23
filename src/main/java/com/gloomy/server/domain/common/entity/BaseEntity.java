@@ -15,6 +15,7 @@ public abstract class BaseEntity {
     protected Long id;
 
     @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
     protected Status status;
 
     @Embedded

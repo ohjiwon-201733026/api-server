@@ -2,6 +2,7 @@ package com.gloomy.server.application.feed;
 
 import com.gloomy.server.application.comment.CommentService;
 import com.gloomy.server.application.core.response.RequestContext;
+import com.gloomy.server.application.feedlike.FeedLikeService;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.domain.comment.Comment;
@@ -25,13 +26,15 @@ public class FeedRestController {
     private final UserService userService;
     private final FeedService feedService;
     private final ImageService imageService;
+    private final FeedLikeService feedLikeService;
     private final CommentService commentService;
     private final RequestContext requestContext;
 
-    public FeedRestController(UserService userService, FeedService feedService, ImageService imageService, CommentService commentService, RequestContext requestContext) {
+    public FeedRestController(UserService userService, FeedService feedService, ImageService imageService, FeedLikeService feedLikeService, CommentService commentService, RequestContext requestContext) {
         this.userService = userService;
         this.feedService = feedService;
         this.imageService = imageService;
+        this.feedLikeService = feedLikeService;
         this.commentService = commentService;
         this.requestContext = requestContext;
     }
@@ -94,7 +97,8 @@ public class FeedRestController {
 
     private FeedDTO.Response makeFeedDTOResponse(Feed feed) {
         Images activeImages = imageService.findAllActiveImages(feed);
+        Integer likeCount = feedLikeService.getFeedLikeCount(feed);
         List<Comment> allComments = commentService.findAllComments(feed.getId());
-        return FeedDTO.Response.of(feed, activeImages, allComments.size());
+        return FeedDTO.Response.of(feed, activeImages, likeCount, allComments.size());
     }
 }

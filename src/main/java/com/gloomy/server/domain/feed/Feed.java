@@ -24,7 +24,7 @@ public class Feed extends BaseEntity {
     @Embedded
     private NonUser nonUser;
 
-    @Column
+    @Column(name = "category", nullable = false)
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -34,21 +34,17 @@ public class Feed extends BaseEntity {
     @Embedded
     private Content content;
 
-    @Embedded
-    private LikeCount likeCount;
-
     protected Feed() {
     }
 
     @Builder
-    private Feed(Ip ip, User userId, NonUser nonUser, Category category, Title title, Status status, Content content, LikeCount likeCount, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
+    private Feed(Ip ip, User userId, NonUser nonUser, Category category, Title title, Status status, Content content, CreatedAt createdAt, UpdatedAt updatedAt, DeletedAt deletedAt) {
         this.ip = ip;
         this.userId = userId;
         this.nonUser = nonUser;
         this.category = category;
         this.title = title;
         this.content = content;
-        this.likeCount = likeCount;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -64,7 +60,6 @@ public class Feed extends BaseEntity {
                     .category(Category.ALL)
                     .title(new Title(""))
                     .content(new Content(""))
-                    .likeCount(new LikeCount(0))
                     .status(Status.active())
                     .createdAt(new CreatedAt())
                     .updatedAt(new UpdatedAt())
@@ -78,7 +73,6 @@ public class Feed extends BaseEntity {
                 .category(Category.UNDEFINED)
                 .title(new Title(""))
                 .content(new Content(""))
-                .likeCount(new LikeCount(0))
                 .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
@@ -95,7 +89,6 @@ public class Feed extends BaseEntity {
                     .category(Category.valueOf(feedDTO.getCategory()))
                     .title(new Title(feedDTO.getTitle()))
                     .content(new Content(feedDTO.getContent()))
-                    .likeCount(new LikeCount(0))
                     .status(Status.active())
                     .createdAt(new CreatedAt())
                     .updatedAt(new UpdatedAt())
@@ -109,7 +102,6 @@ public class Feed extends BaseEntity {
                 .category(Category.valueOf(feedDTO.getCategory()))
                 .title(new Title(feedDTO.getTitle()))
                 .content(new Content(feedDTO.getContent()))
-                .likeCount(new LikeCount(0))
                 .status(Status.active())
                 .createdAt(new CreatedAt())
                 .updatedAt(new UpdatedAt())
@@ -134,10 +126,6 @@ public class Feed extends BaseEntity {
 
     public void setContent(String content) {
         this.content.setContent(content);
-    }
-
-    public void addLikeCount() {
-        this.likeCount.addCount();
     }
 
     public void delete() {

@@ -100,7 +100,7 @@ public class FeedService {
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
             return feedRepository.findByStatusAndCategoryOrderByCreatedAtDesc(pageable, Status.active(), category);
         }
-        return feedRepository.findByStatusAndCategoryOrderByLikeCountDesc(pageable, Status.active(), category);
+        return feedRepository.findByStatusAndCategoryOrderByLikeCount(pageable, Status.active(), category);
     }
 
     private Page<Feed> findAllActiveFeedsByCategoryWithReport(Pageable pageable, Optional<Sort.Order> order, Long userId, Category category) {
@@ -108,14 +108,14 @@ public class FeedService {
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
             return feedRepository.findByStatusAndCategoryWithReportOrderByCreatedDesc(pageable, user, Status.active(), category);
         }
-        return feedRepository.findByStatusAndCategoryWithReportOrderByLikeCountDesc(pageable, user, Status.active(), category);
+        return feedRepository.findByStatusAndCategoryWithReportOrderByLikeCount(pageable, user.getId(), Status.active(), category);
     }
 
     private Page<Feed> findAllActiveFeedsWithoutReport(Pageable pageable, Optional<Sort.Order> order) {
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
             return feedRepository.findByStatusOrderByCreatedAtDesc(pageable, Status.active());
         }
-        return feedRepository.findByStatusOrderByLikeCountDesc(pageable, Status.active());
+        return feedRepository.findByStatusOrderByLikeCount(pageable, Status.active());
     }
 
     private Page<Feed> findAllActiveFeedsWithReport(Pageable pageable, Optional<Sort.Order> order, Long userId) {
@@ -123,7 +123,7 @@ public class FeedService {
         if (order.isEmpty() || FeedSort.from(order.get().getProperty()) == FeedSort.DATE) {
             return feedRepository.findByStatusWithReportOrderByCreatedDesc(pageable, user, Status.active());
         }
-        return feedRepository.findByStatusWithReportOrderByLikeCountDesc(pageable, user, Status.active());
+        return feedRepository.findByStatusWithReportOrderByLikeCount(pageable, user.getId(), Status.active());
     }
 
     @Transactional(readOnly = true)
@@ -179,13 +179,6 @@ public class FeedService {
     @Transactional
     public void deleteAll() {
         feedRepository.deleteAll();
-    }
-
-    @Transactional
-    public Feed addLikeCount(Long feedId) {
-        Feed foundFeed = findOneFeed(feedId);
-        foundFeed.addLikeCount();
-        return feedRepository.save(foundFeed);
     }
 
     @Transactional
