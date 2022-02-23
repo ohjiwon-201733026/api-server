@@ -73,7 +73,7 @@ public class FeedDTO {
             this.deletedAt = deletedAt;
         }
 
-        public static Response of(Feed feed, Images images, Integer commentCount) {
+        public static Response of(Feed feed, Images images, Integer likeCount, Integer commentCount) {
             List<String> imageURLs = new ArrayList<>();
             for (Image image : images.getImages()) {
                 imageURLs.add(image.getImageUrl().getImageUrl());
@@ -89,7 +89,7 @@ public class FeedDTO {
                         .title(feed.getTitle().getTitle())
                         .content(feed.getContent().getContent())
                         .imageURLs(imageURLs)
-                        .likeCount(feed.getLikeCount().getLikeCount())
+                        .likeCount(likeCount)
                         .commentCount(commentCount)
                         .status(feed.getStatus().toString())
                         .createdAt(feed.getCreatedAt().getCreatedAt().toString())
@@ -106,7 +106,7 @@ public class FeedDTO {
                     .category(feed.getCategory().toString())
                     .title(feed.getTitle().getTitle())
                     .content(feed.getContent().getContent())
-                    .likeCount(feed.getLikeCount().getLikeCount())
+                    .likeCount(likeCount)
                     .imageURLs(imageURLs)
                     .commentCount(commentCount)
                     .status(feed.getStatus().toString())

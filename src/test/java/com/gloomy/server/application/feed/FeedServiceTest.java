@@ -1,5 +1,7 @@
 package com.gloomy.server.application.feed;
 
+import com.gloomy.server.application.feedlike.FeedLikeDTO;
+import com.gloomy.server.application.feedlike.FeedLikeService;
 import com.gloomy.server.application.image.ImageService;
 import com.gloomy.server.application.image.Images;
 import com.gloomy.server.application.image.TestImage;
@@ -7,6 +9,7 @@ import com.gloomy.server.application.report.ReportDTO;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Category;
 import com.gloomy.server.domain.feed.Feed;
+import com.gloomy.server.domain.feedlike.FeedLike;
 import com.gloomy.server.domain.report.ReportCategory;
 import com.gloomy.server.domain.report.ReportService;
 import com.gloomy.server.domain.user.User;
@@ -40,6 +43,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class FeedServiceTest {
     @Autowired
     private FeedService feedService;
+    @Autowired
+    private FeedLikeService feedLikeService;
     @Autowired
     private ReportService reportService;
     @Autowired
@@ -302,7 +307,7 @@ class FeedServiceTest {
         Feed activeFeedSecond = feedService.createFeed(null, nonUserFeedDTO);
         PageRequest pageableWithSortLike = PageRequest.of(0, 10, Sort.by("like"));
 
-        feedService.addLikeCount(activeFeedFirst.getId());
+        FeedLike feedLike = feedLikeService.createFeedLike(null, new FeedLikeDTO.Request(activeFeedFirst.getId()));
         Page<Feed> foundActiveFeeds = feedService.findAllActiveFeeds(pageableWithSortLike, null, null);
 
         assertEquals(foundActiveFeeds.getContent().size(), 2);

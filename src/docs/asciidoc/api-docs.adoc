@@ -213,6 +213,45 @@ include::{snippets}/feed-sort-rest-controller-test/get-feed-sorts/response-body.
 
 include::{snippets}/feed-sort-rest-controller-test/get-feed-sorts/response-fields.adoc[]
 
+[[create-nonuser-feed-like]]
+=== 1.12 피드 비회원 좋아요 생성
+
+요청 정보
+
+include::{snippets}/feed-like-rest-controller-test/create-nonuser-feed-like/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-like-rest-controller-test/create-nonuser-feed-like/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-like-rest-controller-test/create-nonuser-feed-like/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-like-rest-controller-test/create-nonuser-feed-like/response-fields.adoc[]
+
+[[create-user-feed-like]]
+=== 1.13 피드 회원 좋아요 생성
+
+요청 정보
+
+include::{snippets}/feed-like-rest-controller-test/create-user-feed-like/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/feed-like-rest-controller-test/create-user-feed-like/request-headers.adoc[]
+include::{snippets}/feed-like-rest-controller-test/create-user-feed-like/request-fields.adoc[]
+
+응답 정보
+
+include::{snippets}/feed-like-rest-controller-test/create-user-feed-like/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/feed-like-rest-controller-test/create-user-feed-like/response-fields.adoc[]
+
 == 2. 이미지 API
 
 [[create-non-user-feed-images-without-feed]]
