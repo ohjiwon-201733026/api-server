@@ -124,7 +124,8 @@ public class UserServiceMockTest {
 
         assertThrows(IllegalArgumentException.class,()->userService.inactiveUser(userId));
 
-    }        @Mock UserJWTPayload userJWTPayload;
+    }
+//    @Mock UserJWTPayload userJWTPayload;
 
 
 //    @DisplayName("jwt user id 가져오기 success")

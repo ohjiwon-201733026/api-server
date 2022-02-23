@@ -1,10 +1,9 @@
-package com.gloomy.server.application.user.kakao;
+package com.gloomy.server.domain.user.kakao;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.user.UriService;
 import com.gloomy.server.domain.user.UserRepository;
-import com.gloomy.server.domain.user.kakao.KakaoApiService;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -22,7 +21,7 @@ import reactor.test.StepVerifier;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 
-import static com.gloomy.server.application.user.login.LoginFixture.*;
+import static com.gloomy.server.domain.user.login.LoginFixture.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
