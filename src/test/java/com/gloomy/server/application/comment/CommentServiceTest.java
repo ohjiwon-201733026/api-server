@@ -49,7 +49,7 @@ class CommentServiceTest {
         User testUser = userService.createUser(TestUserDTO.makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         Feed testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
-        testCommentDTO = new TestCommentDTO(testUser.getId(), testFeed.getId());
+        testCommentDTO = new TestCommentDTO(testFeed.getId(), testUser.getId());
     }
 
     @AfterEach
