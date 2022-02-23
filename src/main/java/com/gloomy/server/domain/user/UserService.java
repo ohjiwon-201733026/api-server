@@ -71,11 +71,14 @@ public class UserService {
     public User inactiveUser(Long userId){
         Optional<User> findUser=userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE);
 
-        if(findUser.isEmpty()) throw new IllegalArgumentException("[ UserService ] 존재하지 않는 사용자");
+        if(findUser.isPresent()) {
+            User user=findUser.get();
+            user.inactiveUser();
+            return userRepository.save(user);
+        }
 
-        User user=findUser.get();
-        user.inactiveUser();
-        return userRepository.save(user);
+        throw new IllegalArgumentException("[ UserService ] 존재하지 않는 사용자");
+
     }
 
 
