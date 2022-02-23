@@ -77,16 +77,25 @@ sudo systemctl mask --now firewalld
 sudo yum install -y iptables-services
 sudo systemctl enable iptables
 sudo systemctl start iptables
+fi
 
+FORWARDING=$(sudo iptables -t nat -L | grep 8080)
+if [ -z "$FORWARDING" ];
+then
 sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 fi
+
 # 5. allocate swap memory
+SWAPFILE=$(cat /etc/fstab | grep /swapfile)
+if [ -z "$SWAPFILE" ];
+then
 sudo dd if=/dev/zero of=/swapfile bs=128M count=16
 sudo chmod 600 /swapfile
 sudo mkswap /swapfile
 sudo swapon /swapfile
 sudo swapon -s
 sudo sh -c "echo /swapfile swap swap defaults 0 0 >> /etc/fstab"
+fi
 
 # 6. git
 cd ~
