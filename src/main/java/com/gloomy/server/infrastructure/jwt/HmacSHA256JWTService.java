@@ -64,7 +64,7 @@ class HmacSHA256JWTService implements JWTSerializer, JWTDeserializer {
     }
 
     @Override
-    public JWTPayload jwtPayloadFromJWT(String jwtToken) {
+    public JWTPayload jwtPayloadFromJWT(String jwtToken){
         UserJWTPayload jwtPayload=null;
         try {
             if (!isValidToken(jwtToken)) throw new IllegalArgumentException(invalidTokenErrorMessage);
@@ -76,7 +76,7 @@ class HmacSHA256JWTService implements JWTSerializer, JWTDeserializer {
             if (isExpired(jwtToken)) throw new IllegalArgumentException(tokenExpired);
 
         }catch (Exception e){
-            new IllegalArgumentException(e.getMessage());
+            throw new IllegalArgumentException(e.getMessage());
         }
         return jwtPayload;
     }

@@ -29,43 +29,28 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try{
             String s = request.getHeader(AUTHORIZATION);
-            if (s == null) {
-                SecurityContextHolder.getContext().setAuthentication(null);
-            } else {
+            JWT jwt=null;
+
+            if (s != null) {
                 String token = s.substring("Bearer ".length());
-                String isLogout=redisService.getValue(token);
-
-                if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
-                    setErrorResponse(HttpStatus.BAD_REQUEST, response, new Exception(isLogoutToken), request);
-                    return;
-                }
-
-                SecurityContextHolder.getContext().setAuthentication(new JWT(token));
+                
+                checkLogout(token); // 로그아웃 체크
+                jwt=new JWT(token);
             }
+
+            SecurityContextHolder.getContext().setAuthentication(jwt);
             filterChain.doFilter(request, response);
-        }catch (IllegalArgumentException e){
-            setErrorResponse(HttpStatus.FORBIDDEN,response,e,request);
-        }
 
     }
-
-    public void setErrorResponse(HttpStatus status, HttpServletResponse response
-            ,Throwable ex,HttpServletRequest request){
-
-        response.setStatus(status.value());
-        response.setContentType("application/json");
-        ErrorResponse<?> errorResponse=new ErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(),null);
-        errorResponse.setMessage(ex.getMessage());
-        try{
-            ObjectMapper objectMapper=new ObjectMapper();
-            String json = objectMapper.writeValueAsString(errorResponse);
-            response.getWriter().write(json);
-        }catch (IOException e){
-            e.printStackTrace();
+    
+    private void checkLogout(String token){
+        String isLogout=redisService.getValue(token);
+        if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
+            throw new IllegalArgumentException(isLogoutToken);
         }
     }
+    
 
     @SuppressWarnings("java:S2160")
     static class JWT extends AbstractAuthenticationToken {

@@ -1,19 +1,12 @@
 package com.gloomy.server.application.jwt;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
-import com.gloomy.server.domain.user.UserRepository;
 import com.gloomy.server.domain.user.UserService;
-import com.gloomy.server.domain.user.login.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static com.gloomy.server.application.core.ErrorMessage.*;
 

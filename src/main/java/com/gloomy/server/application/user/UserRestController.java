@@ -73,4 +73,9 @@ public class UserRestController {
         Long userId=userService.getMyInfo();
         userService.inactiveUser(userId);
     }
+
+    @GetMapping(value = "/user")
+    public void test(){
+//        return "success";
+    }
 }
