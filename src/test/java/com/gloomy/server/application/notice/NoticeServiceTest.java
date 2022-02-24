@@ -135,6 +135,45 @@ class NoticeServiceTest {
         checkCreatedNoticeFail(testNotice.feed, commentId, null, "[NoticeService] 알림 생성 파라미터가 유효하지 않습니다.");
     }
 
+    @Transactional
+    @Test
+    void 댓글_작성시_알림_생성_성공() {
+        TestCommentDTO testCommentDTO = new TestCommentDTO(testNotice.feed.getId(), null);
+
+        Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
+        Notice commentNotice = noticeService.findOneNotice(createdComment);
+        Integer noticeSize = noticeService.countAllNotices(testNotice.feed.getUserId().getId());
+
+        assertEquals(commentNotice.getCommentId(), createdComment);
+        assertEquals(noticeSize, 1);
+    }
+
+    @Transactional
+    @Test
+    void 대댓글_작성시_알림_생성_성공() {
+        ReplyDTO.Request replyDTO = new ReplyDTO.Request("대댓글", testNotice.comment.getId(), "12345");
+
+        Reply createdReply = replyService.createReply(null, replyDTO);
+        Notice replyNotice = noticeService.findOneNotice(createdReply);
+        Integer noticeSize = noticeService.countAllNotices(testNotice.feed.getUserId().getId());
+
+        assertEquals(replyNotice.getReplyId(), createdReply);
+        assertEquals(noticeSize, 1);
+    }
+
+    @Transactional
+    @Test
+    void 좋아요_작성시_알림_생성_성공() {
+        FeedLikeDTO.Request feedLikeDTO = new FeedLikeDTO.Request(testNotice.feed.getId());
+
+        FeedLike createdFeedLike = feedLikeService.createFeedLike(null, feedLikeDTO);
+        Notice feedLikeNotice = noticeService.findOneNotice(createdFeedLike);
+        Integer noticeSize = noticeService.countAllNotices(testNotice.feed.getUserId().getId());
+
+        assertEquals(feedLikeNotice.getFeedLikeId(), createdFeedLike);
+        assertEquals(noticeSize, 1);
+    }
+
     private void checkCreatedNoticeSuccess(Notice expectedNotice, Notice actualNotice) {
         assertEquals(expectedNotice.getFeedId(), actualNotice.getFeedId());
         assertEquals(expectedNotice.getCommentId(), actualNotice.getCommentId());
