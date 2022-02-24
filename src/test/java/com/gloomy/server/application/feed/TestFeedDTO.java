@@ -12,7 +12,6 @@ import java.util.ArrayList;
 @Getter
 public class TestFeedDTO {
     private final User user;
-    private final Long userId;
     private final String password;
     private String category;
     private final String title;
@@ -22,12 +21,15 @@ public class TestFeedDTO {
 
     public TestFeedDTO(User testUser, int imageNum) {
         this.user = testUser;
-        this.userId = testUser.getId();
         this.category = "ALL";
         this.title = "글 제목";
         this.password = "12345";
         this.content = "글 작성 샘플입니다.";
         this.images = TestImage.makeImages(imageNum);
+    }
+
+    public Long getUserId() {
+        return user.getId();
     }
 
     public void setCategory(String category) {

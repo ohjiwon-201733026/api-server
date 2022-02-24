@@ -8,9 +8,11 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
+import com.gloomy.server.domain.notice.Notice;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -53,6 +55,8 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
     @Autowired
     private ReplyService replyService;
     @Autowired
+    private NoticeService noticeService;
+    @Autowired
     private JWTSerializer jwtSerializer;
     @Autowired
     ObjectMapper objectMapper;
@@ -74,6 +78,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
+        noticeService.deleteAll();
         replyService.deleteAll();
         imageService.deleteAll(feedTestDir);
         commentService.deleteAll();

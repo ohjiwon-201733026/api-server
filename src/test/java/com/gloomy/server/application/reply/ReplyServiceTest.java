@@ -6,6 +6,7 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
@@ -46,6 +47,8 @@ public class ReplyServiceTest {
     private CommentService commentService;
     @Autowired
     private ReplyService replyService;
+    @Autowired
+    private NoticeService noticeService;
 
     @Value("${cloud.aws.s3.feedTestDir}")
     private String feedTestDir;
@@ -64,6 +67,7 @@ public class ReplyServiceTest {
 
     @AfterEach
     void afterEach() {
+        noticeService.deleteAll();
         replyService.deleteAll();
         imageService.deleteAll(feedTestDir);
         commentService.deleteAll();
@@ -146,6 +150,7 @@ public class ReplyServiceTest {
         ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
 
         Reply deletedNonUserReply = replyService.createReply(null, nonUserReplyDTO);
+        noticeService.deleteAll();
         replyService.deleteAll();
 
         checkFoundReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
@@ -166,6 +171,7 @@ public class ReplyServiceTest {
         ReplyDTO.Request userReplyDTO = testReplyDTO.makeUserReplyDTO();
 
         Reply deletedUserReply = replyService.createReply(testReplyDTO.getUserId(), userReplyDTO);
+        noticeService.deleteAll();
         replyService.deleteAll();
 
         checkFoundReplyFail(deletedUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
@@ -191,6 +197,7 @@ public class ReplyServiceTest {
     void 대댓글_전체_조회_실패() {
         PageRequest pageable = PageRequest.of(0, 10);
 
+        noticeService.deleteAll();
         commentService.deleteAll();
 
         checkFoundAllRepliesFail(pageable, 0L, "[ReplyService] 해당 댓글 ID가 유효하지 않습니다.");
@@ -243,6 +250,7 @@ public class ReplyServiceTest {
         updateReplyDTOWithContentBlank.setContent("");
 
         Reply deletedReply = replyService.createReply(null, testReplyDTO.makeNonUserReplyDTO());
+        noticeService.deleteAll();
         replyService.deleteAll();
         Reply createdReply = replyService.createReply(null, testReplyDTO.makeNonUserReplyDTO());
 
@@ -269,6 +277,7 @@ public class ReplyServiceTest {
         ReplyDTO.Request nonUserReplyDTO = testReplyDTO.makeNonUserReplyDTO();
 
         Reply deletedNonUserReply = replyService.createReply(null, nonUserReplyDTO);
+        noticeService.deleteAll();
         replyService.deleteAll();
 
         checkDeletedReplyFail(deletedNonUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");
@@ -289,6 +298,7 @@ public class ReplyServiceTest {
         ReplyDTO.Request userReplyDTO = testReplyDTO.makeUserReplyDTO();
 
         Reply deletedUserReply = replyService.createReply(testReplyDTO.getUserId(), userReplyDTO);
+        noticeService.deleteAll();
         replyService.deleteAll();
 
         checkDeletedReplyFail(deletedUserReply.getId(), "[ReplyService] 해당 대댓글 ID가 존재하지 않습니다.");

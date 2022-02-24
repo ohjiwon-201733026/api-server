@@ -1,6 +1,7 @@
 package com.gloomy.server.application.feedlike;
 
 import com.gloomy.server.application.feed.*;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feedlike.FeedLike;
 import com.gloomy.server.domain.user.User;
@@ -29,6 +30,8 @@ class FeedLikeServiceTest {
     private FeedLikeService feedLikeService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private NoticeService noticeService;
 
     private Feed testFeed;
 
@@ -41,6 +44,8 @@ class FeedLikeServiceTest {
 
     @AfterEach
     void afterEach() {
+        noticeService.deleteAll();
+        feedLikeService.deleteAll();
         feedService.deleteAll();
         userService.deleteAll();
     }

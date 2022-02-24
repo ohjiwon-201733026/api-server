@@ -6,6 +6,7 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
@@ -48,6 +49,8 @@ class CommentRestControllerTest extends AbstractControllerTest {
     @Autowired
     CommentService commentService;
     @Autowired
+    NoticeService noticeService;
+    @Autowired
     private JWTSerializer jwtSerializer;
     @Autowired
     ObjectMapper objectMapper;
@@ -67,6 +70,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
+        noticeService.deleteAll();
         commentService.deleteAll();
         imageService.deleteAll(feedTestDir);
         feedService.deleteAll();
