@@ -1,11 +1,9 @@
-package com.gloomy.server.application.user;
+package com.gloomy.server.domain.user;
 
 import com.gloomy.server.application.feed.TestFeedDTO;
+import com.gloomy.server.application.user.TestUserDTO;
+import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.common.entity.Status;
-import com.gloomy.server.domain.user.User;
-import com.gloomy.server.domain.user.UserRepository;
-import com.gloomy.server.domain.user.UserService;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.gloomy.server.application.user.TestUserDTO.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
@@ -35,8 +34,8 @@ public class UserServiceTest {
 
     @BeforeEach
     public void setUp(){
-        this.user= TestUserDTO.TestUser.makeTestUser();
-        this.updateUserDTO= TestUserDTO.UpdateUserTestDTO.makeUpdateUserDtoRequest();
+        this.user= TestUser.makeTestUser();
+        this.updateUserDTO= UpdateUserTestDTO.makeUpdateUserDtoRequest();
         testFeedDTO = new TestFeedDTO(user, 1);
     }
 

@@ -18,9 +18,9 @@ public class TestUserDTO {
         }
     }
 
-    static class UpdateUserTestDTO{
+    public static class UpdateUserTestDTO{
 
-        static UserDTO.UpdateUserDTO.Request makeUpdateUserDtoRequest(){
+        public static UserDTO.UpdateUserDTO.Request makeUpdateUserDtoRequest(){
             TestImage testImage=new TestImage();
 
             return UserDTO.UpdateUserDTO.Request.builder()

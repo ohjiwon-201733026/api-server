@@ -1,4 +1,4 @@
-package com.gloomy.server.application.user.login;
+package com.gloomy.server.domain.user.login;
 
 import com.gloomy.server.application.user.UserDTO;
 

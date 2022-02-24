@@ -38,7 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.csrf().disable();
         http.cors();
         http.logout().disable();
-        http.addFilterBefore(new JWTAuthenticationFilter(redisService), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new ResponseMessageFilter(),UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JWTAuthenticationFilter(redisService), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()
@@ -55,6 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/report/**").permitAll()
                 .antMatchers("/jwt/reissue").permitAll()
                 .antMatchers("/like/**").permitAll()
+                .antMatchers("/user").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin().disable();

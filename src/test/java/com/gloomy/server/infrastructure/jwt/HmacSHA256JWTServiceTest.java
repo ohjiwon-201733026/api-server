@@ -34,7 +34,7 @@ public class HmacSHA256JWTServiceTest {
     
     @DisplayName("accessToken 발급받기")
     @Test
-    public void jwtFromUser() {
+    public void jwtFromUser() throws JsonProcessingException {
         User user= TestUserDTO.TestUser.makeTestUser();
         user.changeId(userId);
         String accessToken=hmacSHA256JWTService.jwtFromUser(user);
