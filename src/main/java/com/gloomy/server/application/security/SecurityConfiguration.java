@@ -56,6 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/report/**").permitAll()
                 .antMatchers("/jwt/reissue").permitAll()
                 .antMatchers("/user").permitAll()
+                .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
 
         http.formLogin().disable();
