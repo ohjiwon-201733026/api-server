@@ -203,6 +203,23 @@ class NoticeServiceTest {
         checkGetAllNoticesFail(pageable, 0L, "[NoticeService] userId가 유효하지 않습니다.");
     }
 
+    @Transactional
+    @Test
+    void 알림_읽음_처리_성공() {
+        Notice createdNotice = noticeService.createNotice(testNotice.feed, testNotice.reply, Type.REPLY);
+
+        Notice readNotice = noticeService.readNotice(createdNotice.getId());
+
+        assertEquals(readNotice.getIsRead().getIsRead(), true);
+    }
+
+    @Transactional
+    @Test
+    void 알림_읽음_처리_실패() {
+        checkReadNoticeFail(null, "[NoticeService] userId가 유효하지 않습니다.");
+        checkReadNoticeFail(0L, "[NoticeService] userId가 유효하지 않습니다.");
+    }
+
     private void checkCreatedNoticeSuccess(Notice expectedNotice, Notice actualNotice) {
         assertEquals(expectedNotice.getFeedId(), actualNotice.getFeedId());
         assertEquals(expectedNotice.getCommentId(), actualNotice.getCommentId());
@@ -216,6 +233,14 @@ class NoticeServiceTest {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     noticeService.createNotice(feed, entity, entityType);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkReadNoticeFail(Long noticeId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    noticeService.readNotice(noticeId);
                 }).getMessage(),
                 errorMessage);
     }
