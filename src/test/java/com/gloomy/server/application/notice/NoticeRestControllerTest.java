@@ -13,6 +13,7 @@ import com.gloomy.server.application.reply.ReplyService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.jwt.JWTSerializer;
+import com.gloomy.server.domain.notice.Notice;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.AfterEach;
@@ -129,6 +130,47 @@ public class NoticeRestControllerTest extends AbstractControllerTest {
                                 fieldWithPath("result.sort.empty").type(JsonFieldType.BOOLEAN).description("정렬 비어있는지 여부"),
                                 fieldWithPath("result.number").type(JsonFieldType.NUMBER).description("현재 페이지 인덱스"),
                                 fieldWithPath("result.empty").type(JsonFieldType.BOOLEAN).description("비어있는지 여부"),
+                                fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
+                        )
+                ));
+    }
+
+    @DisplayName("알림_읽음_처리")
+    @Transactional
+    @Test
+    void readNotice() throws Exception {
+        Notice notice = noticeService.getOneNotice(testUser);
+
+        this.mockMvc.perform(patch("/notice/{noticeId}", notice.getId())
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document.document(
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION).description("사용자 토큰")),
+                        pathParameters(
+                                parameterWithName("noticeId").description("읽음 처리할 알림 ID")),
+                        responseFields(
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.STRING).description("응답 메시지"),
+                                fieldWithPath("result").description("응답 데이터"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("알림 ID"),
+                                fieldWithPath("result.userId").type(JsonFieldType.NUMBER).description("사용자 ID"),
+                                fieldWithPath("result.feedId").type(JsonFieldType.NUMBER).description("피드 ID"),
+                                fieldWithPath("result.commentId").optional().type(JsonFieldType.NUMBER).description("(댓글 알림일 경우) 댓글 ID"),
+                                fieldWithPath("result.replyId").optional().type(JsonFieldType.NUMBER).description("(대댓글 알림일 경우) 댓글 ID"),
+                                fieldWithPath("result.likeId").optional().type(JsonFieldType.NUMBER).description("(좋아요 알림일 경우) 댓글 ID"),
+                                fieldWithPath("result.type").type(JsonFieldType.STRING).description("알림 타입 (COMMENT, REPLY, LIKE)"),
+                                fieldWithPath("result.isRead").type(JsonFieldType.BOOLEAN).description("알림 읽음 여부"),
+                                fieldWithPath("result.status").type(JsonFieldType.STRING).description("알림 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.commentCount").type(JsonFieldType.NUMBER).description("알림 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.likeCount").type(JsonFieldType.NUMBER).description("알림 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.title").type(JsonFieldType.STRING).description("알림 상태 (ACTIVE, INACTIVE)"),
+                                fieldWithPath("result.createdAt").type(JsonFieldType.STRING).description("알림 생성시간"),
+                                fieldWithPath("result.updatedAt").type(JsonFieldType.STRING).description("알림 수정시간"),
+                                fieldWithPath("result.deletedAt").type(JsonFieldType.STRING).description("알림 삭제시간"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                 ));
