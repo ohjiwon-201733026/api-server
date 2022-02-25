@@ -158,6 +158,7 @@ class ImageServiceTest {
         checkUpdatedImageFail(null, images, "[ImageService] 해당 피드가 유효하지 않습니다.");
     }
 
+    @Transactional
     @Test
     void 이미지_삭제_성공() {
         ArrayList<MultipartFile> images = TestImage.makeImages(3);

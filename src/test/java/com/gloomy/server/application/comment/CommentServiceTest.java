@@ -4,6 +4,7 @@ import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.feed.TestUserDTO;
 import com.gloomy.server.application.image.ImageService;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Feed;
@@ -30,7 +31,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
 })
 class CommentServiceTest {
-
     @Autowired
     private FeedService feedService;
     @Autowired
@@ -39,6 +39,8 @@ class CommentServiceTest {
     private CommentService commentService;
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private NoticeService noticeService;
 
     @Value("${cloud.aws.s3.feedTestDir}")
     private String feedTestDir;
@@ -54,6 +56,7 @@ class CommentServiceTest {
 
     @AfterEach
     void afterEach() {
+        noticeService.deleteAll();
         imageService.deleteAll(feedTestDir);
         commentService.deleteAll();
         feedService.deleteAll();
@@ -120,6 +123,7 @@ class CommentServiceTest {
     void 댓글_조회_비회원_실패() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
+        noticeService.deleteAll();
         commentService.deleteAll();
 
         checkFoundCommentFail(createdComment.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
@@ -139,6 +143,7 @@ class CommentServiceTest {
     void 댓글_조회_회원_실패() {
         Comment createdComment = commentService.createComment(testCommentDTO.getUserId(), testCommentDTO.makeUserCommentDTO());
 
+        noticeService.deleteAll();
         commentService.deleteAll();
 
         checkFoundCommentFail(createdComment.getId(), "[CommentService] 해당 댓글 ID가 존재하지 않습니다.");
@@ -223,7 +228,9 @@ class CommentServiceTest {
         updateCommentDTO.setContent(updateContent);
         UpdateCommentDTO.Request updateCommentDTOWithoutContent = new UpdateCommentDTO.Request();
 
+        noticeService.deleteAll();
         commentService.deleteAll();
+
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
         checkUpdatedCommentFail(createdComment.getId(), updateCommentDTOWithoutContent,
@@ -249,6 +256,7 @@ class CommentServiceTest {
     void 댓글_삭제_실패() {
         Comment createdComment = commentService.createComment(null, testCommentDTO.makeNonUserCommentDTO());
 
+        noticeService.deleteAll();
         commentService.deleteAll();
 
         checkDeletedCommentFail(0L, "[CommentService] 해당 댓글 ID가 유효하지 않습니다.");

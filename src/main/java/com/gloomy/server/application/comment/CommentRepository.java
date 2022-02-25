@@ -18,4 +18,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findAllByFeedIdAndStatus(Pageable pageable, Feed feedId, Status status);
 
     Page<Comment> findAllByUserIdAndStatus(Pageable pageable, User userId, Status status);
+
+    Integer countCommentByFeedId(Feed feedId);
 }

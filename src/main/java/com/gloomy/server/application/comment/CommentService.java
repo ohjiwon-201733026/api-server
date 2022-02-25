@@ -1,11 +1,13 @@
 package com.gloomy.server.application.comment;
 
 import com.gloomy.server.application.feed.FeedService;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Content;
 import com.gloomy.server.domain.feed.Feed;
 import com.gloomy.server.domain.feed.Password;
+import com.gloomy.server.domain.notice.Type;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import org.springframework.data.domain.Page;
@@ -18,20 +20,24 @@ import java.util.List;
 
 @Service
 public class CommentService {
-    private UserService userService;
-    private FeedService feedService;
-    private CommentRepository commentRepository;
+    private final UserService userService;
+    private final FeedService feedService;
+    private final NoticeService noticeService;
+    private final CommentRepository commentRepository;
 
-    public CommentService(UserService userService, FeedService feedService, CommentRepository commentRepository) {
+    public CommentService(UserService userService, FeedService feedService, NoticeService noticeService, CommentRepository commentRepository) {
         this.userService = userService;
         this.feedService = feedService;
+        this.noticeService = noticeService;
         this.commentRepository = commentRepository;
     }
 
     @Transactional
     public Comment createComment(Long userId, CommentDTO.Request commentDTO) throws IllegalArgumentException {
         validateCommentDTO(userId, commentDTO);
-        return commentRepository.save(makeComment(userId, commentDTO));
+        Comment comment = commentRepository.save(makeComment(userId, commentDTO));
+        noticeService.createNotice(comment.getFeedId(), comment, Type.COMMENT);
+        return comment;
     }
 
     private Comment makeComment(Long userId, CommentDTO.Request commentDTO) {
@@ -123,6 +129,11 @@ public class CommentService {
         }
         User findUser = userService.findUser(userId);
         return commentRepository.findAllByUserIdAndStatus(pageable, findUser, Status.active());
+    }
+
+    @Transactional(readOnly = true)
+    public Integer getFeedAllActiveCommentsCount(Feed feedId) {
+        return commentRepository.countCommentByFeedId(feedId);
     }
 
     @Transactional(readOnly = true)

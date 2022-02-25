@@ -1,9 +1,11 @@
 package com.gloomy.server.application.reply;
 
 import com.gloomy.server.application.comment.CommentService;
+import com.gloomy.server.application.notice.NoticeService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.feed.Content;
+import com.gloomy.server.domain.notice.Type;
 import com.gloomy.server.domain.reply.Reply;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -19,18 +21,22 @@ import java.util.List;
 public class ReplyService {
     private final UserService userService;
     private final CommentService commentService;
+    private final NoticeService noticeService;
     private final ReplyRepository replyRepository;
 
-    public ReplyService(UserService userService, CommentService commentService, ReplyRepository replyRepository) {
+    public ReplyService(UserService userService, CommentService commentService, NoticeService noticeService, ReplyRepository replyRepository) {
         this.userService = userService;
         this.commentService = commentService;
+        this.noticeService = noticeService;
         this.replyRepository = replyRepository;
     }
 
     @Transactional
     public Reply createReply(Long userId, ReplyDTO.Request replyDTO) {
         validateReplyDTO(userId, replyDTO);
-        return replyRepository.save(makeReply(userId, replyDTO));
+        Reply reply = replyRepository.save(makeReply(userId, replyDTO));
+        noticeService.createNotice(reply.getCommentId().getFeedId(), reply, Type.REPLY);
+        return reply;
     }
 
     private Reply makeReply(Long userId, ReplyDTO.Request replyDTO) {
