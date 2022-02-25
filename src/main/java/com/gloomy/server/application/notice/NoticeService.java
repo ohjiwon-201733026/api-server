@@ -7,14 +7,18 @@ import com.gloomy.server.domain.feedlike.FeedLike;
 import com.gloomy.server.domain.notice.Notice;
 import com.gloomy.server.domain.notice.Type;
 import com.gloomy.server.domain.reply.Reply;
+import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NoticeService {
+    private final UserService userService;
     private final NoticeRepository noticeRepository;
 
-    public NoticeService(NoticeRepository noticeRepository) {
+    public NoticeService(UserService userService, NoticeRepository noticeRepository) {
+        this.userService = userService;
         this.noticeRepository = noticeRepository;
     }
 
@@ -48,6 +52,34 @@ public class NoticeService {
         return noticeRepository.save(feedLikeNotice);
     }
 
+    @Transactional(readOnly = true)
+    public Integer countAllNotices(Long userId) {
+        validateId(userId, "userId가 유효하지 않습니다.");
+        User user = userService.findUser(userId);
+        return noticeRepository.countAllByUserId(user);
+    }
+
+    @Transactional(readOnly = true)
+    public Notice findOneNotice(Comment commentId) {
+        return noticeRepository.findByCommentId(commentId).orElseThrow(() -> {
+            throw new IllegalArgumentException("[NoticeService] 해당 댓글 ID의 알림이 존재하지 않습니다.");
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public Notice findOneNotice(Reply replyId) {
+        return noticeRepository.findByReplyId(replyId).orElseThrow(() -> {
+            throw new IllegalArgumentException("[NoticeService] 해당 대댓글 ID의 알림이 존재하지 않습니다.");
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public Notice findOneNotice(FeedLike feedLikeId) {
+        return noticeRepository.findByFeedLikeId(feedLikeId).orElseThrow(() -> {
+            throw new IllegalArgumentException("[NoticeService] 해당 좋아요 ID의 알림이 존재하지 않습니다.");
+        });
+    }
+
     @Transactional
     public void deleteAll() {
         noticeRepository.deleteAll();
@@ -65,6 +97,12 @@ public class NoticeService {
         }
         if (entityType == Type.LIKE && !(entity instanceof FeedLike)) {
             throw new IllegalArgumentException("[NoticeService] 좋아요가 유효하지 않습니다.");
+        }
+    }
+
+    private void validateId(Long id, String errorMessage) {
+        if (id == null || id <= 0L) {
+            throw new IllegalArgumentException("[NoticeService] " + errorMessage);
         }
     }
 }
