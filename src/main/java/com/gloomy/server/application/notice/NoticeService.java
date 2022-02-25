@@ -1,6 +1,5 @@
 package com.gloomy.server.application.notice;
 
-import com.gloomy.server.application.feed.FeedService;
 import com.gloomy.server.domain.comment.Comment;
 import com.gloomy.server.domain.common.entity.BaseEntity;
 import com.gloomy.server.domain.feed.Feed;
@@ -67,6 +66,22 @@ public class NoticeService {
         validateId(userId, "userId가 유효하지 않습니다.");
         User user = userService.findUser(userId);
         return noticeRepository.countAllByUserId(user);
+    }
+
+    @Transactional
+    public Notice readNotice(Long noticeId) {
+        validateId(noticeId, "userId가 유효하지 않습니다.");
+        Notice foundNotice = findOneNotice(noticeId);
+        foundNotice.read();
+        return noticeRepository.save(foundNotice);
+    }
+
+    @Transactional(readOnly = true)
+    public Notice findOneNotice(Long noticeId) throws IllegalArgumentException {
+        validateId(noticeId, "알림 ID가 유효하지 않습니다.");
+        return noticeRepository.findById(noticeId).orElseThrow(() -> {
+            throw new IllegalArgumentException("[NoticeService] 알림 ID가 존재하지 않습니다.");
+        });
     }
 
     @Transactional(readOnly = true)
