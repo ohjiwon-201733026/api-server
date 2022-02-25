@@ -62,6 +62,14 @@ public class NoticeService {
     }
 
     @Transactional(readOnly = true)
+    public Notice getOneNotice(User user) {
+        validateNotNull(user, "userId가 유효하지 않습니다.");
+        return noticeRepository.findFirstByUserId(user).orElseThrow(() -> {
+            throw new IllegalArgumentException("[NoticeService] 해당 회원 ID의 알림이 존재하지 않습니다.");
+        });
+    }
+
+    @Transactional(readOnly = true)
     public Integer countAllNotices(Long userId) {
         validateId(userId, "userId가 유효하지 않습니다.");
         User user = userService.findUser(userId);

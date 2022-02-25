@@ -24,5 +24,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     Page<Notice> findAllByUserIdOrderByIdDesc(Pageable pageable, User userId);
 
+    Optional<Notice> findFirstByUserId(User userId);
+
     Integer countAllByUserId(User userId);
 }

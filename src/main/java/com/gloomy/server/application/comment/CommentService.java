@@ -132,6 +132,11 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
+    public Integer getFeedAllActiveCommentsCount(Feed feedId) {
+        return commentRepository.countCommentByFeedId(feedId);
+    }
+
+    @Transactional(readOnly = true)
     public List<Comment> findAllComments(Long feedId) {
         Feed foundFeed = feedService.findOneFeed(feedId);
         return commentRepository.findAllByFeedId(foundFeed);
