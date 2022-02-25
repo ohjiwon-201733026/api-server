@@ -36,6 +36,11 @@ public class NoticeRestController {
         return makeResult(allNotices);
     }
 
+    @PatchMapping(value = "/{noticeId}")
+    public NoticeDTO.Response readNotice(@PathVariable Long noticeId) {
+        return makeNoticeDTOResponse(noticeService.readNotice(noticeId));
+    }
+
     private Page<NoticeDTO.Response> makeResult(Page<Notice> allNotices) {
         List<NoticeDTO.Response> result = new ArrayList<>();
         for (Notice notice : allNotices.getContent()) {
