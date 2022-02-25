@@ -602,10 +602,51 @@ include::{snippets}/reply-rest-controller-test/delete-reply/path-parameters.adoc
 
 include::{snippets}/reply-rest-controller-test/delete-reply/response-body.adoc[]
 
+== 5. 알림 API
 
-== 5. 유저 API
+[[get-all-notices]]
+=== 5.1 사용자 알림 조회
+
+요청 정보
+
+include::{snippets}/notice-rest-controller-test/get-all-notices/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/notice-rest-controller-test/get-all-notices/request-headers.adoc[]
+include::{snippets}/notice-rest-controller-test/get-all-notices/request-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/notice-rest-controller-test/get-all-notices/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/notice-rest-controller-test/get-all-notices/response-fields.adoc[]
+
+[[read-notice]]
+=== 5.2 알림 읽음 처리
+
+요청 정보
+
+include::{snippets}/notice-rest-controller-test/read-notice/http-request.adoc[]
+
+요청 형식
+
+include::{snippets}/notice-rest-controller-test/read-notice/request-headers.adoc[]
+include::{snippets}/notice-rest-controller-test/read-notice/path-parameters.adoc[]
+
+응답 정보
+
+include::{snippets}/notice-rest-controller-test/read-notice/response-body.adoc[]
+
+응답 형식
+
+include::{snippets}/notice-rest-controller-test/read-notice/response-fields.adoc[]
+
+== 6. 유저 API
 [[update-user]]
-=== 5.1 회원 탈퇴
+=== 6.1 회원 탈퇴
 CURL
 
 include::{snippets}/user-rest-controller-test/inactive-user/curl-request.adoc[]
@@ -627,9 +668,9 @@ include::{snippets}/user-rest-controller-test/inactive-user/http-response.adoc[]
 include::{snippets}/user-rest-controller-test/inactive-user/response-fields.adoc[]
 
 
-== 6. MyPage API
+== 7. MyPage API
 [[user-feed]]
-=== 6.1 유저 피드 조회
+=== 7.1 유저 피드 조회
 CURL
 
 include::{snippets}/my-page-rest-controller-test/get-user-feeds/curl-request.adoc[]
@@ -652,7 +693,7 @@ include::{snippets}/my-page-rest-controller-test/get-user-feeds/http-response.ad
 include::{snippets}/my-page-rest-controller-test/get-user-feeds/response-fields.adoc[]
 
 [[user-comment]]
-=== 6.2 유저 댓글 조회
+=== 7.2 유저 댓글 조회
 CURL
 
 include::{snippets}/my-page-rest-controller-test/user-comment/curl-request.adoc[]
@@ -675,9 +716,9 @@ include::{snippets}/my-page-rest-controller-test/user-comment/http-response.adoc
 include::{snippets}/my-page-rest-controller-test/user-comment/response-fields.adoc[]
 
 
-== 7. 신고하기
+== 8. 신고하기
 [[inactive-user]]
-=== 7.1 feed 신고
+=== 8.1 feed 신고
 CURL
 
 include::{snippets}/report-rest-controller-test/report-feed/curl-request.adoc[]
@@ -699,9 +740,9 @@ include::{snippets}/report-rest-controller-test/report-feed/http-response.adoc[]
 include::{snippets}/report-rest-controller-test/report-feed/response-fields.adoc[]
 
 
-== 8. jwt 토큰 요청
+== 9. jwt 토큰 요청
 [[jwt-reissue]]
-=== 8.1 access token 갱신
+=== 9.1 access token 갱신
 CURL
 
 include::{snippets}/jwt-rest-controller-test/reissue/curl-request.adoc[]
@@ -721,5 +762,3 @@ include::{snippets}/jwt-rest-controller-test/reissue/http-response.adoc[]
 응답 형식
 
 include::{snippets}/jwt-rest-controller-test/reissue/response-fields.adoc[]
-
-
