@@ -25,6 +25,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -174,6 +177,32 @@ class NoticeServiceTest {
         assertEquals(noticeSize, 1);
     }
 
+    @Transactional
+    @Test
+    void 회원_알림_조회_성공() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Notice commentNotice = noticeService.createNotice(testNotice.feed, testNotice.comment, Type.COMMENT);
+        Notice replyNotice = noticeService.createNotice(testNotice.feed, testNotice.reply, Type.REPLY);
+        Notice feedLikeNotice = noticeService.createNotice(testNotice.feed, testNotice.feedLike, Type.LIKE);
+        Page<Notice> allNotices = noticeService.getAllNotices(pageable, testNotice.feed.getUserId().getId());
+
+        assertEquals(allNotices.getContent().size(), 3);
+        assertEquals(allNotices.getContent().get(0), feedLikeNotice);
+        assertEquals(allNotices.getContent().get(1), replyNotice);
+        assertEquals(allNotices.getContent().get(2), commentNotice);
+    }
+
+    @Transactional
+    @Test
+    void 회원_알림_조회_실패() {
+        Pageable pageable = PageRequest.of(0, 10);
+
+        checkGetAllNoticesFail(null, testNotice.feed.getUserId().getId(), "[NoticeService] pageable이 유효하지 않습니다.");
+        checkGetAllNoticesFail(pageable, null, "[NoticeService] userId가 유효하지 않습니다.");
+        checkGetAllNoticesFail(pageable, 0L, "[NoticeService] userId가 유효하지 않습니다.");
+    }
+
     private void checkCreatedNoticeSuccess(Notice expectedNotice, Notice actualNotice) {
         assertEquals(expectedNotice.getFeedId(), actualNotice.getFeedId());
         assertEquals(expectedNotice.getCommentId(), actualNotice.getCommentId());
@@ -187,6 +216,14 @@ class NoticeServiceTest {
         assertEquals(
                 assertThrows(IllegalArgumentException.class, () -> {
                     noticeService.createNotice(feed, entity, entityType);
+                }).getMessage(),
+                errorMessage);
+    }
+
+    private void checkGetAllNoticesFail(Pageable pageable, Long userId, String errorMessage) {
+        assertEquals(
+                assertThrows(IllegalArgumentException.class, () -> {
+                    noticeService.getAllNotices(pageable, userId);
                 }).getMessage(),
                 errorMessage);
     }
