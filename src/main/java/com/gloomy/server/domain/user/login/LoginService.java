@@ -39,14 +39,13 @@ public class LoginService {
                 userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getKakao_account().getEmail(), Status.ACTIVE);
         User user;
         if(userOp.isEmpty()) { // 회원가입
-            user=User.of(kakaoUser.getKakao_account().getEmail(), kakaoUser.getKakao_account().getProfile().getNickname()
+            user=User.of(kakaoUser.getKakao_account().getEmail(), userService.createNickName()
                     , kakaoToken.getAccess_token(),jwtSerializer.createRefreshToken());
         }
         else{ // 로그인
             user=userOp.get();
             user.changeKakaoToken(kakaoToken.getAccess_token());
         }
-        System.out.println(user.toString());
         userRepository.save(user);
 
         return user;
@@ -62,10 +61,10 @@ public class LoginService {
         }
 
         kakaoApiService.logout(userId,user.get().getKakaoToken()); // 카카오 로그아웃 처리
-        jwtLogout();
+        this.jwtLogout();
     }
 
-    private void jwtLogout() throws JsonProcessingException {
+    protected void jwtLogout() throws JsonProcessingException {
         String token= userService.getToken();
         long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
         redisService.setKey(token,"logout",expiredTime);

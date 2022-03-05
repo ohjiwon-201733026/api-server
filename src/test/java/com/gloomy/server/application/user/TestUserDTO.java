@@ -13,8 +13,7 @@ public class TestUserDTO {
 
     public static class TestUser{
         public static User makeTestUser(){
-            return User.of("test@email.com","testName",new Password("test")
-                    , Sex.MALE,2020,01,01);
+            return User.of("test@email.com", "testName","kakaoToken","refreshToken");
         }
     }
 

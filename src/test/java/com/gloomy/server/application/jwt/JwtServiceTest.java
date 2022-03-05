@@ -1,22 +1,25 @@
 package com.gloomy.server.application.jwt;
 
 import com.gloomy.server.application.user.TestUserDTO;
+import com.gloomy.server.config.TestConfig;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
-import com.gloomy.server.infrastructure.jwt.ExpiredTimeTokenHmacSHA256JWTServiceTest;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.gloomy.server.application.core.ErrorMessage.invalidTokenErrorMessage;
 import static com.gloomy.server.application.core.ErrorMessage.refreshTokenNotEqualsErrorMessage;
@@ -26,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
 })
+@Import({TestConfig.class})
 @Transactional
 public class JwtServiceTest {
 
@@ -37,8 +41,9 @@ public class JwtServiceTest {
     @Autowired
     JWTDeserializer jwtDeserializer;
 //    @Autowired
-//    ExpiredTimeTokenHmacSHA256JWTServiceTest hmacSHA256JWTService;
-
+//    JWTSerializer expiredTimeTokenHmacSHA256JWTService;
+//    @Autowired
+//    List<JWTSerializer> jwtSerializerList;
 
     private String accessToken_O;
     private String refreshToken_O;
@@ -60,10 +65,18 @@ public class JwtServiceTest {
         accessToken_X=accessToken_O.substring(1);
         refreshToken_X=refreshToken_O.substring(1);
         refreshToken_differ=jwtSerializer.jwtFromUser(saveUser);
-//        refreshToken_expired= hmacSHA256JWTService.createRefreshToken();
+//        refreshToken_expired= expiredTimeTokenHmacSHA256JWTService.createRefreshToken();
 
         saveUser.changeRefreshToken(refreshToken_O);
         request=new JwtDTO.Request(accessToken_O,refreshToken_O);
+    }
+
+    @Test
+    public void test(){
+
+//        System.out.println(expiredTimeTokenHmacSHA256JWTService.getClass());
+//        AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
+//        System.out.println(ctx.getBean("ExpiredTimeTokenHmacSHA256JWTService").getClass());
     }
 
     @DisplayName("access & refresh token 재발급 받기_성공")
