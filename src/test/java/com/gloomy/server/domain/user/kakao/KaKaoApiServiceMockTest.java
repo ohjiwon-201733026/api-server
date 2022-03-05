@@ -25,7 +25,7 @@ import static com.gloomy.server.domain.user.login.LoginFixture.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(MockitoExtension.class)
-public class KaKaoApiServiceTest {
+public class KaKaoApiServiceMockTest {
 
     private MockWebServer mockWebServer;
     private ObjectMapper objectMapper;

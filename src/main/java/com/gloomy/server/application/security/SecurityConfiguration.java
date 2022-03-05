@@ -55,6 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
                 .antMatchers("/logout").permitAll()
                 .antMatchers("/report/**").permitAll()
                 .antMatchers("/jwt/reissue").permitAll()
+                .antMatchers("/like/**").permitAll()
                 .antMatchers("/user").permitAll()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
