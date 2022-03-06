@@ -24,18 +24,19 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 class JWTAuthenticationFilter extends OncePerRequestFilter {
 
-    private final RedisService redisService;
+//    private final RedisService redisService;
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-            String s = request.getHeader(AUTHORIZATION);
+        System.out.println("JWTAuthenticationFilter.doFilterInternal");
+        String s = request.getHeader(AUTHORIZATION);
             JWT jwt=null;
 
             if (s != null) {
                 String token = s.substring("Bearer ".length());
                 
-                checkLogout(token); // 로그아웃 체크
+//                checkLogout(token); // 로그아웃 체크
                 jwt=new JWT(token);
             }
 
@@ -45,10 +46,10 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
     }
     
     private void checkLogout(String token){
-        String isLogout=redisService.getValue(token);
-        if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
-            throw new IllegalArgumentException(isLogoutToken);
-        }
+//        String isLogout=redisService.getValue(token);
+//        if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
+//            throw new IllegalArgumentException(isLogoutToken);
+//        }
     }
     
 

@@ -43,8 +43,8 @@ public class LoginServiceMockTest {
     UserRepository userRepository;
     @Mock
     JWTDeserializer jwtDeserializer;
-    @Mock
-    RedisService redisService;
+//    @Mock
+//    RedisService redisService;
     @Mock
     UserService userService;
     @Mock

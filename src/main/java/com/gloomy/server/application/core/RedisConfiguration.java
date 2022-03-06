@@ -8,28 +8,28 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-@Configuration
+//@Configuration
 public class RedisConfiguration {
-
-    @Value("${spring.redis.host}")
-    private String redisHost;
-
-    @Value("${spring.redis.port}")
-    private int redisPort;
-
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory(){
-        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
-        return lettuceConnectionFactory;
-    }
-
-    @Bean
-    public RedisTemplate<String,Object> redisTemplate(){
-        RedisTemplate<String,Object> redisTemplate=new RedisTemplate<>();
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        return redisTemplate;
-    }
+//
+//    @Value("${spring.redis.host}")
+//    private String redisHost;
+//
+//    @Value("${spring.redis.port}")
+//    private int redisPort;
+//
+//    @Bean
+//    public RedisConnectionFactory redisConnectionFactory(){
+//        LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisHost, redisPort);
+//        return lettuceConnectionFactory;
+//    }
+//
+//    @Bean
+//    public RedisTemplate<String,Object> redisTemplate(){
+//        RedisTemplate<String,Object> redisTemplate=new RedisTemplate<>();
+//        redisTemplate.setConnectionFactory(redisConnectionFactory());
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        return redisTemplate;
+//    }
 
 
 

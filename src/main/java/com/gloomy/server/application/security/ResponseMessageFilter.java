@@ -16,10 +16,12 @@ import java.io.IOException;
 public class ResponseMessageFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        System.out.println("ResponseMessageFilter.doFilterInternal");
         try{
             filterChain.doFilter(request,response);
         }
         catch (IllegalArgumentException e){
+            System.out.println("error");
             setErrorResponse(HttpStatus.FORBIDDEN,response,e,request);
         }
     }

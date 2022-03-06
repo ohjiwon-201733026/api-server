@@ -34,7 +34,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureRestDocs(uriScheme = "https", uriHost = "docs.api.com") // (1)
 @SpringBootTest(classes = ApiServerApplication.class)
-@TestPropertySource(properties = { "spring.config.location=classpath:application.yml,classpath:aws.yml"})
+@TestPropertySource(properties = { "spring.config.location=classpath:test-application.yml,classpath:aws.yml"})
 public abstract class AbstractControllerTest {
 
     @Autowired

@@ -27,6 +27,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(RuntimeException.class)
     public ErrorResponse<?> handlerRuntimeException(RuntimeException e) {
+        System.out.println("ControllerExceptionHandler.handlerRuntimeException");
         e.printStackTrace();
         return new ErrorResponse<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getMessage(), requestContext.getRequestBody());
     }
@@ -34,6 +35,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse<?> handlerIllegalArgumentException(IllegalArgumentException e) {
+        System.out.println("ControllerExceptionHandler.handlerIllegalArgumentException");
         e.printStackTrace();
         return new ErrorResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), requestContext.getRequestBody());
     }
@@ -41,6 +43,7 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(BindException.class)
     public ErrorResponse<?> handlerBindException(BindException e) {
+        System.out.println("ControllerExceptionHandler.handlerBindException");
         e.printStackTrace();
         return new ErrorResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
@@ -48,24 +51,28 @@ public class ControllerExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ErrorResponse<?> handlerMethodArgumentMismatchException(MethodArgumentTypeMismatchException e) {
+        System.out.println("ControllerExceptionHandler.handlerMethodArgumentMismatchException");
         return new ErrorResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getParameter());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse<?> handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        System.out.println("ControllerExceptionHandler.handlerMethodArgumentNotValidException");
         return new ErrorResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ErrorResponse<?> handlerHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
+        System.out.println("ControllerExceptionHandler.handlerHttpMediaTypeNotSupportedException");
         return new ErrorResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getSupportedMediaTypes());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ErrorResponse<?> handlerHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        System.out.println("ControllerExceptionHandler.handlerHttpRequestMethodNotSupportedException");
         return new ErrorResponse<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getSupportedHttpMethods());
     }
 }

@@ -26,7 +26,7 @@ public class LoginService {
     private final LoginApiService<UserDTO.KakaoToken, UserDTO.KakaoUser> kakaoApiService;
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;
-    private final RedisService redisService;
+//    private final RedisService redisService;
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
 
@@ -67,7 +67,7 @@ public class LoginService {
     protected void jwtLogout() throws JsonProcessingException {
         String token= userService.getToken();
         long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
-        redisService.setKey(token,"logout",expiredTime);
+//        redisService.setKey(token,"logout",expiredTime);
     }
 
 }

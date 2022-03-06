@@ -16,7 +16,7 @@ public class NotificationController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody String token,@RequestBody Long id){
-        fcmService.saveToken(id,token);
+//        fcmService.saveToken(id,token);
         return ResponseEntity.ok().build();
     }
 }

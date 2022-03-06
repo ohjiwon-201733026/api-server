@@ -11,6 +11,7 @@ public class JwtDTO {
     @AllArgsConstructor
     @Getter
     @Setter
+    @NoArgsConstructor
     static class Request{
         @NotNull
         String accessToken;
@@ -23,6 +24,7 @@ public class JwtDTO {
     @AllArgsConstructor
     @Getter
     @Setter
+    @NoArgsConstructor
     static class Response{
         String accessToken;
         String refreshToken;

@@ -225,9 +225,11 @@ class UserRestControllerTest extends AbstractControllerTest {
                         )
                 ));
     }
+
+ */
     @DisplayName("User Detail")
     @Test
-    @WithMockUser
+//    @WithMockUser
     public void userDetail() throws Exception {
         User saveUser=userService.createUser(user);
         String token=jwtSerializer.jwtFromUser(saveUser);
@@ -241,16 +243,17 @@ class UserRestControllerTest extends AbstractControllerTest {
                         responseFields(
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.STRING).description("메세지"),
+                                fieldWithPath("result.id").type(JsonFieldType.NUMBER).description("유저 id"),
                                 fieldWithPath("result.email").type(JsonFieldType.STRING).description("유저 이메일"),
-                                fieldWithPath("result.sex").type(JsonFieldType.STRING).description("유저 성별"),
-                                fieldWithPath("result.imageUrl").type(JsonFieldType.STRING).description("유저 이미지"),
-                                fieldWithPath("result.dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일"),
+                                fieldWithPath("result.nickname").type(JsonFieldType.STRING).description("유저 nickname"),
+//                                fieldWithPath("result.sex").type(JsonFieldType.STRING).description("유저 성별"),
+//                                fieldWithPath("result.dateOfBirth").type(JsonFieldType.STRING).description("유저 생년월일"),
                                 fieldWithPath("responseTime").type(JsonFieldType.STRING).description("응답 시간")
                         )
                         )
                 ).andReturn();
     }
- */
+
 
     @DisplayName("회원 탈퇴")
     @Test

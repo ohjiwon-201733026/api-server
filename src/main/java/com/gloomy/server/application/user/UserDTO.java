@@ -177,11 +177,14 @@ public class UserDTO {
         @Getter
         @ToString
         public static class Response{
+            @NotNull
+            Long id;
+            @NotNull
+            String nickname;
             @Email
             String email;
-            Sex sex;
-            String imageUrl;
-            String dateOfBirth;
+//            Sex sex;
+//            String dateOfBirth;
         }
 
     }
