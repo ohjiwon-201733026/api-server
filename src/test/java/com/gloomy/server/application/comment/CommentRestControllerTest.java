@@ -35,6 +35,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
@@ -70,11 +71,7 @@ class CommentRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
-        noticeService.deleteAll();
-        commentService.deleteAll();
         imageService.deleteAll(feedTestDir);
-        feedService.deleteAll();
-        userService.deleteAll();
     }
 
     @DisplayName("비회원_댓글_생성")

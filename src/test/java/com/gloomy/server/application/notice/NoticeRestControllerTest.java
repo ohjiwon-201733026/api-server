@@ -37,6 +37,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
@@ -74,12 +75,6 @@ public class NoticeRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
-        noticeService.deleteAll();
-        feedLikeService.deleteAll();
-        replyService.deleteAll();
-        commentService.deleteAll();
-        feedService.deleteAll();
-        userService.deleteAll();
     }
 
     @DisplayName("사용자_알림_조회")

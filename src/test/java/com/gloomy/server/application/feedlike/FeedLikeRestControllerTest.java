@@ -30,6 +30,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
@@ -49,12 +50,6 @@ class FeedLikeRestControllerTest extends AbstractControllerTest {
         User testUser = userService.createUser(TestUserDTO.makeTestUser());
         TestFeedDTO testFeedDTO = new TestFeedDTO(testUser, 1);
         testFeed = feedService.createFeed(null, testFeedDTO.makeNonUserFeedDTO());
-    }
-
-    @AfterEach
-    void afterEach() {
-        feedService.deleteAll();
-        userService.deleteAll();
     }
 
     @DisplayName("비회원_좋아요_생성")

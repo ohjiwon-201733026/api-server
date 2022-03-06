@@ -39,6 +39,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {
         "spring.config.location=classpath:test-application.yml,classpath:aws.yml"
@@ -78,12 +79,7 @@ public class ReplyRestControllerTest extends AbstractControllerTest {
 
     @AfterEach
     void afterEach() {
-        noticeService.deleteAll();
-        replyService.deleteAll();
         imageService.deleteAll(feedTestDir);
-        commentService.deleteAll();
-        feedService.deleteAll();
-        userService.deleteAll();
     }
 
     @DisplayName("대댓글_생성_비회원")
