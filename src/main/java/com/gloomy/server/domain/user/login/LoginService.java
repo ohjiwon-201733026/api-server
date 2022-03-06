@@ -6,6 +6,8 @@ import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.jwt.JWTSerializer;
+import com.gloomy.server.domain.logout.Logout;
+import com.gloomy.server.domain.logout.LogoutRepository;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
 import com.gloomy.server.domain.user.UserService;
@@ -27,6 +29,7 @@ public class LoginService {
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;
 //    private final RedisService redisService;
+    private final LogoutRepository logoutRepository;
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
 
@@ -66,8 +69,8 @@ public class LoginService {
 
     protected void jwtLogout() throws JsonProcessingException {
         String token= userService.getToken();
-        long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
-//        redisService.setKey(token,"logout",expiredTime);
+//        long expiredTime=jwtDeserializer.jwtPayloadFromJWT(token).getExpiredTime()-now().getEpochSecond();
+        logoutRepository.save(new Logout(token));
     }
 
 }
