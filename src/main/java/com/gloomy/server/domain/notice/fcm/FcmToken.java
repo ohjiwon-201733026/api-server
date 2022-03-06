@@ -26,7 +26,7 @@ public class FcmToken {
         this.fcmToken=fcmToken;
     }
 
-    public FcmToken of(User userId,String fcmToken){
+    public static FcmToken of(User userId,String fcmToken){
         return new FcmToken(userId,fcmToken);
     }
 

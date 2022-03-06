@@ -2,6 +2,8 @@ package com.gloomy.server.application.security;
 
 import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.domain.logout.LogoutRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -22,15 +24,11 @@ import static org.springframework.http.HttpMethod.POST;
 
 @EnableConfigurationProperties(SecurityConfigurationProperties.class)
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
+    private final LogoutRepository logoutRepository;
     private final SecurityConfigurationProperties properties;
-//    private final RedisService redisService;
-
-    SecurityConfiguration(SecurityConfigurationProperties properties) {
-        this.properties = properties;
-//        this.redisService = redisService;
-    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -39,7 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.cors();
         http.logout().disable();
         http.addFilterBefore(new ResponseMessageFilter(),UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTAuthenticationFilter(logoutRepository), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/kakao", "/h2-console/**").permitAll()
                 .antMatchers(GET, "/user").permitAll()
