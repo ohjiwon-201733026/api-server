@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,11 +21,11 @@ public class RedisServiceMockTest {
 
 //    @InjectMocks RedisService redisService;
 
-    @Mock
-    RedisTemplate<String,Object> redisTemplate;
-
-    @Mock
-    ValueOperations<String,Object> valOp;
+//    @Mock
+//    RedisTemplate<String,Object> redisTemplate;
+//
+//    @Mock
+//    ValueOperations<String,Object> valOp;
 
     private String mockKey;
     private String mockValue;
@@ -43,8 +41,8 @@ public class RedisServiceMockTest {
     @DisplayName("redis get value")
     @Test
     public void getValue(){
-        doReturn(valOp).when(redisTemplate).opsForValue();
-        doReturn(mockValue).when(valOp).get(mockKey);
+//        doReturn(valOp).when(redisTemplate).opsForValue();
+//        doReturn(mockValue).when(valOp).get(mockKey);
 
 //        String value=redisService.getValue(mockKey);
 
@@ -54,10 +52,10 @@ public class RedisServiceMockTest {
     @DisplayName("redis set key-value")
     @Test
     public void setKey(){
-        doReturn(valOp).when(redisTemplate).opsForValue();
-        doNothing()
-                .when(valOp)
-                .set(mockKey,mockValue);
+//        doReturn(valOp).when(redisTemplate).opsForValue();
+//        doNothing()
+//                .when(valOp)
+//                .set(mockKey,mockValue);
 
 //        redisService.setKey(mockKey,mockValue,mockExpiredTime);
     }
@@ -65,7 +63,7 @@ public class RedisServiceMockTest {
     @DisplayName("redis delete key")
     @Test
     public void deleteKey(){
-        doReturn(true).when(redisTemplate).delete(mockKey);
+//        doReturn(true).when(redisTemplate).delete(mockKey);
 
 //        redisService.deleteKey(mockKey);
     }
@@ -73,7 +71,7 @@ public class RedisServiceMockTest {
     @DisplayName("redis hasKey")
     @Test
     public void hasKey(){
-        doReturn(true).when(redisTemplate).hasKey(mockKey);
+//        doReturn(true).when(redisTemplate).hasKey(mockKey);
 
 //        boolean hasKey=redisService.hasKey(mockKey);
 

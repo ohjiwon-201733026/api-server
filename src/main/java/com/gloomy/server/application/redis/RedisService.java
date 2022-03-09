@@ -1,9 +1,6 @@
 package com.gloomy.server.application.redis;
 
-import io.lettuce.core.dynamic.annotation.Value;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
