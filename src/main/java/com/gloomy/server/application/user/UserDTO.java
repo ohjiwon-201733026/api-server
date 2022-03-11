@@ -1,21 +1,12 @@
 package com.gloomy.server.application.user;
 
-import com.gloomy.server.domain.user.Image;
-import com.gloomy.server.domain.user.Sex;
 import com.gloomy.server.domain.user.User;
 import lombok.*;
-import org.joda.time.DateTime;
-import org.json.JSONObject;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
-import java.util.Objects;
 
 public class UserDTO {
 
@@ -166,9 +157,6 @@ public class UserDTO {
         public static class Request{
             @Email
             String email;
-            Sex sex;
-            MultipartFile image;
-            String dateOfBirth;
         }
 
         @NoArgsConstructor
@@ -183,8 +171,6 @@ public class UserDTO {
             String nickname;
             @Email
             String email;
-//            Sex sex;
-//            String dateOfBirth;
         }
 
     }

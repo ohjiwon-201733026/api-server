@@ -2,12 +2,11 @@ package com.gloomy.server.domain.user;
 
 import com.gloomy.server.domain.common.entity.Status;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,6 +16,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @ToString
 @Table(name = "users")
 @Entity
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -30,67 +30,35 @@ public class User {
     @Embedded
     private Profile profile;
 
-    @Embedded
-    private Password password;
-
-    @Enumerated(EnumType.STRING)
-    private Sex sex;
-
-    private LocalDate dateOfBirth;
-
     @Enumerated(EnumType.STRING)
     private Status joinStatus;
+    private Type type;
 
     private String kakaoToken;
     private String refreshToken;
 
 
-    protected User() {
-    }
-
-    private User(String email, Profile profile, Password password) {
+    private User(String email, Profile profile, Type type) {
         this.email = email;
         this.profile = profile;
-        this.password = password;
+        this.type=type;
         this.joinStatus=Status.ACTIVE;
     }
-    private User(String email, Profile profile,Password password,String kakaoToken,String refreshToken) {
+    private User(String email, Profile profile,Type type,String kakaoToken,String refreshToken) {
         this.email = email;
         this.profile = profile;
-        this.password = password;
+        this.type=type;
         this.kakaoToken=kakaoToken;
         this.joinStatus=Status.ACTIVE;
         this.refreshToken=refreshToken;
     }
 
-    private User(String email, Profile profile,Password password,Sex sex, LocalDate dateOfBirth){
-        this.email = email;
-        this.profile = profile;
-        this.password = password;
-        this.sex=sex;
-        this.dateOfBirth=dateOfBirth;
-        this.joinStatus=Status.ACTIVE;
+    public static User of(String email, String nickName, Type type){
+        return new User(email, Profile.from(nickName),type);
     }
 
-    public static User of(String email, String nickName, Password password,
-                          Sex sex, int year,int month,int day){
-        return new User(email, Profile.from(nickName),password,sex,LocalDate.of(year,month,day));
-    }
-
-    public static User of(String email, String name, Password password) {
-        return new User(email, Profile.from(name), password);
-    }
-
-    public static User of(String email, String name) {
-        return new User(email, Profile.from(name), null);
-    }
-
-    public static User of(String email, String name,String kakaoToken,String refreshToken) {
-        return new User(email,Profile.from(name), null,kakaoToken,refreshToken);
-    }
-
-    boolean matchesPassword(String rawPassword, PasswordEncoder passwordEncoder) {
-        return password.matchesPassword(rawPassword, passwordEncoder);
+    public static User of(String email, String name,Type type,String kakaoToken,String refreshToken) {
+        return new User(email,Profile.from(name),type,kakaoToken,refreshToken);
     }
 
     public void inactiveUser(){
@@ -98,7 +66,7 @@ public class User {
     }
 
     /**
-     * change*
+     * change *
      */
     public void changeId(Long id) {
         this.id = id;
@@ -109,6 +77,7 @@ public class User {
     public void changeRefreshToken(String refreshToken) {this.refreshToken=refreshToken;}
 
     public String getName(){ return this.profile.getName();}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

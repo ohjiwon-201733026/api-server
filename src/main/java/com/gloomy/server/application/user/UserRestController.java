@@ -1,11 +1,13 @@
 package com.gloomy.server.application.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gloomy.server.application.jwt.JwtService;
 import com.gloomy.server.domain.user.login.LoginService;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,29 +18,26 @@ import static com.gloomy.server.application.user.UserDTO.*;
 
 @RestController
 @Transactional
+@RequiredArgsConstructor
 public class UserRestController {
     private final LoginService loginService;
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
+    private final JwtService jwtService;
 
-    UserRestController(LoginService loginService, UserService userService, JWTSerializer jwtSerializer) {
-        this.loginService = loginService;
-        this.userService = userService;
-        this.jwtSerializer = jwtSerializer;
-    }
 
-    @PostMapping(value = "/kakao/signUp")
-    public Response kakaoLogin(@Validated @RequestBody CodeRequest request) {
-        User user=loginService.login(request);
-        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
-    }
-
-//    @GetMapping(value = "/kakao/signUp")
-//    public Response kakaoLogin(@RequestParam String code) {
-//        CodeRequest request=new CodeRequest(code);
+//    @PostMapping(value = "/kakao/signUp")
+//    public Response kakaoLogin(@Validated @RequestBody CodeRequest request) {
 //        User user=loginService.login(request);
-//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user),user.getRefreshToken());
+//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
 //    }
+
+    @GetMapping(value = "/kakao/signUp")
+    public Response kakaoLogin(@RequestParam String code) {
+        CodeRequest request=new CodeRequest(code);
+        User user=loginService.login(request);
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user),user.getRefreshToken());
+    }
 
     @GetMapping(value="/kakao/logout")
     public void logout() throws JsonProcessingException {
@@ -65,14 +64,14 @@ public class UserRestController {
 
     @GetMapping(value ="/user/detail")
     public UpdateUserDTO.Response userDetail(){
-        Long userId=userService.getMyInfo();
+        Long userId=jwtService.getMyInfo();
         User findUser = userService.findUser(userId);
         return makeUpdateUserDTO(findUser);
     }
 
     @GetMapping(value = "/user/inactive")
     public void inactiveUser(){
-        Long userId=userService.getMyInfo();
+        Long userId=jwtService.getMyInfo();
         userService.inactiveUser(userId);
     }
 

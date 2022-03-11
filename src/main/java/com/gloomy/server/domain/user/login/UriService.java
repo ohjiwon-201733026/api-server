@@ -1,4 +1,4 @@
-package com.gloomy.server.domain.user;
+package com.gloomy.server.domain.user.login;
 
 import lombok.Builder;
 import org.springframework.stereotype.Service;

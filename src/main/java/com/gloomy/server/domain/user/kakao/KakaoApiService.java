@@ -1,14 +1,10 @@
 package com.gloomy.server.domain.user.kakao;
 
 import com.gloomy.server.application.user.UserDTO;
-import com.gloomy.server.domain.common.entity.Status;
-import com.gloomy.server.domain.user.UriService;
-import com.gloomy.server.domain.user.User;
+import com.gloomy.server.domain.user.login.UriService;
 import com.gloomy.server.domain.user.UserRepository;
 import com.gloomy.server.domain.user.login.LoginApiService;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,7 +15,6 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -70,8 +65,8 @@ public class KakaoApiService implements LoginApiService<UserDTO.KakaoToken, User
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(GRANT_TYPE, grantTypeValue)
                         .with(CLIENT_ID, clientIdValue)
-                        .with(REDIRECT_URI, request.getRedirect_uri())
-//                        .with(REDIRECT_URI, "http://localhost:8080/kakao/signUp")
+//                        .with(REDIRECT_URI, request.getRedirect_uri())
+                        .with(REDIRECT_URI, "http://localhost:8080/kakao/signUp")
                         .with(CODE, request.getCode()))
                 .retrieve()
                 .bodyToMono(UserDTO.KakaoToken.class);

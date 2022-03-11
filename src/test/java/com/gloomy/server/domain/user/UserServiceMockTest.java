@@ -4,11 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gloomy.server.application.user.TestUserDTO;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
-import com.gloomy.server.domain.user.UriService;
-import com.gloomy.server.domain.user.User;
-import com.gloomy.server.domain.user.UserRepository;
-import com.gloomy.server.domain.user.UserService;
-import com.gloomy.server.infrastructure.jwt.UserJWTPayload;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,9 +64,6 @@ public class UserServiceMockTest {
     private void checkSameUser(User actual, User expected){
         Assertions.assertEquals(actual.getEmail(),expected.getEmail());
         Assertions.assertEquals(actual.getName(),expected.getName());
-        Assertions.assertEquals(actual.getSex(),expected.getSex());
-        Assertions.assertEquals(actual.getDateOfBirth(),expected.getDateOfBirth());
-        Assertions.assertEquals(actual.getPassword(),expected.getPassword());
     }
 
     @DisplayName("findUser mock fail")

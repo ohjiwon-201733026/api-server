@@ -3,6 +3,7 @@ package com.gloomy.server.domain.user;
 
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
+import com.gloomy.server.domain.user.login.UriService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,7 +29,6 @@ public class UserService {
     public Optional<User> findById(long id) {
         return userRepository.findByIdAndJoinStatus(id, Status.ACTIVE);
     }
-
 
     public User createUser(User user) {
         return userRepository.save(user);

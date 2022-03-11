@@ -39,22 +39,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.addFilterBefore(new ResponseMessageFilter(),UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(logoutRepository), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/kakao", "/h2-console/**").permitAll()
-                .antMatchers(GET, "/user").permitAll()
-                .antMatchers(POST, "/user", "/user/login").permitAll()
-                .antMatchers(  "/kakao/signUp").permitAll()
-                .antMatchers("/h2-console/**").permitAll()
-                .antMatchers("/feed/**").permitAll()
-                .antMatchers("/comment/**").permitAll()
-                .antMatchers("/reply/**").permitAll()
-                .antMatchers("/docs/**").permitAll()
-                .antMatchers("/user/**").permitAll()
-                .antMatchers("/myPage/**").permitAll()
-                .antMatchers("/logout").permitAll()
-                .antMatchers("/report/**").permitAll()
-                .antMatchers("/jwt/reissue").permitAll()
-                .antMatchers("/like/**").permitAll()
-                .antMatchers("/user").permitAll()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();
 
@@ -64,11 +48,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     @Bean
     JWTAuthenticationProvider jwtAuthenticationProvider(JWTDeserializer jwtDeserializer) {
         return new JWTAuthenticationProvider(jwtDeserializer);
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 
