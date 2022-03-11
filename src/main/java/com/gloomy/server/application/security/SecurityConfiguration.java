@@ -36,7 +36,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.csrf().disable();
         http.cors();
         http.logout().disable();
-        http.addFilterBefore(new ResponseMessageFilter(),UsernamePasswordAuthenticationFilter.class)
+        http.addFilterBefore(new JwtExceptionFilter(),UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(logoutRepository), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/**").permitAll()

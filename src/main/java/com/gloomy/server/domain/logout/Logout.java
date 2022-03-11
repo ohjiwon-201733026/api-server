@@ -9,8 +9,8 @@ import javax.persistence.*;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Getter
-@ToString
 @Entity
+@ToString
 @NoArgsConstructor
 public class Logout {
 

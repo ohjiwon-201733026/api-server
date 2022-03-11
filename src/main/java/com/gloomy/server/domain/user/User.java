@@ -32,6 +32,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Status joinStatus;
+
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     private String kakaoToken;

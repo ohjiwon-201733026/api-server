@@ -17,9 +17,10 @@ import java.net.URI;
 import java.util.Optional;
 
 
-@RequiredArgsConstructor
+
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final JWTDeserializer jwtDeserializer;

@@ -72,7 +72,7 @@ public class MyPageRestControllerTest extends AbstractControllerTest {
         feedService.createFeed(testFeedDTO2.getUserId(), testFeedDTO2.makeUserFeedDTO());
 
         String token=jwtSerializer.jwtFromUser(saveUser);
-        mockMvc.perform(get("/feed/user")
+        mockMvc.perform(get("/myPage/feed")
                 .header("Authorization", "Bearer " + token)
                 .param("page", "0")
                 .accept(MediaType.APPLICATION_JSON))

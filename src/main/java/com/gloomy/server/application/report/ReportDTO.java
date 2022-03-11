@@ -3,12 +3,17 @@ package com.gloomy.server.application.report;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class ReportDTO {
 
     @NoArgsConstructor
     @Getter
     public static class Request{
+        @NotEmpty
         private Long feedId;
+        @NotEmpty
         private String reportCategory;
 
         public Request(Long feedId, String reportCategory) {

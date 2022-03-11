@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import static com.gloomy.server.application.user.UserDTO.*;
 
 @RestController
-@Transactional
 @RequiredArgsConstructor
 public class UserRestController {
     private final LoginService loginService;
@@ -26,20 +25,20 @@ public class UserRestController {
     private final JwtService jwtService;
 
 
-//    @PostMapping(value = "/kakao/signUp")
-//    public Response kakaoLogin(@Validated @RequestBody CodeRequest request) {
-//        User user=loginService.login(request);
-//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
-//    }
-
-    @GetMapping(value = "/kakao/signUp")
-    public Response kakaoLogin(@RequestParam String code) {
-        CodeRequest request=new CodeRequest(code);
+    @PostMapping(value = "/kakao/signUp")
+    public Response kakaoLogin(@Validated @RequestBody CodeRequest request) {
         User user=loginService.login(request);
-        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user),user.getRefreshToken());
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
     }
 
-    @GetMapping(value="/kakao/logout")
+//    @GetMapping(value = "/kakao/signUp")
+//    public Response kakaoLogin(@RequestParam String code) {
+//        CodeRequest request=new CodeRequest(code);
+//        User user=loginService.login(request);
+//        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user),user.getRefreshToken());
+//    }
+
+    @PostMapping(value="/kakao/logout")
     public void logout() throws JsonProcessingException {
         loginService.logout();
     }
@@ -56,8 +55,6 @@ public class UserRestController {
                 .id(user.getId())
                 .nickname(user.getProfile().getUserNickName())
                 .email(user.getEmail())
-//                .sex(user.getSex())
-//                .dateOfBirth(user.getDateOfBirth()==null?"":user.getDateOfBirth().toString())
                 .build();
 
     }
@@ -69,7 +66,7 @@ public class UserRestController {
         return makeUpdateUserDTO(findUser);
     }
 
-    @GetMapping(value = "/user/inactive")
+    @PutMapping(value = "/user/inactive")
     public void inactiveUser(){
         Long userId=jwtService.getMyInfo();
         userService.inactiveUser(userId);

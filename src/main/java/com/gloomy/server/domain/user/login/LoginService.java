@@ -34,7 +34,6 @@ public class LoginService {
     private final JWTSerializer jwtSerializer;
     private final JwtService jwtService;
 
-    @Transactional
     public User login(UserDTO.CodeRequest request) {
         UserDTO.KakaoToken kakaoToken = kakaoApiService.getToken(request).block();
         UserDTO.KakaoUser kakaoUser =  kakaoApiService.getUserInfo(kakaoToken.getAccess_token()).block();

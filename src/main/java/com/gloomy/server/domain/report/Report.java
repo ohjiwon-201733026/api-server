@@ -24,7 +24,7 @@ public class Report {
     @JoinColumn(name = "feed_id")
     private Feed feedId;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private ReportCategory reportCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
