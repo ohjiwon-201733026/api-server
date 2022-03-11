@@ -1,6 +1,7 @@
 package com.gloomy.server.application.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gloomy.server.application.jwt.JwtService;
 import com.gloomy.server.domain.report.ReportService;
 import com.gloomy.server.domain.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +31,9 @@ public class ReportRestControllerMockTest {
     UserService userService;
 
     @Mock
+    JwtService jwtService;
+
+    @Mock
     ReportService reportService;
 
     private MockMvc mockMvc; // API 요청 받기 위한 객체
@@ -50,7 +54,7 @@ public class ReportRestControllerMockTest {
     @Test
     public void reportFeed() throws Exception {
         // given
-        doReturn(userId).when(userService).getMyInfo();
+        doReturn(userId).when(jwtService).getMyInfo();
 
         // when
         final ResultActions resultActions=mockMvc

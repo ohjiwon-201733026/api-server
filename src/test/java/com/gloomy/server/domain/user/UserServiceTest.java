@@ -52,9 +52,7 @@ public class UserServiceTest {
 
     private void checkSameUser(User actual,User expect){
         Assertions.assertEquals(actual.getId(),expect.getId());
-        Assertions.assertEquals(actual.getSex(),expect.getSex());
         Assertions.assertEquals(actual.getEmail(),expect.getEmail());
-        Assertions.assertEquals(actual.getDateOfBirth(),expect.getDateOfBirth());
         Assertions.assertEquals(actual.getJoinStatus(),expect.getJoinStatus());
     }
 

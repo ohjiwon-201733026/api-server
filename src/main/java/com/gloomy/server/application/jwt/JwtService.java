@@ -5,6 +5,7 @@ import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,5 +48,17 @@ public class JwtService {
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken).build();
 
+    }
+
+    public Long getMyInfo(){
+        String token=getToken();
+        if(token.equals("")) return null;
+        return jwtDeserializer.jwtPayloadFromJWT(token).getUserId();
+    }
+
+    public String getToken(){
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getCredentials().toString();
     }
 }

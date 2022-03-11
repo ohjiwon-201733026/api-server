@@ -1,8 +1,7 @@
 package com.gloomy.server.application.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gloomy.server.application.AbstractControllerTest;
+import com.gloomy.server.application.jwt.JwtService;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserService;
@@ -16,12 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -30,10 +25,6 @@ import static com.gloomy.server.domain.user.login.LoginFixture.ACCESS_TOKEN;
 import static com.gloomy.server.domain.user.login.LoginFixture.USER_ID;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -48,6 +39,8 @@ public class UserRestControllerMockTest {
     LoginService loginService;
     @Mock
     UserService userService;
+    @Mock
+    JwtService jwtService;
     @Mock
     JWTSerializer jwtSerializer;
     @Mock
@@ -113,7 +106,7 @@ public class UserRestControllerMockTest {
     @DisplayName("inactive user")
     @Test
     public void inactiveUser() throws Exception {
-        doReturn(USER_ID).when(userService).getMyInfo();
+        doReturn(USER_ID).when(jwtService).getMyInfo();
         doReturn(testUser).when(userService).inactiveUser(USER_ID);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/user/inactive")

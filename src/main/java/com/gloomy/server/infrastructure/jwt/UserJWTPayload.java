@@ -14,7 +14,6 @@ import static java.time.Instant.now;
 public class UserJWTPayload implements JWTPayload {
 
     private Long sub;
-    private String name;
     private long iat;
 
     static UserJWTPayload of(long epochSecondExpired){
@@ -22,19 +21,17 @@ public class UserJWTPayload implements JWTPayload {
     }
 
     static UserJWTPayload of(User user, long epochSecondExpired) {
-        return new UserJWTPayload(user.getId(), valueOf(user.getEmail()), epochSecondExpired);
+        return new UserJWTPayload(user.getId(), epochSecondExpired);
     }
 
     private UserJWTPayload(long iat){
         this.sub=null;
-        this.name=null;
         this.iat=iat;
     }
 
     // TODO: 파싱이슈
-    public UserJWTPayload(long sub, String name, long iat) {
+    public UserJWTPayload(long sub, long iat) {
         this.sub = sub;
-        this.name = name;
         this.iat = iat;
     }
 
@@ -55,6 +52,6 @@ public class UserJWTPayload implements JWTPayload {
 
     @Override
     public String toString() {
-        return format("{\"sub\":%d,\"name\":\"%s\",\"iat\":%d}", sub, name, iat);
+        return format("{\"sub\":%d,\"iat\":%d}", sub, iat);
     }
 }

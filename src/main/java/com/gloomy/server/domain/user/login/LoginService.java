@@ -1,6 +1,7 @@
 package com.gloomy.server.domain.user.login;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.gloomy.server.application.jwt.JwtService;
 import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.common.entity.Status;
@@ -8,6 +9,7 @@ import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.jwt.JWTSerializer;
 import com.gloomy.server.domain.logout.Logout;
 import com.gloomy.server.domain.logout.LogoutRepository;
+import com.gloomy.server.domain.user.Type;
 import com.gloomy.server.domain.user.User;
 import com.gloomy.server.domain.user.UserRepository;
 import com.gloomy.server.domain.user.UserService;
@@ -27,13 +29,12 @@ public class LoginService {
 
     private final LoginApiService<UserDTO.KakaoToken, UserDTO.KakaoUser> kakaoApiService;
     private final UserRepository userRepository;
-    private final JWTDeserializer jwtDeserializer;
-//    private final RedisService redisService;
     private final LogoutRepository logoutRepository;
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
+    private final JwtService jwtService;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public User login(UserDTO.CodeRequest request) {
         UserDTO.KakaoToken kakaoToken = kakaoApiService.getToken(request).block();
         UserDTO.KakaoUser kakaoUser =  kakaoApiService.getUserInfo(kakaoToken.getAccess_token()).block();
@@ -42,8 +43,8 @@ public class LoginService {
                 userRepository.findFirstByEmailAndJoinStatus(kakaoUser.getKakao_account().getEmail(), Status.ACTIVE);
         User user;
         if(userOp.isEmpty()) { // 회원가입
-            user=User.of(kakaoUser.getKakao_account().getEmail(), userService.createNickName()
-                    , kakaoToken.getAccess_token(),jwtSerializer.createRefreshToken());
+            user=User.of(kakaoUser.getKakao_account().getEmail(), userService.createNickName(),
+                    Type.KAKAO, kakaoToken.getAccess_token(),jwtSerializer.createRefreshToken());
         }
         else{ // 로그인
             user=userOp.get();
@@ -56,7 +57,7 @@ public class LoginService {
 
     public void logout() throws JsonProcessingException {
 
-        Long userId=userService.getMyInfo();
+        Long userId=jwtService.getMyInfo();
 
         Optional<User> user =userRepository.findByIdAndJoinStatus(userId, Status.ACTIVE);
         if(user.isEmpty()){
