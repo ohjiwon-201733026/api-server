@@ -86,7 +86,7 @@ public class UserRestControllerMockTest {
         doReturn(USER_ID).when(jwtService).getMyInfo();
         doReturn(testUser).when(userService).inactiveUser(USER_ID);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/user/inactive")
+        mockMvc.perform(MockMvcRequestBuilders.put("/user/inactive")
                 .header("Authorization","Bearer "+accessToken)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())

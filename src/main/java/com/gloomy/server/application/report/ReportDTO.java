@@ -11,9 +11,9 @@ public class ReportDTO {
     @NoArgsConstructor
     @Getter
     public static class Request{
-        @NotEmpty
+        @NotNull
         private Long feedId;
-        @NotEmpty
+        @NotNull
         private String reportCategory;
 
         public Request(Long feedId, String reportCategory) {

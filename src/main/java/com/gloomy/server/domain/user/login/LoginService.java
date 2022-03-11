@@ -2,7 +2,6 @@ package com.gloomy.server.domain.user.login;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.gloomy.server.application.jwt.JwtService;
-import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.jwt.JWTDeserializer;

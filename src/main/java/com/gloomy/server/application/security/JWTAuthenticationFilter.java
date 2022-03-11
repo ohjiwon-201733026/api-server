@@ -1,17 +1,11 @@
 package com.gloomy.server.application.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.gloomy.server.application.core.response.ErrorResponse;
-import com.gloomy.server.application.redis.RedisService;
-import com.gloomy.server.domain.common.entity.Status;
 import com.gloomy.server.domain.logout.Logout;
 import com.gloomy.server.domain.logout.LogoutRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;

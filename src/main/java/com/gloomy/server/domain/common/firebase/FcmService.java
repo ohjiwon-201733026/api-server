@@ -1,6 +1,5 @@
 package com.gloomy.server.domain.common.firebase;
 
-import com.gloomy.server.application.redis.RedisService;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.WebpushConfig;

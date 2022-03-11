@@ -1,6 +1,5 @@
 package com.gloomy.server.application.security;
 
-import com.gloomy.server.application.redis.RedisService;
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.logout.LogoutRepository;
 import lombok.RequiredArgsConstructor;

@@ -66,7 +66,6 @@ public class KakaoApiService implements LoginApiService<UserDTO.KakaoToken, User
                 .body(BodyInserters.fromFormData(GRANT_TYPE, grantTypeValue)
                         .with(CLIENT_ID, clientIdValue)
                         .with(REDIRECT_URI, request.getRedirect_uri())
-//                        .with(REDIRECT_URI, "http://localhost:8080/kakao/signUp")
                         .with(CODE, request.getCode()))
                 .retrieve()
                 .bodyToMono(UserDTO.KakaoToken.class);

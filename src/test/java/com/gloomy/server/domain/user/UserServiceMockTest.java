@@ -116,18 +116,5 @@ public class UserServiceMockTest {
         assertThrows(IllegalArgumentException.class,()->userService.inactiveUser(userId));
 
     }
-//    @Mock UserJWTPayload userJWTPayload;
 
-
-//    @DisplayName("jwt user id 가져오기 success")
-//    @Test
-//    public void getMyInfo_mock_success(){
-//        doReturn(token).when(userServiceMock).getToken();
-//        doReturn(new UserJWTPayload()).when(jwtDeserializer).jwtPayloadFromJWT(token);
-//        doReturn(userId).when(userJWTPayload).getUserId();
-//
-//        Long getUserId=userService.getMyInfo();
-//
-//        Assertions.assertEquals(getUserId,userId);
-//    }
 }
