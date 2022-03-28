@@ -2,6 +2,7 @@ package com.gloomy.server.application.security;
 
 import com.gloomy.server.domain.jwt.JWTDeserializer;
 import com.gloomy.server.domain.logout.LogoutRepository;
+import com.gloomy.server.domain.logout.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -18,15 +19,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-
 @EnableConfigurationProperties(SecurityConfigurationProperties.class)
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
-    private final LogoutRepository logoutRepository;
+    private final LogoutService logoutService;
     private final SecurityConfigurationProperties properties;
 
     @Override
@@ -36,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.cors();
         http.logout().disable();
         http.addFilterBefore(new JwtExceptionFilter(),UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JWTAuthenticationFilter(logoutRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JWTAuthenticationFilter(logoutService), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
                 .antMatchers("/**").permitAll()
                 .anyRequest().authenticated();

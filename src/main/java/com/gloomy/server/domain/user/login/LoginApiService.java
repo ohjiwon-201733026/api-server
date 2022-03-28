@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 public interface LoginApiService<T,U> {
 
-    public Mono<UserDTO.KakaoToken> getToken(UserDTO.CodeRequest request);
-    public Mono<UserDTO.KakaoUser> getUserInfo(String accessToken);
+    public Mono<T> getToken(UserDTO.CodeRequest request);
+    public Mono<U> getUserInfo(String accessToken);
     public Long logout(Long userId,String token);
 }

@@ -2,6 +2,7 @@ package com.gloomy.server.application.security;
 
 import com.gloomy.server.domain.logout.Logout;
 import com.gloomy.server.domain.logout.LogoutRepository;
+import com.gloomy.server.domain.logout.LogoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -23,7 +24,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 //    private final RedisService redisService;
-    private final LogoutRepository logoutRepository;
+    private final LogoutService logoutService;
 
 
     @Override
@@ -33,8 +34,9 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
 
             if (s != null) {
                 String token = s.substring("Bearer ".length());
-                
-                checkLogout(token); // 로그아웃 체크
+
+                logoutService.getToken(token);
+//                checkLogout(token); // 로그아웃 체크
                 jwt=new JWT(token);
             }
 
@@ -44,9 +46,6 @@ class JWTAuthenticationFilter extends OncePerRequestFilter {
     }
     
     private void checkLogout(String token){
-        Optional<Logout> logoutOptional=logoutRepository.findByLogoutToken(token);
-        if(logoutOptional.isPresent()) throw new IllegalArgumentException(isLogoutToken);
-
 //        String isLogout=redisService.getValue(token);
 //        if (!ObjectUtils.isEmpty(isLogout)) { // 블랙리스트에 없을 경우
 //            throw new IllegalArgumentException(isLogoutToken);

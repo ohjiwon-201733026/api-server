@@ -5,6 +5,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.gloomy.server.application.core.ErrorMessage.isLogoutToken;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -13,6 +16,13 @@ public class LogoutService {
     private final LogoutRepository logoutRepository;
 
     public Optional<Logout> getToken(String logoutToken){
-        return logoutRepository.findByLogoutToken(logoutToken);
+
+        Optional<Logout> logoutOptional=logoutRepository.findByLogoutToken(logoutToken);
+        if(logoutOptional.isPresent()) throw new IllegalArgumentException(isLogoutToken);
+
+        return logoutOptional;
     }
+
+
+
 }
