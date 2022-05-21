@@ -9,8 +9,10 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -26,6 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
 
     private final LogoutService logoutService;
     private final SecurityConfigurationProperties properties;
+    private final JWTDeserializer jwtDeserializer;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -36,11 +39,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
         http.addFilterBefore(new JwtExceptionFilter(),UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(logoutService), UsernamePasswordAuthenticationFilter.class);
         http.authorizeRequests()
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated();
-
-        http.formLogin().disable();
+                .anyRequest().permitAll()
+                .and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .formLogin()
+                .disable();
     }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth){
+        auth.authenticationProvider(jwtAuthenticationProvider(jwtDeserializer));
+    }
+
 
     @Bean
     JWTAuthenticationProvider jwtAuthenticationProvider(JWTDeserializer jwtDeserializer) {

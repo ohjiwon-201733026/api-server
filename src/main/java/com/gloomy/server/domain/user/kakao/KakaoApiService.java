@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -17,7 +18,7 @@ import reactor.core.publisher.Mono;
 import java.net.URI;
 
 @Service
-@Transactional
+@Transactional(isolation = Isolation.READ_COMMITTED)
 public class KakaoApiService implements LoginApiService<UserDTO.KakaoToken, UserDTO.KakaoUser> {
 
     private final String GRANT_TYPE="grant_type";
@@ -65,7 +66,8 @@ public class KakaoApiService implements LoginApiService<UserDTO.KakaoToken, User
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData(GRANT_TYPE, grantTypeValue)
                         .with(CLIENT_ID, clientIdValue)
-                        .with(REDIRECT_URI, request.getRedirect_uri())
+//                        .with(REDIRECT_URI, request.getRedirect_uri())
+                        .with(REDIRECT_URI, "http://localhost:8080/kakao/signUp")
                         .with(CODE, request.getCode()))
                 .retrieve()
                 .bodyToMono(UserDTO.KakaoToken.class);

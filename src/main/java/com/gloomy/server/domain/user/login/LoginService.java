@@ -27,11 +27,18 @@ import static java.time.Instant.now;
 public class LoginService {
 
     private final LoginApiService<UserDTO.KakaoToken, UserDTO.KakaoUser> kakaoApiService;
+    private final LoginApiService<UserDTO.KakaoToken, UserDTO.KakaoUser> appleApiService;
     private final UserRepository userRepository;
     private final LogoutRepository logoutRepository;
     private final UserService userService;
     private final JWTSerializer jwtSerializer;
     private final JwtService jwtService;
+
+    public void test(){
+        System.out.println(kakaoApiService.getClass());
+        System.out.println(appleApiService.getClass());
+        appleApiService.logout(1L,"token");
+    }
 
     public User login(UserDTO.CodeRequest request) {
         UserDTO.KakaoToken kakaoToken = kakaoApiService.getToken(request).block();
