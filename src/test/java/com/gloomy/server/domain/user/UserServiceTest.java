@@ -4,6 +4,7 @@ import com.gloomy.server.application.feed.TestFeedDTO;
 import com.gloomy.server.application.user.TestUserDTO;
 import com.gloomy.server.application.user.UserDTO;
 import com.gloomy.server.domain.common.entity.Status;
+import com.gloomy.server.domain.user.login.LoginService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class UserServiceTest {
     UserRepository userRepository;
     @Autowired
     UserService userService;
+    @Autowired
+    LoginService loginService;
     User user;
     UserDTO.UpdateUserDTO.Request updateUserDTO;
     TestFeedDTO testFeedDTO;
@@ -37,6 +40,11 @@ public class UserServiceTest {
         this.user= TestUser.makeTestUser();
         this.updateUserDTO= UpdateUserTestDTO.makeUpdateUserDtoRequest();
         testFeedDTO = new TestFeedDTO(user, 1);
+    }
+
+    @Test
+    public void test(){
+        loginService.test();
     }
 
 

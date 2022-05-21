@@ -2,6 +2,7 @@ package com.gloomy.server.domain.logout;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -10,7 +11,7 @@ import static com.gloomy.server.application.core.ErrorMessage.isLogoutToken;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
 public class LogoutService {
 
     private final LogoutRepository logoutRepository;

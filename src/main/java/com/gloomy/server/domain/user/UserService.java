@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,7 +20,7 @@ import java.util.Optional;
 
 
 @Service
-@Transactional
+@Transactional(isolation = Isolation.READ_COMMITTED)
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
@@ -55,6 +56,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public User findUser(Long userId) {
+        System.out.println("userID "+userId);
         return userRepository.findByIdAndJoinStatus(userId,Status.ACTIVE).orElseThrow(() -> {
             throw new IllegalArgumentException("[ userService ]: 존재하지 않는 user 입니다.");
         });

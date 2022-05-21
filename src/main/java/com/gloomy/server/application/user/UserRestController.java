@@ -31,6 +31,13 @@ public class UserRestController {
         return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
     }
 
+    @GetMapping(value = "/kakao/signUp")
+    public Response kakaoLogin(@RequestParam String code) {
+        CodeRequest request=new CodeRequest(code);
+        User user=loginService.login(request);
+        return Response.fromUserAndToken(user, jwtSerializer.jwtFromUser(user), user.getRefreshToken());
+    }
+
 
     @PostMapping(value="/kakao/logout")
     public void logout() throws JsonProcessingException {
@@ -55,6 +62,7 @@ public class UserRestController {
 
     @GetMapping(value ="/user/detail")
     public UpdateUserDTO.Response userDetail(){
+        System.out.println(SecurityContextHolder.getContext().getAuthentication().getClass());
         Long userId=jwtService.getMyInfo();
         User findUser = userService.findUser(userId);
         return makeUpdateUserDTO(findUser);

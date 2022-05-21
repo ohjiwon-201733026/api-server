@@ -9,6 +9,7 @@ import com.gloomy.server.domain.user.UserRepository;
 import com.gloomy.server.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class ReportService {
 
         return reportRepository.save(report);
     }
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true,isolation = Isolation.READ_COMMITTED)
     public Optional<Report> findReportById(Long reportId){
         return reportRepository.findById(reportId);
     }
