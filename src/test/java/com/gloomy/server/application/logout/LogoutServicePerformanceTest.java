@@ -36,11 +36,11 @@ public class LogoutServicePerformanceTest {
             "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p",
             "q","r","s","t","u","v","w","x","y","z"
     };
-    @Test
-    public void getLogoutToken(){
-
-        Optional<Logout> findLogout=logoutRepository.findByLogoutToken(logout.getLogoutToken());
-
-        Assertions.assertEquals(findLogout.get().getLogoutToken(),"log_out_token");
-    }
+//    @Test
+//    public void getLogoutToken(){
+//
+//        Optional<Logout> findLogout=logoutRepository.findByLogoutToken(logout.getLogoutToken());
+//
+//        Assertions.assertEquals(findLogout.get().getLogoutToken(),"log_out_token");
+//    }
 }
